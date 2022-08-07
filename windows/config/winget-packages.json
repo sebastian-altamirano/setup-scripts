@@ -1,0 +1,77 @@
+{
+	"$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+	"CreationDate": "2022-08-06T20:41:20.779-00:00",
+	"Sources": [
+		{
+			"Packages": [
+				{
+					"PackageIdentifier": "7zip.7zip"
+				},
+				{
+					"PackageIdentifier": "calibre.calibre"
+				},
+				{
+					"PackageIdentifier": "CPUID.HWMonitor"
+				},
+				{
+					"PackageIdentifier": "DeepL.DeepL"
+				},
+				{
+					"PackageIdentifier": "Discord.Discord"
+				},
+				{
+					"PackageIdentifier": "FastStone.Viewer"
+				},
+				{
+					"PackageIdentifier": "FlawlessWidescreen.FlawlessWidescreen"
+				},
+				{
+					"PackageIdentifier": "GnuPG.Gpg4win"
+				},
+				{
+					"PackageIdentifier": "HandBrake.HandBrake"
+				},
+				{
+					"PackageIdentifier": "Insomnia.Insomnia"
+				},
+				{
+					"PackageIdentifier": "KDE.Krita"
+				},
+				{
+					"PackageIdentifier": "Microsoft.PowerShell"
+				},
+				{
+					"PackageIdentifier": "Microsoft.PowerToys"
+				},
+				{
+					"PackageIdentifier": "Microsoft.VisualStudioCode"
+				},
+				{
+					"PackageIdentifier": "Microsoft.WindowsTerminal"
+				},
+				{
+					"PackageIdentifier": "Mozilla.Firefox"
+				},
+				{
+					"PackageIdentifier": "NVAccess.NVDA"
+				},
+				{
+					"PackageIdentifier": "Nvidia.PhysXLegacy"
+				},
+				{
+					"PackageIdentifier": "Spotify.Spotify"
+				},
+				{
+					"PackageIdentifier": "Valve.Steam"
+				}
+			],
+			"SourceDetails": {
+				"Argument": "https://cdn.winget.microsoft.com/cache",
+				"Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+				"Name": "winget",
+				"Type": "Microsoft.PreIndexed.Package"
+			}
+		}
+	],
+	"WinGetVersion": "1.3.2091"
+}

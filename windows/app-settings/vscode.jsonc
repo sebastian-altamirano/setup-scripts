@@ -1,0 +1,94 @@
+{
+	"editor.accessibilitySupport": "off",
+	"editor.bracketPairColorization.enabled": false,
+	"editor.codeLens": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.fontFamily": "JetBrains Mono",
+	"editor.fontLigatures": true,
+	"editor.fontSize": 16,
+	"editor.formatOnSave": true,
+	"editor.insertSpaces": false,
+	"editor.minimap.enabled": false,
+	"editor.rulers": [80, 100],
+	"editor.tabSize": 2,
+
+	"files.eol": "\n",
+
+	"git.enableCommitSigning": true,
+
+	"scm.repositories.sortOrder": "name",
+
+	"search.exclude": {
+		"**/.git": true,
+		"**/node_modules": true,
+		".husky": true,
+		".nyc_output": true,
+		".vscode": true,
+		"coverage": true,
+		"dist": true,
+		"package-lock.json": true
+	},
+
+	"window.autoDetectColorScheme": true,
+	"window.zoomLevel": 1,
+
+	"workbench.colorTheme": "Tomorrow Night Eighties",
+	"workbench.editor.pinnedTabSizing": "compact",
+	"workbench.preferredDarkColorTheme": "Tomorrow Night Eighties",
+	"workbench.preferredLightColorTheme": "GitHub Light Default",
+	"workbench.settings.editor": "json",
+	"workbench.sideBar.location": "right",
+
+	// --------------------------- OS-SPECIFIC SETTINGS --------------------------
+
+	// Linux
+	"editor.selectionClipboard": false,
+
+	"window.titleBarStyle": "custom",
+
+	// Windows
+	"terminal.external.windowsExec": "wt",
+
+	// ------------------------ LANGUAGE-SPECIFIC SETTINGS -----------------------
+
+	"css.validate": false,
+
+	"javascript.updateImportsOnFileMove.enabled": "always",
+
+	"less.validate": false,
+
+	"scss.validate": false,
+
+	"typescript.updateImportsOnFileMove.enabled": "always",
+
+	// ---------------------------- EXTENSION SETTINGS ---------------------------
+
+	// Code Runner
+	"code-runner.clearPreviousOutput": true,
+	"code-runner.runInTerminal": true,
+	"code-runner.saveFileBeforeRun": true,
+
+	// GitLens
+	"gitlens.codeLens.enabled": false,
+	"gitlens.hovers.currentLine.over": "annotation",
+	"gitlens.statusBar.enabled": false,
+
+	// Prettier
+	"prettier.endOfLine": "lf",
+	"prettier.printWidth": 100,
+	"prettier.tabWidth": 4,
+	"prettier.useTabs": true,
+
+	// Stylelint
+	"stylelint.validate": ["css", "scss"],
+
+	// TODO Highlight
+	"todohighlight.include": [
+		"**/*.html",
+		"**/*.css",
+		"**/*.scss",
+		"**/*.js",
+		"**/*.ts",
+		"**/*.tsx"
+	]
+}
