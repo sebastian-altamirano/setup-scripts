@@ -1,0 +1,25 @@
+[alias]
+	amend = commit --amend --date=now --no-edit
+	br = branch
+	ci = commit
+	co = checkout
+	cp = cherry-pick
+	pl = pull
+	ps = push
+	st = status
+
+[commit]
+	gpgsign = true
+
+[core]
+	editor = nano
+
+[push]
+	default = current
+
+# Complete the following fields before executing the installation script:
+
+[user]
+	name = 
+	email = 
+	signingkey = 

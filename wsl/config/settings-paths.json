@@ -1,0 +1,12 @@
+{
+	"paths": [
+		{
+			"from": "fish",
+			"to": "~/.config/fish"
+		},
+		{
+			"from": ".gitconfig",
+			"to": "~/.gitconfig"
+		}
+	]
+}
