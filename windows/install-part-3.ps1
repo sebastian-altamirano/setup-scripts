@@ -53,3 +53,5 @@ Write-Host "- Install the fonts that have been downloaded to $fontsZipPath."
 Write-Host "- Change the screen refresh rate to the maximum available value."
 
 Stop-DotfilesLogging
+
+Read-Host -Prompt "Press Enter to exit"
