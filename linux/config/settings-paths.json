@@ -1,12 +1,12 @@
 {
 	"paths": [
 		{
-			"from": "fish",
-			"to": "~/.config/fish"
+			"resourceName": "fish",
+			"destination": "~/.config/fish"
 		},
 		{
-			"from": ".gitconfig",
-			"to": "~/.gitconfig"
+			"resourceName": ".gitconfig",
+			"destination": "~/.gitconfig"
 		}
 	]
 }

@@ -1,12 +1,12 @@
 {
 	"paths": [
 		{
-			"from": "vscode.jsonc",
-			"to": "$env:AppData\\Code\\User\\settings.json"
+			"resourceName": "vscode.jsonc",
+			"destination": "$env:AppData\\Code\\User\\settings.json"
 		},
 		{
-			"from": "windows-terminal.json",
-			"to": "$env:LocalAppData\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
+			"resourceName": "windows-terminal.json",
+			"destination": "$env:LocalAppData\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
 		}
 	]
 }

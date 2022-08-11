@@ -34,8 +34,8 @@ $appSettingsPath = ".\app-settings"
 Write-Host "Importing application settings"
 $appSettingsMappings = (Get-Content "$configPath\settings-paths.json" | ConvertFrom-Json).paths
 Foreach ($mapping in $appSettingsMappings) {
-	$path = Join-Path "../app-settings" $mapping 
-	$destination = $ExecutionContext.InvokeCommand.ExpandString($mapping.to)
+	$path = Join-Path "../app-settings" $mapping.resourceName
+	$destination = $ExecutionContext.InvokeCommand.ExpandString($mapping.destination)
 	Copy-DotfilesResource -Path $path -Destination $destination
 }
 

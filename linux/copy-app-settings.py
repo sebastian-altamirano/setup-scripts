@@ -6,10 +6,10 @@ from shutil import copy2 as copyFile
 APP_SETTINGS_PATH = "app-settings"
 
 appSettingsMappings = readJson("config/settings-paths.json")["paths"]
-for fromPath, toPath in appSettingsMappings.items():
-	absoluteToPath = getAbsolutePath(f"{APP_SETTINGS_PATH}/{toPath}")
-	createDirectories(absoluteToPath, exist_ok=True)
+for resourceName, destination in appSettingsMappings.values():
+	absoluteDestination = getAbsolutePath(destination)
+	createDirectories(absoluteDestination, exist_ok=True)
 	copyFile(
-		src=getAbsolutePath(f"{APP_SETTINGS_PATH}/{fromPath}"),
-		dst=absoluteToPath
+		src=getAbsolutePath(f"{APP_SETTINGS_PATH}/{resourceName}"),
+		dst=absoluteDestination
 	)
