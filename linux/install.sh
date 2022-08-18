@@ -38,6 +38,9 @@ done <config/vscode-extensions.txt
 # Copy application settings.
 python3 copy-application-settings.py
 
+# Restart GPG Agent for its configuration to take effect.
+gpg-connect-agent reloadagent /bye
+
 # Show post-install instructions.
 echo "$(tput setab 2)Finished!"
 echo "Now there are some manual steps you need to perform:"

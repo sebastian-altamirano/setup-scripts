@@ -7,6 +7,10 @@
 		{
 			"resourceName": ".gitconfig",
 			"destination": "~/.gitconfig"
+		},
+		{
+			"resourceName": "gpg-agent.conf",
+			"destination": "~/.gnupg/gpg-agent.conf"
 		}
 	]
 }

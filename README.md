@@ -58,7 +58,7 @@ You must enable "virtualization" in the BIOS in order to enable Hyper-V, which i
 
 ## Linux installation script
 
-This script is intended to be run on Ubuntu running inside WSL, but it can be run on an ordinary installation without problems, although you should check the list of VSCode extensions to install.
+This script is intended to be run on Ubuntu running inside WSL.
 
 ### Requirements
 
