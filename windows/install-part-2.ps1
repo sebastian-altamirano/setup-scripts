@@ -4,7 +4,7 @@ Start-DotfilesLogging -Name "dotfiles-install"
 
 Unregister-DotfilesScriptExecution -TaskPath Dotfiles -TaskName ResumeInstalation
 
-Write-Output "Installing Ubuntu using WSL"
+Write-Output "Installing Ubuntu using WSL."
 wsl --install -d Ubuntu
 
 Register-DotfilesScriptExecution `

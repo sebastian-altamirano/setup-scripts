@@ -4,10 +4,10 @@ Import-Module ".\Dotfiles"
 
 Start-DotfilesLogging -Name "dotfiles-install"
 
-Write-Output "Installing Dotfiles's PowerShell module"
+Write-Output "Installing Dotfiles's PowerShell module."
 Copy-DotfilesResource -Path ".\Dotfiles" -Destination "$env:ProgramFiles\PowerShell\Modules"
 
-Write-Output "Enabling Hyper-V because it is required by WSL"
+Write-Output "Enabling Hyper-V because it is required by WSL."
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 
 Register-DotfilesScriptExecution `

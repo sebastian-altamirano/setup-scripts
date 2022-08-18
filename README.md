@@ -52,7 +52,7 @@ You must enable "virtualization" in the BIOS in order to enable Hyper-V, which i
 4. Create folders and quick access links.
 5. Import my personal Windows settings.
 6. Import my personal settings for some applications.
-7. Create scheduled tasks
+7. Create scheduled tasks.
 8. Download fonts.
 9. Display post-installation instructions.
 

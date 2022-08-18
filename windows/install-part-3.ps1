@@ -6,19 +6,19 @@ Unregister-DotfilesScriptExecution -TaskPath Dotfiles -TaskName ResumeInstalatio
 
 $configPath = ".\config"
 
-Write-Host "Installing winget packages"
+Write-Host "Installing winget packages."
 winget import --accept-package-agreements --accept-source-agreements "$configPath\winget-packages.json"
 
-Write-Host "Installing VSCode extensions"
+Write-Host "Installing VSCode extensions."
 $vscodeExtensions = Get-Content -Path "$configPath\vscode-extensions.txt"
 Foreach ($extension in $vscodeExtensions) {
 	code --install-extension $extension
 }
 
-Write-Host "Removing Cortana"
+Write-Host "Removing Cortana."
 Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
 
-Write-Host "Creating folders and quick access links"
+Write-Host "Creating folders and quick access links."
 $folderNames = Get-Content -Path "$configPath\quick-access-folders.txt"
 $quickAccess = New-Object -ComObject shell.application -Verbose
 Foreach ($folderName in $folderNames) {
@@ -26,12 +26,12 @@ Foreach ($folderName in $folderNames) {
 	$quickAccess.Namespace($folderPath).Self.InvokeVerb("pintohome")
 }
 
-Write-Host "Importing Windows settings"
+Write-Host "Importing Windows settings."
 reg import "$configPath\windows-settings.reg"
 
 $appSettingsPath = ".\app-settings"
 
-Write-Host "Importing application settings"
+Write-Host "Importing application settings."
 $appSettingsMappings = (Get-Content "$configPath\settings-paths.json" | ConvertFrom-Json).paths
 Foreach ($mapping in $appSettingsMappings) {
 	$path = Join-Path "../app-settings" $mapping.resourceName
@@ -39,10 +39,10 @@ Foreach ($mapping in $appSettingsMappings) {
 	Copy-DotfilesResource -Path $path -Destination $destination
 }
 
-Write-Host "Creating scheduled tasks"
+Write-Host "Creating scheduled tasks."
 .\create-switch-theme-task.ps1
 
-Write-Host "Downloading fonts"
+Write-Host "Downloading fonts."
 $fontsZipPath = (Resolve-Path "JetBrainsMono.zip").Path
 Invoke-WebRequest "https://fonts.google.com/download?family=JetBrains%20Mono" -OutFile $fontsZipPath
 Expand-Archive $fontsZip -DestinationPath "fonts"
@@ -54,4 +54,4 @@ Write-Host "- Change the screen refresh rate to the maximum available value."
 
 Stop-DotfilesLogging
 
-Read-Host -Prompt "Press Enter to exit"
+Read-Host -Prompt "Press Enter to exit."
