@@ -11,6 +11,10 @@
 		{
 			"resourceName": "gpg-agent.conf",
 			"destination": "~/.gnupg/gpg-agent.conf"
+		},
+		{
+			"resourceName": "ssh-config",
+			"destination": "~/.ssh/config"
 		}
 	]
 }
