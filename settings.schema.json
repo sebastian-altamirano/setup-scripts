@@ -1,0 +1,39 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Dotfiles configuration",
+	"type": "object",
+	"properties": {
+		"quickAccessFolders": {
+			"type": "array",
+			"description": "Contains a list of folders to create and add to the quick access section of the file explorer.",
+			"items": {
+				"type": "string"
+			}
+		},
+		"settingsPaths": {
+			"type": "array",
+			"description": "Contains a list of application settings mappings.",
+			"items": {
+				"type": "object",
+				"description": "Defines a source-destination mapping of a resource located in the `app-settings` folder.",
+				"properties": {
+					"resourceName": {
+						"description": "The name of the file or directory.",
+						"type": "string"
+					},
+					"destination": {
+						"description": "The destination path. It must be an absolute path.",
+						"type": "string"
+					}
+				}
+			}
+		},
+		"vscodeExtensions": {
+			"type": "array",
+			"description": "Contains a list of VSCode extensions to install.",
+			"items": {
+				"type": "string"
+			}
+		}
+	}
+}

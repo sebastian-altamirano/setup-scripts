@@ -31,9 +31,7 @@ fish -c "
 sudo apt -y install git
 
 # Install VSCode extensions.
-while read extension; do
-  code --install-extension $extension
-done <config/vscode-extensions.txt
+python3 install-vscode-extensions.py
 
 # Copy application settings.
 python3 copy-application-settings.py

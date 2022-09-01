@@ -5,13 +5,13 @@ Start-DotfilesLogging -Name "dotfiles-install"
 Unregister-DotfilesScriptExecution -TaskPath Dotfiles -TaskName ResumeInstalation
 
 $configPath = ".\config"
+$config = Get-Content "settings.json" | ConvertFrom-Json
 
 Write-Host "Installing winget packages."
 winget import --accept-package-agreements --accept-source-agreements "$configPath\winget-packages.json"
 
 Write-Host "Installing VSCode extensions."
-$vscodeExtensions = Get-Content -Path "$configPath\vscode-extensions.txt"
-Foreach ($extension in $vscodeExtensions) {
+Foreach ($extension in $config.vscodeExtensions) {
 	code --install-extension $extension
 }
 
@@ -19,9 +19,8 @@ Write-Host "Removing Cortana."
 Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
 
 Write-Host "Creating folders and quick access links."
-$folderNames = Get-Content -Path "$configPath\quick-access-folders.txt"
 $quickAccess = New-Object -ComObject shell.application -Verbose
-Foreach ($folderName in $folderNames) {
+Foreach ($folderName in $config.quickAccessFolders) {
 	$folderPath = Join-Path $env:UserProfile "Documents" $folderName
 	$quickAccess.Namespace($folderPath).Self.InvokeVerb("pintohome")
 }
@@ -29,12 +28,9 @@ Foreach ($folderName in $folderNames) {
 Write-Host "Importing Windows settings."
 reg import "$configPath\windows-settings.reg"
 
-$appSettingsPath = ".\app-settings"
-
 Write-Host "Importing application settings."
-$appSettingsMappings = (Get-Content "$configPath\settings-paths.json" | ConvertFrom-Json).paths
-Foreach ($mapping in $appSettingsMappings) {
-	$path = Join-Path "../app-settings" $mapping.resourceName
+Foreach ($mapping in $config.settingsPaths) {
+	$path = Join-Path ".\app-settings" $mapping.resourceName
 	$destination = $ExecutionContext.InvokeCommand.ExpandString($mapping.destination)
 	Copy-DotfilesResource -Path $path -Destination $destination
 }

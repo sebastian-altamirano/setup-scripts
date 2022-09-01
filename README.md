@@ -80,14 +80,18 @@ You must fill in the empty fields of `linux/app-settings/.gitconfig`.
 
 ## Customization
 
-In both `/windows` and `/linux` we can find the `/config` and `/app-settings` directories, which we can use to customize some tasks performed during the installation process without the need to modify the scripts.
+In both `/windows` and `/linux` we can find the `settings.json` file and the `/config` and `/app-settings` directories.
+
+### `settings.json`
+
+It is a configuration file allows us to customize some tasks performed during the installation process without the need to modify the scripts.
+
+### `/app-settings`
+
+Some applications store their settings inside one or many configuration files. The purpose of this folder is to store these settings so that they can be copied to their destination path during the installation process.
+
+The `settingsPaths` property, located within the aforementioned `settings.json` file, contains a list of objects that store the source resource name and destination path of these settings. On Windows the destination path may include PowerShell environment variables, such as `$env:AppData`.
 
 ### `/config`
 
 It contains configuration files that are used during the installation process and have no use once the installation is complete.
-
-### `app-settings`
-
-Some applications store their settings inside one or several files. The purpose of this folder is to store these settings so that they can be copied to their destination path during the installation process.
-
-The `settings-paths.json` file, located inside `/config`, stores the source resource name and the destination path of these settings. On Windows the value of `destination` may include PowerShell environment variables, such as `$env:AppData`.

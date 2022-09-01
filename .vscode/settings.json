@@ -1,8 +1,8 @@
 {
 	"json.schemas": [
 		{
-			"fileMatch": ["*/config/settings-paths.json"],
-			"url": "./settings-paths.schema.json"
+			"fileMatch": ["{windows, linux}/settings.json"],
+			"url": "./settings.schema.json"
 		}
 	]
 }

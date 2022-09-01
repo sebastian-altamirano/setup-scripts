@@ -1,5 +1,6 @@
 {
-	"paths": [
+	"quickAccessFolders": ["Github", "Notas", "Playground"],
+	"settingsPaths": [
 		{
 			"resourceName": "vscode.jsonc",
 			"destination": "$env:AppData\\Code\\User\\settings.json"
@@ -8,5 +9,11 @@
 			"resourceName": "windows-terminal.json",
 			"destination": "$env:LocalAppData\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
 		}
+	],
+	"vscodeExtensions": [
+		"github.github-vscode-theme",
+		"ms-vscode.Theme-TomorrowKit",
+		"ms-vscode-remote.remote-wsl",
+		"wayou.vscode-todo-highlight"
 	]
 }

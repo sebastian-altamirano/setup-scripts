@@ -3,13 +3,17 @@ from os import makedirs as createDirectories
 from os.path import abspath as getAbsolutePath
 from shutil import copy2 as copyFile
 
-APP_SETTINGS_PATH = "app-settings"
+SETTINGS_PATHS_KEY = "settingsPaths"
 
-appSettingsMappings = readJson("config/settings-paths.json")["paths"]
-for resourceName, destination in appSettingsMappings.values():
+config = readJson("settings.json")
+
+if SETTINGS_PATHS_KEY not in config:
+	return
+
+for resourceName, destination in config[SETTINGS_PATHS_KEY].values():
 	absoluteDestination = getAbsolutePath(destination)
 	createDirectories(absoluteDestination, exist_ok=True)
 	copyFile(
-		src=getAbsolutePath(f"{APP_SETTINGS_PATH}/{resourceName}"),
+		src=getAbsolutePath(f"app-settings/{resourceName}"),
 		dst=absoluteDestination
 	)

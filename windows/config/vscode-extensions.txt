@@ -1,4 +1,0 @@
-github.github-vscode-theme
-ms-vscode.Theme-TomorrowKit
-ms-vscode-remote.remote-wsl
-wayou.vscode-todo-highlight

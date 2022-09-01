@@ -1,5 +1,5 @@
 {
-	"paths": [
+	"settingsPaths": [
 		{
 			"resourceName": "fish",
 			"destination": "~/.config/fish"
@@ -16,5 +16,12 @@
 			"resourceName": "ssh-config",
 			"destination": "~/.ssh/config"
 		}
+	],
+	"vscodeExtensions": [
+		"dbaeumer.vscode-eslint",
+		"eamodio.gitlens",
+		"esbenp.prettier-vscode",
+		"formulahendry.code-runner",
+		"stylelint.vscode-stylelint"
 	]
 }
