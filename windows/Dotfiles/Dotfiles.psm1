@@ -9,7 +9,7 @@ Specifies the source path.
 Specifies the destination path.
 
 .EXAMPLE
-Copy-DotfilesResource -Path ".\Dotfiles" -Destination $env:ProgramFiles\PowerShell\Modules
+Copy-DotfilesResource -Path "Dotfiles" -Destination $env:ProgramFiles\PowerShell\Modules
 #>
 function Copy-Resource {
 	param (
