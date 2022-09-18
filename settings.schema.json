@@ -24,8 +24,24 @@
 					"destination": {
 						"description": "The destination path. It must be an absolute path.",
 						"type": "string"
+					},
+					"completionCommands": {
+						"description": "Commands to execute after copying the resource.",
+						"type": "array",
+						"items": {
+							"description": "Contains a list of command arguments, e.g: [\"echo\", \"Hello World!\"]",
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"postInstallationInstructions": {
+						"description": "Post-installation instructions to be displayed at the end of the installation process.",
+						"type": "string"
 					}
-				}
+				},
+				"required": ["resourceName", "destination"]
 			}
 		},
 		"vscodeExtensions": {

@@ -3,7 +3,8 @@
 	"settingsPaths": [
 		{
 			"resourceName": "csgo-autoexec.cfg",
-			"destination": "${env:ProgramFiles(x86)}\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg\\autoexec.cfg"
+			"destination": "${env:ProgramFiles(x86)}\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg\\autoexec.cfg",
+			"postInstallationInstructions": "Configure the CSGO launch options in Steam to use the autoexec (see the first comment in the CFG)."
 		},
 		{
 			"resourceName": "vscode.jsonc",

@@ -29,10 +29,17 @@ Write-Host "Importing Windows settings."
 reg import "$configPath\windows-settings.reg"
 
 Write-Host "Importing application settings."
-Foreach ($mapping in $config.settingsPaths) {
-	$path = Join-Path ".\app-settings" $mapping.resourceName
-	$destination = $ExecutionContext.InvokeCommand.ExpandString($mapping.destination)
+Foreach ($resourceMapping in $config.settingsPaths) {
+	$path = Join-Path ".\app-settings" $resourceMapping.resourceName
+	$destination = $ExecutionContext.InvokeCommand.ExpandString($resourceMapping.destination)
 	Copy-DotfilesResource -Path $path -Destination $destination
+
+	if ($resourceMapping.completionCommands) {
+		Foreach ($commandArgs in $resourceMapping.completionCommands) {
+      ($commandArgs -Join " ")
+			Invoke-Expression ($commandArgs -Join " ")
+		}
+	}
 }
 
 Write-Host "Creating scheduled tasks."
@@ -43,10 +50,15 @@ $fontsZipPath = (Resolve-Path "JetBrainsMono.zip").Path
 Invoke-WebRequest "https://fonts.google.com/download?family=JetBrains%20Mono" -OutFile $fontsZipPath
 Expand-Archive $fontsZip -DestinationPath "fonts"
 
-Write-Host -BackgroundColor Green "Finished!"
+Write-Host -BackgroundColor Green -ForegroundColor Black "Finished!"
 Write-Host "Now there are some manual steps you need to perform:"
 Write-Host "- Install the fonts that have been downloaded to $fontsZipPath."
 Write-Host "- Change the screen refresh rate to the maximum available value."
+Foreach ($resourceMapping in $config.settingsPaths) {
+	if ($resourceMapping.postInstallationInstructions) {
+		Write-Host "- $($resourceMapping.postInstallationInstructions)"
+	}
+}
 
 Stop-DotfilesLogging
 

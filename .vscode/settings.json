@@ -1,7 +1,7 @@
 {
 	"json.schemas": [
 		{
-			"fileMatch": ["{windows, linux}/settings.json"],
+			"fileMatch": ["{windows,linux}/settings.json"],
 			"url": "./settings.schema.json"
 		}
 	]

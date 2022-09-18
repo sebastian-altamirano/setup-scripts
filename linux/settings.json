@@ -10,7 +10,8 @@
 		},
 		{
 			"resourceName": "gpg-agent.conf",
-			"destination": "~/.gnupg/gpg-agent.conf"
+			"destination": "~/.gnupg/gpg-agent.conf",
+			"completionCommands": [["gpg-connect-agent", "reloadagent", "/bye"]]
 		},
 		{
 			"resourceName": "ssh-config",
