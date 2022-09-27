@@ -28,13 +28,15 @@ function Copy-Resource {
 Registers an scheduled task to run a script at startup using pwsh.
 
 .PARAMETER Path
-Specifies the path of the script, can be relative or absolute.
+Specifies the path of the script, it can be relative or absolute.
 .PARAMETER TaskName
 Specifies the task name.
 .PARAMETER TaskPath
 Specifies the task namespace.
 .PARAMETER RunLevel
 Specifies the required privilege level to run the task.
+.PARAMETER ScriptArgs
+Specifies the arguments to be passed to the script.
 
 .EXAMPLE
 Register-DotfilesScriptExecution `
@@ -42,6 +44,7 @@ Register-DotfilesScriptExecution `
 	-TaskPath Dotfiles `
 	-TaskName ResumeInstallation `
 	-RunLevel Highest
+	-ScriptArgs "-LogFilePath $env:UserProfile\Documents\dotfiles-install.log"
 
 .LINK
 Unregister-DotfilesScriptExecution
@@ -53,14 +56,15 @@ function Register-ScriptExecution {
 		[Parameter(Mandatory)]
 		[string] $TaskName,
 		[string] $TaskPath = "",
-		[Microsoft.PowerShell.Cmdletization.GeneratedTypes.ScheduledTask.RunLevelEnum] $RunLevel = "Limited"
+		[Microsoft.PowerShell.Cmdletization.GeneratedTypes.ScheduledTask.RunLevelEnum] $RunLevel = "Limited",
+		[string] $ScriptArgs = ""
 	)
 
 	$pwshExecutablePath = $(Get-Command pwsh).Path
 
 	$action = New-ScheduledTaskAction `
 		-Execute $pwshExecutablePath `
-		-Argument "-File $(Resolve-Path $Path)"
+		-Argument "-File $(Resolve-Path $Path) $ScriptArgs"
 	$trigger = New-ScheduledTaskTrigger -AtStartup
 
 	Register-ScheduledTask `
@@ -138,18 +142,19 @@ function Set-WindowsTheme {
 
 <#
 .SYNOPSIS
-Creates a record of all or part of a PowerShell session to a log file in the Documents directory.
+Creates a record of all or part of a PowerShell session to a log file.
 
 .DESCRIPTION
-Creates a record of all or part of a PowerShell session to a log file in the Documents directory.
+Creates a record of all or part of a PowerShell session to a log file.
 If the file already exists, the record is appended to the end of the file.
 Write-Host can be used to add comments.
+If the command is executed inside a script, the path to the script will be logged.
 
-.PARAMETER Name
-Specifies the name of the log file.
+.PARAMETER Path
+Specifies the path where the log file will be saved.
 
 .EXAMPLE
-Start-DotfilesLogging dotfiles-install
+Start-DotfilesLogging $env:UserProfile\Documents\dotfiles-install.log
 
 .LINK
 Stop-DotfilesLogging
@@ -157,16 +162,18 @@ Stop-DotfilesLogging
 function Start-Logging {
 	param (
 		[Parameter(Mandatory)]
-		[string] $Name
+		[string] $Path
 	)
 
 	Start-Transcript `
-		-Path "$env:UserProfile\Documents\$Name.log" `
+		-Path $Path `
 		-UseMinimalHeader `
 		-IncludeInvocationHeader `
 		-Append `
 		| Out-Null
-	Write-Host (Get-Location).Path
+	if ($PSCommandPath) {
+		Write-Host "--- Running $PSCommandPath ---"
+	}
 }
 
 <#

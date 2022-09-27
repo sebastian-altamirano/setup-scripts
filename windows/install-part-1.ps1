@@ -1,8 +1,12 @@
 #Requires -RunAsAdministrator
 
+param (
+	[string] $LogFilePath = "$env:UserProfile\Documents\dotfiles-install.log"
+)
+
 Import-Module ".\Dotfiles"
 
-Start-DotfilesLogging -Name "dotfiles-install"
+Start-DotfilesLogging $LogFilePath
 
 Write-Output "Installing Dotfiles's PowerShell module."
 Copy-DotfilesResource -Path "Dotfiles" -Destination "$env:ProgramFiles\PowerShell\Modules"
@@ -11,7 +15,8 @@ Write-Output "Enabling Hyper-V because it is required by WSL."
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 
 Register-DotfilesScriptExecution `
-	-Path "install-part-2.psd1" `
+	-Path "install-part-2.ps1" `
+	-ScriptArgs $LogFilePath
 	-TaskPath Dotfiles `
 	-TaskName ResumeInstallation `
 	-RunLevel Highest

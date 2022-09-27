@@ -1,6 +1,11 @@
 #Requires -RunAsAdministrator
 
-Start-DotfilesLogging -Name "dotfiles-install"
+param (
+	[Parameter(Mandatory)]
+	[string] $LogFilePath
+)
+
+Start-DotfilesLogging $LogFilePath
 
 Unregister-DotfilesScriptExecution -TaskPath Dotfiles -TaskName ResumeInstalation
 
