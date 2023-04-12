@@ -4,5 +4,21 @@
 			"fileMatch": ["{windows,linux}/settings.json"],
 			"url": "./settings.schema.json"
 		}
-	]
+	],
+
+	"editor.formatOnSave": true,
+	"editor.formatOnSaveMode": "file",
+	"python.formatting.provider": "black",
+
+	"python.analysis.typeCheckingMode": "strict",
+	"python.linting.mypyEnabled": true,
+	"python.linting.pylintEnabled": true,
+
+	"python.testing.unittestArgs": ["-v", "-s", "${workspaceFolder}/linux", "-p", "*_test.py"],
+	"python.testing.unittestEnabled": true,
+
+	"[python]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4
+	}
 }
