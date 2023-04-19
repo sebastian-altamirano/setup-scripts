@@ -20,11 +20,11 @@ from dotfiles.installation_steps import copyApplicationSettings, installVSCodeEx
 from dotfiles.type_definitions import ApplicationSettingsMapping
 
 
-@patch("dotfiles.helpers.installation_steps.run")
-@patch("dotfiles.helpers.installation_steps.copyFile")
-@patch("dotfiles.helpers.installation_steps.getAbsolutePath")
-@patch("dotfiles.helpers.installation_steps.createDirectories")
-@patch("dotfiles.helpers.installation_steps.isAbsolutePath", return_value=True)
+@patch("dotfiles.installation_steps.run")
+@patch("dotfiles.installation_steps.copyFile")
+@patch("dotfiles.installation_steps.getAbsolutePath")
+@patch("dotfiles.installation_steps.createDirectories")
+@patch("dotfiles.installation_steps.isAbsolutePath", return_value=True)
 class CopyApplicationSettingsTests(TestCase):
     """Contains tests for the `copyApplicationSettings` function."""
 
@@ -226,7 +226,7 @@ class CopyApplicationSettingsTests(TestCase):
         )
 
 
-@patch("dotfiles.helpers.installation_steps.run")
+@patch("dotfiles.installation_steps.run")
 class InstallVSCodeExtensionsTests(TestCase):
     """Contains tests for the `installVSCodeExtensions` function."""
 
