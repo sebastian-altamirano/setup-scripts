@@ -9,8 +9,8 @@ from shutil import copy2 as copyFile
 from subprocess import run
 from typing import List
 
-from linux.helpers.utils import installationStep, runWithFish
-from linux.type_definitions import ApplicationSettingsMapping
+from dotfiles.helpers.utils import installationStep, runWithFish
+from dotfiles.type_definitions import ApplicationSettingsMapping
 
 
 @installationStep

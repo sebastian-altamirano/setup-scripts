@@ -7,8 +7,8 @@ from subprocess import run
 from typing import Any, Callable, List, Optional
 from warnings import warn
 
-from linux.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
-from linux.type_definitions import InstallationStepReturnValueT
+from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
+from dotfiles.type_definitions import InstallationStepReturnValueT
 
 
 def logCompletionMessage(postInstallationInstructions: Optional[List[str]] = None) -> None:

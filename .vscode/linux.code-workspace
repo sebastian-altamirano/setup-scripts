@@ -1,0 +1,40 @@
+{
+	"folders": [
+		{
+			"name": "Linux dotfiles",
+			"path": "../linux"
+		}
+	],
+	"extensions": { "recommendations": ["ms-python.python"] },
+	"settings": {
+		"json.schemas": [
+			{
+				"fileMatch": ["settings.json"],
+				"url": "../settings.schema.json"
+			}
+		],
+		"search.exclude": {
+			"**/.mypy_cache": true,
+			"**/.venv": true,
+			"**/.__pycache__": true
+		},
+
+		"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+
+		"editor.formatOnSave": true,
+		"editor.formatOnSaveMode": "file",
+		"python.formatting.provider": "black",
+
+		"python.analysis.typeCheckingMode": "strict",
+		"python.linting.mypyEnabled": true,
+		"python.linting.pylintEnabled": true,
+
+		"python.testing.unittestArgs": ["-v", "-p", "*_test.py"],
+		"python.testing.unittestEnabled": true,
+
+		"[python]": {
+			"editor.insertSpaces": true,
+			"editor.tabSize": 4
+		}
+	}
+}

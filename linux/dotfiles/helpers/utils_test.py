@@ -9,8 +9,8 @@ from typing import Any, Callable, List
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-from linux.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
-from linux.helpers.utils import (
+from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
+from dotfiles.helpers.utils import (
     installationStep,
     logCompletionMessage,
     runWithFish,
@@ -111,7 +111,7 @@ class LogCompletionMessageTests(TestCase):
         self.assertEqual(f"- {postInstallationInstruction}", logRecord.getMessage())
 
 
-@patch("linux.helpers.utils.run")
+@patch("dotfiles.helpers.utils.run")
 class RunWithFishTests(TestCase):
     """Contains tests for the `runWithFish`function."""
 
@@ -126,7 +126,7 @@ class RunWithFishTests(TestCase):
 class WarnAboutUnsupportedConfigTests(TestCase):
     """Contains tests for the `warnAboutUnsupportedConfig`function."""
 
-    @patch("linux.helpers.utils.warn")
+    @patch("dotfiles.helpers.utils.warn")
     def testIfAWarningIsIssued(self, mockWarn: Mock) -> None:
         key = "quickAccessFolders"
 

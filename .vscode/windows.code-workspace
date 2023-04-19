@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "Windows dotfiles",
+			"path": "../windows"
+		}
+	],
+	"settings": {
+		"json.schemas": [
+			{
+				"fileMatch": ["settings.json"],
+				"url": "../settings.schema.json"
+			}
+		]
+	}
+}

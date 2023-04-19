@@ -14,17 +14,17 @@ from typing import Any, List, Tuple
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
 
-import linux.installation_steps as installationSteps
-from linux.helpers.utils import installationStep
-from linux.installation_steps import copyApplicationSettings, installVSCodeExtensions
-from linux.type_definitions import ApplicationSettingsMapping
+import dotfiles.installation_steps as installationSteps
+from dotfiles.helpers.utils import installationStep
+from dotfiles.installation_steps import copyApplicationSettings, installVSCodeExtensions
+from dotfiles.type_definitions import ApplicationSettingsMapping
 
 
-@patch("linux.helpers.installation_steps.run")
-@patch("linux.helpers.installation_steps.copyFile")
-@patch("linux.helpers.installation_steps.getAbsolutePath")
-@patch("linux.helpers.installation_steps.createDirectories")
-@patch("linux.helpers.installation_steps.isAbsolutePath", return_value=True)
+@patch("dotfiles.helpers.installation_steps.run")
+@patch("dotfiles.helpers.installation_steps.copyFile")
+@patch("dotfiles.helpers.installation_steps.getAbsolutePath")
+@patch("dotfiles.helpers.installation_steps.createDirectories")
+@patch("dotfiles.helpers.installation_steps.isAbsolutePath", return_value=True)
 class CopyApplicationSettingsTests(TestCase):
     """Contains tests for the `copyApplicationSettings` function."""
 
@@ -226,7 +226,7 @@ class CopyApplicationSettingsTests(TestCase):
         )
 
 
-@patch("linux.helpers.installation_steps.run")
+@patch("dotfiles.helpers.installation_steps.run")
 class InstallVSCodeExtensionsTests(TestCase):
     """Contains tests for the `installVSCodeExtensions` function."""
 
