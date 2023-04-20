@@ -2,11 +2,10 @@
 
 """Contains tests for the functions defined in `install.py`."""
 
-from typing import cast
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
-from dotfiles.install import UNSUPPORTED_CONFIGURATION_KEYS, install
+from dotfiles.install import install
 from dotfiles.type_definitions import Config
 
 
@@ -15,7 +14,7 @@ from dotfiles.type_definitions import Config
 @patch("dotfiles.install.installPackages")
 @patch("dotfiles.install.installVSCodeExtensions")
 @patch("dotfiles.install.copyApplicationSettings")
-@patch("dotfiles.install.warnAboutUnsupportedConfig")
+@patch("dotfiles.install.warnAboutUnsupportedOrUnrecognizedConfig")
 @patch("dotfiles.install.logCompletionMessage")
 @patch("dotfiles.install.readJson")
 class InstallTests(TestCase):
@@ -25,7 +24,7 @@ class InstallTests(TestCase):
         self,
         mockReadJson: Mock,
         mockLogCompletionMessage: Mock,
-        mockWarnAboutUnsupportedConfig: Mock,
+        mockWarnAboutUnsupportedOrUnrecognizedConfig: Mock,
         mockCopyApplicationSettings: Mock,
         mockInstallVSCodeExtensions: Mock,
         mockInstallPackages: Mock,
@@ -40,7 +39,7 @@ class InstallTests(TestCase):
         mockInstallFish.assert_called()
         mockUpgradeSystemDependencies.assert_called()
         mockInstallPackages.assert_called()
-        mockWarnAboutUnsupportedConfig.assert_not_called()
+        mockWarnAboutUnsupportedOrUnrecognizedConfig.assert_not_called()
         mockInstallVSCodeExtensions.assert_not_called()
         mockCopyApplicationSettings.assert_not_called()
         mockLogCompletionMessage.assert_called()
@@ -49,7 +48,7 @@ class InstallTests(TestCase):
         self,
         mockReadJson: Mock,
         mockLogCompletionMessage: Mock,
-        _mockWarnAboutUnsupportedConfig: Mock,
+        _mockWarnAboutUnsupportedOrUnrecognizedConfig: Mock,
         mockCopyApplicationSettings: Mock,
         _mockInstallVSCodeExtensions: Mock,
         mockInstallPackages: Mock,
@@ -81,20 +80,18 @@ class InstallTests(TestCase):
         self,
         mockReadJson: Mock,
         _mockLogCompletionMessage: Mock,
-        mockWarnAboutUnsupportedConfig: Mock,
+        mockWarnAboutUnsupportedOrUnrecognizedConfig: Mock,
         _mockCopyApplicationSettings: Mock,
         _mockInstallVSCodeExtensions: Mock,
         _mockInstallPackages: Mock,
         _mockUpgradeSystemDependencies: Mock,
         _mockInstallFish: Mock,
     ) -> None:
-        unsupportedConfiguration: Config = cast(
-            Config, {key: "Unsupported configuration" for key in UNSUPPORTED_CONFIGURATION_KEYS}
-        )
+        unsupportedConfiguration = {"unsupportedConfigurationKey": "Unsupported configuration"}
         mockReadJson.return_value = unsupportedConfiguration
 
         install()
 
-        mockWarnAboutUnsupportedConfig.assert_has_calls(
+        mockWarnAboutUnsupportedOrUnrecognizedConfig.assert_has_calls(
             [call(key) for key in unsupportedConfiguration]
         )

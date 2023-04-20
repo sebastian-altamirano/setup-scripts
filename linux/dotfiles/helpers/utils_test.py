@@ -14,7 +14,7 @@ from dotfiles.helpers.utils import (
     installationStep,
     logCompletionMessage,
     runWithFish,
-    warnAboutUnsupportedConfig,
+    warnAboutUnsupportedOrUnrecognizedConfig,
 )
 
 
@@ -123,22 +123,22 @@ class RunWithFishTests(TestCase):
         mockRun.assert_called_with(["fish", "-c", *args], check=True)
 
 
-class WarnAboutUnsupportedConfigTests(TestCase):
-    """Contains tests for the `warnAboutUnsupportedConfig`function."""
+class WarnAboutUnsupportedOrUnrecognizedConfigTests(TestCase):
+    """Contains tests for the `warnAboutUnsupportedOrUnrecognizedConfig`function."""
 
     @patch("dotfiles.helpers.utils.warn")
     def testIfAWarningIsIssued(self, mockWarn: Mock) -> None:
         key = "quickAccessFolders"
 
-        warnAboutUnsupportedConfig(key)
+        warnAboutUnsupportedOrUnrecognizedConfig(key)
 
         mockWarn.assert_called_once_with(
-            f'{YELLOW_BG_BLACK_FG}Configuration contains a value for "{key}", but this key is not '
-            f"supported for this OS.{COLOR_TERMINATOR}"
+            f'{YELLOW_BG_BLACK_FG}The configuration contains a value for "{key}", but this key is '
+            f"either not recognized or is not supported by this OS.{COLOR_TERMINATOR}"
         )
 
     def testIfKeyCannotBeAnEmptyString(self) -> None:
         key = ""
 
         with self.assertRaisesRegex(ValueError, "`key` cannot be an empty string."):
-            warnAboutUnsupportedConfig(key)
+            warnAboutUnsupportedOrUnrecognizedConfig(key)

@@ -3,7 +3,7 @@
 from json import loads as readJson
 from typing import List
 
-from dotfiles.helpers.utils import logCompletionMessage, warnAboutUnsupportedConfig
+from dotfiles.helpers.utils import logCompletionMessage, warnAboutUnsupportedOrUnrecognizedConfig
 from dotfiles.installation_steps import (
     copyApplicationSettings,
     installFish,
@@ -13,9 +13,10 @@ from dotfiles.installation_steps import (
 )
 from dotfiles.type_definitions import Config
 
-UNSUPPORTED_CONFIGURATION_KEYS = [
-    # This is not supported because this program is intended to be run inside WSL.
-    "quickAccessFolders"
+SUPPORTED_CONFIGURATION_KEYS = [
+    "settingsPaths",
+    "vscodeExtensions"
+    # `quickAccessFolders` is not supported because this program is intended to be run inside WSL.
 ]
 
 
@@ -31,9 +32,12 @@ def install() -> None:
     postInstallationInstructions += installPackages()
 
     config: Config = readJson("settings.json")
-    for key in UNSUPPORTED_CONFIGURATION_KEYS:
-        if key in config:
-            warnAboutUnsupportedConfig(key)
+
+    # Issue the warning before starting to do any work.
+    for key in config:
+        if key not in SUPPORTED_CONFIGURATION_KEYS:
+            warnAboutUnsupportedOrUnrecognizedConfig(key)
+
     if "vscodeExtensions" in config:
         installVSCodeExtensions(config["vscodeExtensions"])
     if "settingsPaths" in config:
