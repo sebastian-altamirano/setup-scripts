@@ -2,11 +2,13 @@
 
 """Contains tests for the functions defined in `cli.py`."""
 
+from datetime import datetime
 from logging import ERROR as LOGGING_LEVEL_ERROR
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
 
+from dotfiles import __version__
 from dotfiles.cli import main
 
 
@@ -31,13 +33,17 @@ class EntryPointTests(TestCase):
 
         mockInstall.assert_called_once()
 
+    @patch("dotfiles.cli.datetime")
     def testIfArgumentParserIsConfigured(
         self,
+        mockDateTime: Mock,
         _mockFileHandler: Mock,
         _mockConfigureLogging: Mock,
         mockArgumentParser: Mock,
         _mockInstall: Mock,
     ) -> None:
+        now = datetime.now()
+        mockDateTime.now = Mock(datetime, return_value=now)
         arguments = ["install.py", "--logFilePath", "dotfiles-install.log"]
 
         with patch("dotfiles.cli.argv", arguments):
@@ -47,11 +53,13 @@ class EntryPointTests(TestCase):
             [
                 call(
                     "--logFilePath",
-                    default=f"{Path.home()}/dotfiles-install.log",
+                    default=(
+                        f"{Path.home()}/dotfiles_install-{now.strftime('%Y_%m_%d-%H_%M_%S')}.log"
+                    ),
                     help=ANY,
                     type=str,
                 ),
-                call("--version", action="version", version=ANY),
+                call("--version", action="version", version=__version__),
             ]
         )
         mockArgumentParser.return_value.parse_args.assert_called_once_with(arguments[1:])

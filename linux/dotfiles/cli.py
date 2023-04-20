@@ -1,6 +1,7 @@
 """Defines the aplication entry point."""
 
 from argparse import ArgumentParser
+from datetime import datetime
 from logging import INFO as LOGGING_LEVEL_INFO
 from logging import FileHandler, StreamHandler
 from logging import basicConfig as configureLogging
@@ -20,7 +21,9 @@ def _parseArguments(arguments: Optional[Sequence[str]] = None) -> Arguments:
     parser = ArgumentParser(description="Installation script for Linux dotfiles.")
     parser.add_argument(
         "--logFilePath",
-        default=f"{Path.home()}/dotfiles-install.log",
+        default=(
+            f"{Path.home()}/dotfiles_install-{datetime.now().strftime('%Y_%m_%d-%H_%M_%S')}.log"
+        ),
         help="specifies the path where the log file will be saved",
         type=str,
     )
