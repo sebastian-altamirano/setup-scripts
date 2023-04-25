@@ -22,9 +22,11 @@ def installFish() -> None:
     logInfo("Changing the default shell to fish...")
     run(
         [
+            "sudo",
             "chsh",
             "-s",
-            run(["which", "fish"], capture_output=True, check=True, text=True).stdout,
+            run(["which", "fish"], capture_output=True, check=True, text=True).stdout.rstrip(),
+            run(["whoami"], capture_output=True, check=True, text=True).stdout.rstrip(),
         ],
         check=True,
     )
