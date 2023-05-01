@@ -4,7 +4,9 @@ from logging import error as logError
 from logging import info as logInfo
 from os import makedirs as createDirectories
 from os.path import abspath as getAbsolutePath
+from os.path import dirname as getDirectoryName
 from os.path import isabs as isAbsolutePath
+from os.path import join as joinPaths
 from shutil import copy2 as copyFile
 from subprocess import run
 from typing import List
@@ -45,8 +47,12 @@ def installPackages() -> List[str]:
     postInstallationInstructions: List[str] = []
 
     logInfo("Installing fisher...")
-    run("curl -sL https://git.io/fisher | source", check=True, shell=True)
-    runWithFish("fisher", "install", "jorgebucaran/fisher")
+    # Fisher is installed using an script because it requires `source`, which cannot be executed
+    # with `subprocess.run`.
+    fisherInstallationScriptPath = joinPaths(
+        getDirectoryName(getAbsolutePath(__file__)), "scripts/install-fisher.fish"
+    )
+    run([fisherInstallationScriptPath], check=True)
 
     logInfo("Installing some plugins for fisher...")
     runWithFish("fisher", "install", "IlanCosman/tide@v5")
