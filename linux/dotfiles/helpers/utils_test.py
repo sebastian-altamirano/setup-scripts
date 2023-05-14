@@ -2,20 +2,74 @@
 
 """Contains tests for the functions defined in `utils.py`."""
 
+from abc import ABC, abstractmethod
 from logging import ERROR as LOGGING_LEVEL_ERROR
 from logging import INFO as LOGGING_LEVEL_INFO
 from logging import LogRecord
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Optional
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import ANY, Mock, call, patch
 
 from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.helpers.utils import (
     installationStep,
     logCompletionMessage,
     runWithFish,
+    runWithSh,
     warnAboutUnsupportedOrUnrecognizedConfig,
 )
+
+
+class BaseTests:  # pylint: disable=too-few-public-methods
+    """Contains base test classes."""
+
+    @patch("dotfiles.helpers.utils.run")
+    class RunWithBaseTests(ABC, TestCase):
+        """Contains base tests for `runWith...` functions."""
+
+        @abstractmethod
+        def getRunFunction(self) -> Callable[..., None]:
+            """Returns the function used to run the commands."""
+
+        def getShell(self) -> Optional[str]:
+            """Returns the shell used to run the commands."""
+            return None
+
+        def getFinalArgs(self, *args: str) -> List[str]:
+            """Returns the arguments as they are passed to the run function."""
+            shell = self.getShell()  # pylint: disable=assignment-from-none
+            shellArgs: List[str] = [] if shell is None else [shell, "-c"]
+            return [*shellArgs, *args]
+
+        def testIfCommandIsExecuted(self, mockRun: Mock) -> None:
+            args = ["echo", "Hello World!"]
+
+            self.getRunFunction()(*args)
+
+            mockRun.assert_called_once_with(
+                self.getFinalArgs(*args),
+                check=True,
+            )
+
+        @patch("dotfiles.helpers.utils.logInfo")
+        def testIfCommandIsLoggedBeforeBeingExecuted(
+            self, mockLogInfo: Mock, mockRun: Mock
+        ) -> None:
+            mocksManager = Mock()
+            mocksManager.attach_mock(mockLogInfo, "mockLogInfo")
+            mocksManager.attach_mock(mockRun, "mockRun")
+            args = ["echo", "Hello World!"]
+
+            self.getRunFunction()(*args)
+
+            self.assertEqual(
+                [
+                    call.mockLogInfo(*self.getFinalArgs(*args)),
+                    call.mockRun(ANY, check=True),
+                ],
+                mocksManager.mock_calls,
+            )
+            mockLogInfo.assert_called_once()
 
 
 class InstallationStepTests(TestCase):
@@ -111,16 +165,21 @@ class LogCompletionMessageTests(TestCase):
         self.assertEqual(f"- {postInstallationInstruction}", logRecord.getMessage())
 
 
-@patch("dotfiles.helpers.utils.run")
-class RunWithFishTests(TestCase):
+class RunWithFishTests(BaseTests.RunWithBaseTests):
     """Contains tests for the `runWithFish`function."""
 
-    def testIfCommandIsExecutedWithFish(self, mockRun: Mock) -> None:
-        args = ["echo", "Hello World!"]
+    def getShell(self) -> Optional[str]:
+        return "fish"
 
-        runWithFish(*args)
+    def getRunFunction(self) -> Callable[..., None]:
+        return runWithFish
 
-        mockRun.assert_called_with(["fish", "-c", *args], check=True)
+
+class RunWithShTests(BaseTests.RunWithBaseTests):
+    """Contains tests for the `runWithSh`function."""
+
+    def getRunFunction(self) -> Callable[..., None]:
+        return runWithSh
 
 
 class WarnAboutUnsupportedOrUnrecognizedConfigTests(TestCase):

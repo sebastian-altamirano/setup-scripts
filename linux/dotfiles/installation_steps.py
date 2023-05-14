@@ -11,34 +11,33 @@ from shutil import copy2 as copyFile
 from subprocess import run
 from typing import List
 
-from dotfiles.helpers.utils import installationStep, runWithFish
+from dotfiles.helpers.utils import installationStep, runWithFish, runWithSh
 from dotfiles.type_definitions import ApplicationSettingsMapping
+
+runWithoutLogging = run
 
 
 @installationStep
 def installFish() -> None:
     """Installs fish and changes the default shell to it."""
-    run(["sudo", "apt-add-repository", "-y", "ppa:fish-shell/release-3"], check=True)
-    run(["sudo", "apt", "-y", "install", "fish"], check=True)
+    runWithSh("sudo", "apt-add-repository", "-y", "ppa:fish-shell/release-3")
+    runWithSh("sudo", "apt", "-y", "install", "fish")
 
     logInfo("Changing the default shell to fish...")
-    run(
-        [
-            "sudo",
-            "chsh",
-            "-s",
-            run(["which", "fish"], capture_output=True, check=True, text=True).stdout.rstrip(),
-            run(["whoami"], capture_output=True, check=True, text=True).stdout.rstrip(),
-        ],
-        check=True,
+    runWithSh(
+        "sudo",
+        "chsh",
+        "-s",
+        run(["which", "fish"], capture_output=True, check=True, text=True).stdout.rstrip(),
+        run(["whoami"], capture_output=True, check=True, text=True).stdout.rstrip(),
     )
 
 
 @installationStep
 def upgradeSystemDependencies() -> None:
     """Upgrades system packages using apt."""
-    run(["sudo", "apt", "update"], check=True)
-    run(["sudo", "apt", "-y", "upgrade"], check=True)
+    runWithSh("sudo", "apt", "update")
+    runWithSh("sudo", "apt", "-y", "upgrade")
 
 
 @installationStep
@@ -52,7 +51,7 @@ def installPackages() -> List[str]:
     fisherInstallationScriptPath = joinPaths(
         getDirectoryName(getAbsolutePath(__file__)), "scripts/install-fisher.fish"
     )
-    run([fisherInstallationScriptPath], check=True)
+    runWithSh(fisherInstallationScriptPath)
 
     logInfo("Installing some plugins for fisher...")
     runWithFish("fisher", "install", "IlanCosman/tide@v5")
@@ -63,10 +62,10 @@ def installPackages() -> List[str]:
     logInfo("Installing Node LTS...")
     runWithFish("nvm", "install", "lts")
     runWithFish("set", "--universal", "nvm_default_version", "lts")
-    run(["npm", "i", "-g", "npm"], check=True)
+    runWithSh("npm", "i", "-g", "npm")
 
     logInfo("Installing Git...")
-    run(["sudo", "apt", "-y", "install", "git"], check=True)
+    runWithSh("sudo", "apt", "-y", "install", "git")
 
     return postInstallationInstructions
 
@@ -76,7 +75,7 @@ def installVSCodeExtensions(extensions: List[str]) -> None:
     """Installs extensions for VSCode."""
     extensionThatCouldNotBeInstalled = ""
     for extension in extensions:
-        commandOutput = run(
+        commandOutput = runWithoutLogging(
             ["code", "--install-extension", extension], capture_output=True, check=True
         )
         if commandOutput.stderr:
@@ -87,6 +86,8 @@ def installVSCodeExtensions(extensions: List[str]) -> None:
             "Could not install the following extensions:\n%s",
             extensionThatCouldNotBeInstalled,
         )
+    else:
+        logInfo("All extensions have been installed successfully.")
 
 
 @installationStep
@@ -117,8 +118,9 @@ def copyApplicationSettings(settingsMappings: List[ApplicationSettingsMapping]) 
         )
 
         if "completionCommands" in settingsMapping:
+            logInfo("Running completion commands...")
             for commandArgs in settingsMapping["completionCommands"]:
-                run(commandArgs, check=True)
+                runWithSh(*commandArgs)
 
         if "postInstallationInstructions" in settingsMapping:
             postInstallationInstructions.append(settingsMapping["postInstallationInstructions"])

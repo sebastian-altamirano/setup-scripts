@@ -2,15 +2,16 @@
 
 """Contains tests for the functions defined in `installation_steps.py`."""
 
-from ast import FunctionDef
+from ast import AST, Call, FunctionDef, Import, ImportFrom
 from ast import Name as AstName
+from ast import NodeVisitor
 from ast import parse as parseAst
 from inspect import getsource as getSource
 from inspect import unwrap
 from logging import ERROR as LOGGING_LEVEL_ERROR
 from logging import INFO as LOGGING_LEVEL_INFO
 from logging import LogRecord
-from typing import Any, List, Tuple
+from typing import Any, List, Optional, Tuple
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
 
@@ -20,7 +21,7 @@ from dotfiles.installation_steps import copyApplicationSettings, installVSCodeEx
 from dotfiles.type_definitions import ApplicationSettingsMapping
 
 
-@patch("dotfiles.installation_steps.run")
+@patch("dotfiles.installation_steps.runWithSh")
 @patch("dotfiles.installation_steps.copyFile")
 @patch("dotfiles.installation_steps.getAbsolutePath")
 @patch("dotfiles.installation_steps.createDirectories")
@@ -34,7 +35,7 @@ class CopyApplicationSettingsTests(TestCase):
         mockCreateDirectories: Mock,
         mockGetAbsolutePath: Mock,
         mockCopyFile: Mock,
-        _mockRun: Mock,
+        _mockRunWithSh: Mock,
     ) -> None:
         mocksManager = Mock()
         mocksManager.attach_mock(mockIsAbsolutePath, "mockIsAbsolutePath")
@@ -66,7 +67,7 @@ class CopyApplicationSettingsTests(TestCase):
         _mockCreateDirectories: Mock,
         _mockGetAbsolutePath: Mock,
         mockCopyFile: Mock,
-        _mockRun: Mock,
+        _mockRunWithSh: Mock,
     ) -> None:
         settingsMappings: List[ApplicationSettingsMapping] = [
             {
@@ -86,11 +87,11 @@ class CopyApplicationSettingsTests(TestCase):
         _mockCreateDirectories: Mock,
         _mockGetAbsolutePath: Mock,
         mockCopyFile: Mock,
-        mockRun: Mock,
+        mockRunWithSh: Mock,
     ) -> None:
         mocksManager = Mock()
         mocksManager.attach_mock(mockCopyFile, "mockCopyFile")
-        mocksManager.attach_mock(mockRun, "mockRun")
+        mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
         settingMapping: ApplicationSettingsMapping = {
             "resourceName": "fish",
             "destination": "~/.config/fish",
@@ -106,17 +107,28 @@ class CopyApplicationSettingsTests(TestCase):
             anotherSettingsMapping,
         ]
 
-        copyApplicationSettings(settingsMappings)
+        with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
+            copyApplicationSettings(settingsMappings)
 
         self.assertEqual(
             [
                 call.mockCopyFile(src=ANY, dst=settingMapping["destination"]),
-                call.mockRun(settingMapping["completionCommands"][0], check=True),
-                call.mockRun(settingMapping["completionCommands"][1], check=True),
+                call.mockRunWithSh(*settingMapping["completionCommands"][0]),
+                call.mockRunWithSh(*settingMapping["completionCommands"][1]),
                 call.mockCopyFile(src=ANY, dst=anotherSettingsMapping["destination"]),
-                call.mockRun(anotherSettingsMapping["completionCommands"][0], check=True),
+                call.mockRunWithSh(*anotherSettingsMapping["completionCommands"][0]),
             ],
             mocksManager.mock_calls,
+        )
+        self.assertEqual(
+            len([mapping for mapping in settingsMappings if "completionCommands" in mapping]),
+            len(
+                [
+                    record.getMessage()
+                    for record in loggerSpy.records
+                    if record.getMessage() == "Running completion commands..."
+                ]
+            ),
         )
 
     def testIfPostInstallationInstructionsAreReturned(
@@ -150,7 +162,7 @@ class CopyApplicationSettingsTests(TestCase):
         _mockCreateDirectories: Mock,
         _mockGetAbsolutePath: Mock,
         _mockCopyFile: Mock,
-        mockRun: Mock,
+        mockRunWithSh: Mock,
     ) -> None:
         settingsMapping: List[ApplicationSettingsMapping] = [
             {
@@ -161,7 +173,7 @@ class CopyApplicationSettingsTests(TestCase):
 
         postInstallationInstructions = copyApplicationSettings(settingsMapping)
 
-        mockRun.assert_not_called()
+        mockRunWithSh.assert_not_called()
         self.assertEqual([], postInstallationInstructions)
 
     def testIfAMappingWithARelativeDestinationIsIgnored(
@@ -170,7 +182,7 @@ class CopyApplicationSettingsTests(TestCase):
         _mockCreateDirectories: Mock,
         _mockGetAbsolutePath: Mock,
         mockCopyFile: Mock,
-        _mockRun: Mock,
+        _mockRunWithSh: Mock,
     ) -> None:
         invalidSettingsMapping: ApplicationSettingsMapping = {
             "resourceName": "fish",
@@ -234,7 +246,7 @@ class InstallVSCodeExtensionsTests(TestCase):
         mockRun.return_value.stderr = ""
         extensions = ["theme", "linter", "another-linter", "language-support"]
 
-        with self.assertNoLogs():
+        with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
             unwrap(installVSCodeExtensions)(extensions)
 
         mockRun.assert_has_calls(
@@ -243,6 +255,11 @@ class InstallVSCodeExtensionsTests(TestCase):
                 for extension in extensions
             ],
             any_order=True,
+        )
+        self.assertEqual(1, len(loggerSpy.records))
+        self.assertEqual(
+            "All extensions have been installed successfully.",
+            loggerSpy.records[0].getMessage(),
         )
 
     def testIfExtensionsThatCouldNotBeInstalledAreLogged(self, mockRun: Mock) -> None:
@@ -288,3 +305,67 @@ class GeneralTests(TestCase):
                     if isinstance(functionDecorator, AstName)
                 )
             )
+
+    def testIfAllInstallationStepsUseRunWithInsteadOfRun(self) -> None:
+        def assertInstalationStepUsesRunWith(functionName: str, installationStepName: str) -> None:
+            self.assertNotEqual(
+                functionName,
+                # We are assuming that `subprocess.run` is imported as `from subprocess import run`.
+                "run",
+                f"`{installationStepName}` makes use of `subprocess.run`, replace it with "
+                "`runWithSh`",
+            )
+
+        class InstallationStepVisitor(NodeVisitor):
+            """
+            Node visitor to check that all installation steps use `runWith...` instead of
+            `subprocess.run`, but allowing the latter when called within the arguments of the
+            former.
+            """
+
+            # pylint: disable=invalid-name
+
+            def __init__(self) -> None:
+                self.installationStepName: Optional[str] = None
+                self.isSubprocessImportedAsModule = False
+                self.isSubprocessRunRenamed = False
+
+            def _assertSubprocessRunIsImportedAsExpected(self) -> None:
+                # This is done to simplify the test.
+                assert (
+                    not self.isSubprocessImportedAsModule and not self.isSubprocessRunRenamed
+                ), "`subprocess.run` must be imported as `from subprocess import run`"
+
+            def visit(self, node: AST) -> Any:
+                super().visit(node)
+                self._assertSubprocessRunIsImportedAsExpected()
+
+            def visit_Call(self, node: Call) -> None:
+                if self.installationStepName and (functionName := getattr(node.func, "id", None)):
+                    assertInstalationStepUsesRunWith(functionName, self.installationStepName)
+                # It is OK to call `run` within the arguments of `runWith...`, that is why
+                # `generic_visit` is not called.
+
+            def visit_FunctionDef(self, node: FunctionDef) -> None:
+                self.installationStepName = node.name
+                self.generic_visit(node)
+                self.installationStepName = None
+
+            def visit_ImportFrom(self, node: ImportFrom) -> None:
+                if node.module == "subprocess" and any(
+                    importName.name == "run" and importName.asname is not None
+                    for importName in node.names
+                ):
+                    self.isSubprocessRunRenamed = True
+                else:
+                    self.generic_visit(node)
+
+            def visit_Import(self, node: Import) -> None:
+                if any(importName.name == "subprocess" for importName in node.names):
+                    self.isSubprocessImportedAsModule = True
+                else:
+                    self.generic_visit(node)
+
+        abstractSintaxTree = parseAst(getSource(installationSteps))
+        visitor = InstallationStepVisitor()
+        visitor.visit(abstractSintaxTree)

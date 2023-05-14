@@ -42,13 +42,31 @@ def installationStep(
     return runInstallationStep
 
 
+def _runWith(*args: str) -> None:
+    logInfo(*args)
+    run([*args], check=True)
+
+
 def runWithFish(*args: str) -> None:
     """Runs a command with fish.
+
+    The command is logged before being executed.
 
     Raises:
         CalledProcessError: If the command execution failed.
     """
-    run(["fish", "-c", *args], check=True)
+    _runWith("fish", "-c", *args)
+
+
+def runWithSh(*args: str) -> None:
+    """Runs a command with sh.
+
+    The command is logged before being executed.
+
+    Raises:
+        CalledProcessError: If the command execution failed.
+    """
+    _runWith(*args)
 
 
 def warnAboutUnsupportedOrUnrecognizedConfig(key: str) -> None:
