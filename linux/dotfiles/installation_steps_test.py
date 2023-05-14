@@ -291,20 +291,29 @@ class GeneralTests(TestCase):
     """Contains tests that apply to all installation steps."""
 
     def testIfAllInstallationStepsAreDecorated(self) -> None:
-        abstractSintaxTree = parseAst(getSource(installationSteps))
-
-        functionsDecorators = [
-            node.decorator_list for node in abstractSintaxTree.body if isinstance(node, FunctionDef)
-        ]
-
-        for functionDecorators in functionsDecorators:
+        def assertInstallationStepIsDecorated(node: FunctionDef) -> None:
+            installationStepName = node.name
+            decorators = node.decorator_list
             self.assertTrue(
                 any(
-                    installationStep.__name__ == functionDecorator.id
-                    for functionDecorator in functionDecorators
-                    if isinstance(functionDecorator, AstName)
-                )
+                    installationStep.__name__ == decorator.id
+                    for decorator in decorators
+                    if isinstance(decorator, AstName)
+                ),
+                f"`{installationStepName}` is not decorated with `{installationStep.__name__}`.",
             )
+
+        class InstallationStepVisitor(NodeVisitor):
+            """Node visitor to check that all installation steps are decorated."""
+
+            def visit(self, node: AST) -> None:
+                if isinstance(node, FunctionDef):
+                    assertInstallationStepIsDecorated(node)
+                self.generic_visit(node)
+
+        abstractSintaxTree = parseAst(getSource(installationSteps))
+        visitor = InstallationStepVisitor()
+        visitor.visit(abstractSintaxTree)
 
     def testIfAllInstallationStepsUseRunWithInsteadOfRun(self) -> None:
         def assertInstalationStepUsesRunWith(functionName: str, installationStepName: str) -> None:
