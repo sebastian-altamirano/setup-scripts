@@ -5,7 +5,16 @@
 			"path": "../linux"
 		}
 	],
-	"extensions": { "recommendations": ["ms-python.python"] },
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-python.vscode-pylance",
+			"ms-python.black-formatter",
+			"ms-python.isort",
+			"ms-python.mypy-type-checker",
+			"ms-python.pylint"
+		]
+	},
 	"settings": {
 		"json.schemas": [
 			{
@@ -22,18 +31,22 @@
 
 		"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
 
-		"editor.formatOnSave": true,
-		"editor.formatOnSaveMode": "file",
-		"python.formatting.provider": "black",
+		"black-formatter.importStrategy": "fromEnvironment",
+		"python.formatting.provider": "none",
 
 		"python.analysis.typeCheckingMode": "strict",
-		"python.linting.mypyEnabled": true,
-		"python.linting.pylintEnabled": true,
+		"python.linting.mypyEnabled": false,
+		"mypy.importStrategy": "fromEnvironment",
+		"python.linting.pylintEnabled": false,
+		"pylint.importStrategy": "fromEnvironment",
 
 		"python.testing.unittestArgs": ["-v", "-p", "*_test.py"],
 		"python.testing.unittestEnabled": true,
 
 		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter",
+			"editor.formatOnSave": true,
+			"editor.formatOnSaveMode": "file",
 			"editor.insertSpaces": true,
 			"editor.tabSize": 4
 		}
