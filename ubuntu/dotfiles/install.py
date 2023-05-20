@@ -1,4 +1,4 @@
-"""Installation script for Linux dotfiles."""
+"""Installation script for Ubuntu dotfiles."""
 
 from json import loads as readJson
 from typing import List
@@ -21,14 +21,14 @@ SUPPORTED_CONFIGURATION_KEYS = [
 
 
 def install() -> None:
-    """Installs Linux dotfiles.
+    """Installs Ubuntu dotfiles.
 
     Upgrades dependencies, installs packages and copies applications settings.
     """
     postInstallationInstructions: List[str] = []
 
-    installFish()
     upgradeSystemDependencies()
+    installFish()
     postInstallationInstructions += installPackages()
 
     config: Config = readJson("settings.json")

@@ -18,7 +18,7 @@ from dotfiles.type_definitions import Arguments
 
 
 def _parseArguments(arguments: Optional[Sequence[str]] = None) -> Arguments:
-    parser = ArgumentParser(description="Installation script for Linux dotfiles.")
+    parser = ArgumentParser(description="Installation script for Ubuntu dotfiles.")
     parser.add_argument(
         "--logFilePath",
         default=(

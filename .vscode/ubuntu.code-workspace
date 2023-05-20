@@ -1,8 +1,8 @@
 {
 	"folders": [
 		{
-			"name": "Linux dotfiles",
-			"path": "../linux"
+			"name": "Ubuntu dotfiles",
+			"path": "../ubuntu"
 		}
 	],
 	"extensions": {
