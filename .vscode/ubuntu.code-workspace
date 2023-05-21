@@ -16,6 +16,9 @@
 		]
 	},
 	"settings": {
+		// General
+
+		"files.eol": "\n",
 		"json.schemas": [
 			{
 				"fileMatch": ["settings.json"],
@@ -25,30 +28,31 @@
 		"search.exclude": {
 			"**/.__pycache__": true,
 			"**/.mypy_cache": true,
-			"**/.venv": true,
+			"**/*venv": true,
 			"**/pdm.lock": true
 		},
 
-		"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-
-		"black-formatter.importStrategy": "fromEnvironment",
-		"python.formatting.provider": "none",
+		// Linting
 
 		"python.analysis.typeCheckingMode": "strict",
 		"python.linting.mypyEnabled": false,
-		"mypy.importStrategy": "fromEnvironment",
+		"mypy-type-checker.importStrategy": "fromEnvironment",
 		"python.linting.pylintEnabled": false,
 		"pylint.importStrategy": "fromEnvironment",
 
+		// Testing
+
+		"python.testing.pytestEnabled": false,
 		"python.testing.unittestArgs": ["-v", "-p", "*_test.py"],
 		"python.testing.unittestEnabled": true,
 
+		// Formatting
+
+		"black-formatter.importStrategy": "fromEnvironment",
+		"python.formatting.provider": "none",
 		"[python]": {
 			"editor.defaultFormatter": "ms-python.black-formatter",
-			"editor.formatOnSave": true,
-			"editor.formatOnSaveMode": "file",
-			"editor.insertSpaces": true,
-			"editor.tabSize": 4
+			"editor.formatOnSave": true
 		}
 	}
 }

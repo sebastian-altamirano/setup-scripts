@@ -24,8 +24,7 @@ cover/
 dmypy.json
 
 # Environments
-.venv
-venv/
+*venv/
 
 # pdm
 .pdm-python

@@ -5,7 +5,11 @@
 			"path": "../windows"
 		}
 	],
+	"extensions": {
+		"recommendations": ["ms-vscode.powershell"]
+	},
 	"settings": {
+		"files.eol": "\n",
 		"json.schemas": [
 			{
 				"fileMatch": ["settings.json"],
