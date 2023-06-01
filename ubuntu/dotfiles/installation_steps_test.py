@@ -1,6 +1,6 @@
-# pylint: disable=C0116
-
 """Contains tests for the functions defined in `installation_steps.py`."""
+
+# pylint: disable=missing-function-docstring
 
 from ast import AST, Call, FunctionDef, Import, ImportFrom
 from ast import Name as AstName
@@ -238,18 +238,18 @@ class CopyApplicationSettingsTests(TestCase):
         )
 
 
-@patch("dotfiles.installation_steps.run")
+@patch("dotfiles.installation_steps.runWithoutLogging")
 class InstallVSCodeExtensionsTests(TestCase):
     """Contains tests for the `installVSCodeExtensions` function."""
 
-    def testIfAllExtensionsAreInstalled(self, mockRun: Mock) -> None:
-        mockRun.return_value.stderr = ""
+    def testIfAllExtensionsAreInstalled(self, mockRunWithoutLogging: Mock) -> None:
+        mockRunWithoutLogging.return_value.stderr = ""
         extensions = ["theme", "linter", "another-linter", "language-support"]
 
         with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
             unwrap(installVSCodeExtensions)(extensions)
 
-        mockRun.assert_has_calls(
+        mockRunWithoutLogging.assert_has_calls(
             [
                 call(["code", "--install-extension", extension], capture_output=True, check=True)
                 for extension in extensions
@@ -262,19 +262,19 @@ class InstallVSCodeExtensionsTests(TestCase):
             loggerSpy.records[0].getMessage(),
         )
 
-    def testIfExtensionsThatCouldNotBeInstalledAreLogged(self, mockRun: Mock) -> None:
+    def testIfExtensionsThatCouldNotBeInstalledAreLogged(self, mockRunWithoutLogging: Mock) -> None:
         extensionThatExists = "extension-that-exists"
         extensionThatDoesNotExist = "extension-that-does-not-exist"
         extensions = [extensionThatExists, extensionThatDoesNotExist]
 
-        def fillStdErrIfExtensionDoesNotExist(arguments: List[str], **kwargs: Any) -> Mock:
+        def fillStdErrIfExtensionDoesNotExist(arguments: List[str], **_kwargs: Any) -> Mock:
             return Mock(
                 stderr="An error has occurred..."
                 if arguments[2] == extensionThatDoesNotExist
                 else ""
             )
 
-        mockRun.side_effect = fillStdErrIfExtensionDoesNotExist
+        mockRunWithoutLogging.side_effect = fillStdErrIfExtensionDoesNotExist
 
         with self.assertLogs() as loggerSpy:
             unwrap(installVSCodeExtensions)(extensions)
@@ -332,8 +332,6 @@ class GeneralTests(TestCase):
             former.
             """
 
-            # pylint: disable=invalid-name
-
             def __init__(self) -> None:
                 self.installationStepName: Optional[str] = None
                 self.isSubprocessImportedAsModule = False
@@ -349,18 +347,18 @@ class GeneralTests(TestCase):
                 super().visit(node)
                 self._assertSubprocessRunIsImportedAsExpected()
 
-            def visit_Call(self, node: Call) -> None:
+            def visit_Call(self, node: Call) -> None:  # pylint: disable=invalid-name
                 if self.installationStepName and (functionName := getattr(node.func, "id", None)):
                     assertInstalationStepUsesRunWith(functionName, self.installationStepName)
                 # It is OK to call `run` within the arguments of `runWith...`, that is why
                 # `generic_visit` is not called.
 
-            def visit_FunctionDef(self, node: FunctionDef) -> None:
+            def visit_FunctionDef(self, node: FunctionDef) -> None:  # pylint: disable=invalid-name
                 self.installationStepName = node.name
                 self.generic_visit(node)
                 self.installationStepName = None
 
-            def visit_ImportFrom(self, node: ImportFrom) -> None:
+            def visit_ImportFrom(self, node: ImportFrom) -> None:  # pylint: disable=invalid-name
                 if node.module == "subprocess" and any(
                     importName.name == "run" and importName.asname is not None
                     for importName in node.names
@@ -369,7 +367,7 @@ class GeneralTests(TestCase):
                 else:
                     self.generic_visit(node)
 
-            def visit_Import(self, node: Import) -> None:
+            def visit_Import(self, node: Import) -> None:  # pylint: disable=invalid-name
                 if any(importName.name == "subprocess" for importName in node.names):
                     self.isSubprocessImportedAsModule = True
                 else:

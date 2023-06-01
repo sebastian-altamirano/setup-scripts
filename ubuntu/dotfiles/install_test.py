@@ -1,6 +1,6 @@
-# pylint: disable=C0116
-
 """Contains tests for the functions defined in `install.py`."""
+
+# pylint: disable=missing-function-docstring
 
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
@@ -20,7 +20,7 @@ from dotfiles.type_definitions import Config
 class InstallTests(TestCase):
     """Contains tests for the `install` function."""
 
-    def testIfAllConfigurationKeysAreOptional(
+    def testIfAllConfigurationKeysAreOptional(  # pylint: disable=too-many-arguments
         self,
         mockReadJson: Mock,
         mockLogCompletionMessage: Mock,

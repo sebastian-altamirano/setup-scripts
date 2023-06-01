@@ -1,6 +1,6 @@
-# pylint: disable=C0116
-
 """Contains tests for the functions defined in `utils.py`."""
+
+# pylint: disable=missing-function-docstring
 
 from abc import ABC, abstractmethod
 from logging import ERROR as LOGGING_LEVEL_ERROR
@@ -101,7 +101,7 @@ class InstallationStepTests(TestCase):
     def testIfStartAndErrorIsLogged(self) -> None:
         @installationStep
         def function() -> None:
-            raise Exception("Installation step failed.")
+            raise Exception("Installation step failed.")  # pylint: disable=broad-exception-raised
 
         with self.assertLogs() as loggerSpy, self.assertRaises(Exception):
             function()

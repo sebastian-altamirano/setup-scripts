@@ -1,6 +1,6 @@
-# pylint: disable=C0116
-
 """Contains tests for the functions defined in `cli.py`."""
+
+# pylint: disable=missing-function-docstring
 
 from datetime import datetime
 from logging import ERROR as LOGGING_LEVEL_ERROR
@@ -67,7 +67,7 @@ class EntryPointTests(TestCase):
     @patch("dotfiles.cli.getAbsolutePath")
     @patch("dotfiles.cli.logWarnings")
     @patch("dotfiles.cli.StreamHandler")
-    def testIfLoggerIsConfigured(
+    def testIfLoggerIsConfigured(  # pylint: disable=too-many-arguments
         self,
         mockStreamHandler: Mock,
         mockLogWarnings: Mock,
