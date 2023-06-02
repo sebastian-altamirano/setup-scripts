@@ -44,6 +44,7 @@ format = [
 
 [tool.pdm.scripts]
 lint = {composite = ["mypy dotfiles", "pylint dotfiles"]}
+test = "python -m unittest discover dotfiles -v -p '*_test.py'"
 
 [tool.pdm.version]
 source = "file"
