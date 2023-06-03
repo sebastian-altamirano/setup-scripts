@@ -1,0 +1,378 @@
+"""Contains tests for the functions defined in `installation_steps.py`."""
+
+# pylint: disable=missing-function-docstring
+
+from ast import AST, Call, FunctionDef, Import, ImportFrom
+from ast import Name as AstName
+from ast import NodeVisitor
+from ast import parse as parseAst
+from inspect import getsource as getSource
+from inspect import unwrap
+from logging import ERROR as LOGGING_LEVEL_ERROR
+from logging import INFO as LOGGING_LEVEL_INFO
+from logging import LogRecord
+from typing import Any, List, Optional, Tuple
+from unittest import TestCase
+from unittest.mock import ANY, Mock, call, patch
+
+import dotfiles.installation_steps as installationSteps
+from dotfiles.helpers.utils import installationStep
+from dotfiles.installation_steps import copyApplicationSettings, installVSCodeExtensions
+from dotfiles.type_definitions import ApplicationSettingsMapping
+
+
+@patch("dotfiles.installation_steps.runWithSh")
+@patch("dotfiles.installation_steps.copyFile")
+@patch("dotfiles.installation_steps.getAbsolutePath")
+@patch("dotfiles.installation_steps.createDirectories")
+@patch("dotfiles.installation_steps.isAbsolutePath", return_value=True)
+class CopyApplicationSettingsTests(TestCase):
+    """Contains tests for the `copyApplicationSettings` function."""
+
+    def testIfResourceIsCopied(
+        self,
+        mockIsAbsolutePath: Mock,
+        mockCreateDirectories: Mock,
+        mockGetAbsolutePath: Mock,
+        mockCopyFile: Mock,
+        _mockRunWithSh: Mock,
+    ) -> None:
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockIsAbsolutePath, "mockIsAbsolutePath")
+        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
+        mocksManager.attach_mock(mockGetAbsolutePath, "mockGetAbsolutePath")
+        mocksManager.attach_mock(mockCopyFile, "mockCopyFile")
+        settingsMapping: ApplicationSettingsMapping = {
+            "resourceName": "fish",
+            "destination": "~/.config/fish",
+        }
+
+        copyApplicationSettings([settingsMapping])
+
+        self.assertEqual(
+            [
+                call.mockIsAbsolutePath(settingsMapping["destination"]),
+                call.mockCreateDirectories(settingsMapping["destination"], exist_ok=True),
+                call.mockGetAbsolutePath(f"app-settings/{settingsMapping['resourceName']}"),
+                call.mockCopyFile(
+                    src=mockGetAbsolutePath.return_value, dst=settingsMapping["destination"]
+                ),
+            ],
+            mocksManager.mock_calls,
+        )
+
+    def testIfAllResourcesAreCopied(
+        self,
+        _mockIsAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockGetAbsolutePath: Mock,
+        mockCopyFile: Mock,
+        _mockRunWithSh: Mock,
+    ) -> None:
+        settingsMappings: List[ApplicationSettingsMapping] = [
+            {
+                "resourceName": "fish",
+                "destination": "~/.config/fish",
+            },
+            {"resourceName": ".gitconfig", "destination": "~/.gitconfig"},
+        ]
+
+        copyApplicationSettings(settingsMappings)
+
+        self.assertEqual(len(settingsMappings), mockCopyFile.call_count)
+
+    def testIfCompletionCommandsAreExecutedAfterTheResourceIsCopied(
+        self,
+        _mockIsAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockGetAbsolutePath: Mock,
+        mockCopyFile: Mock,
+        mockRunWithSh: Mock,
+    ) -> None:
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockCopyFile, "mockCopyFile")
+        mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
+        settingMapping: ApplicationSettingsMapping = {
+            "resourceName": "fish",
+            "destination": "~/.config/fish",
+            "completionCommands": [["echo", "Hello"], ["echo", "Bye"]],
+        }
+        anotherSettingsMapping: ApplicationSettingsMapping = {
+            "resourceName": ".gitconfig",
+            "destination": "~/.gitconfig",
+            "completionCommands": [["echo", "Hello again"]],
+        }
+        settingsMappings: List[ApplicationSettingsMapping] = [
+            settingMapping,
+            anotherSettingsMapping,
+        ]
+
+        with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
+            copyApplicationSettings(settingsMappings)
+
+        self.assertEqual(
+            [
+                call.mockCopyFile(src=ANY, dst=settingMapping["destination"]),
+                call.mockRunWithSh(*settingMapping["completionCommands"][0]),
+                call.mockRunWithSh(*settingMapping["completionCommands"][1]),
+                call.mockCopyFile(src=ANY, dst=anotherSettingsMapping["destination"]),
+                call.mockRunWithSh(*anotherSettingsMapping["completionCommands"][0]),
+            ],
+            mocksManager.mock_calls,
+        )
+        self.assertEqual(
+            len([mapping for mapping in settingsMappings if "completionCommands" in mapping]),
+            len(
+                [
+                    record.getMessage()
+                    for record in loggerSpy.records
+                    if record.getMessage() == "Running completion commands..."
+                ]
+            ),
+        )
+
+    def testIfPostInstallationInstructionsAreReturned(
+        self, *_args: Tuple[Mock, Mock, Mock, Mock, Mock]
+    ) -> None:
+        settingMapping: ApplicationSettingsMapping = {
+            "resourceName": "fish",
+            "destination": "~/.config/fish",
+            "postInstallationInstructions": (
+                "This is where I would put my post-installation instructions, if I had any!"
+            ),
+        }
+        anotherSettingsMapping: ApplicationSettingsMapping = {
+            "resourceName": ".gitconfig",
+            "destination": "~/.gitconfig",
+            "postInstallationInstructions": "There is nothing else to do...",
+        }
+        settingMappings = [settingMapping, anotherSettingsMapping]
+        expectedPostInstallationInstructions: List[str] = [
+            settingMapping["postInstallationInstructions"],
+            anotherSettingsMapping["postInstallationInstructions"],
+        ]
+
+        postInstallationInstructions = copyApplicationSettings(settingMappings)
+
+        self.assertEqual(expectedPostInstallationInstructions, postInstallationInstructions)
+
+    def testIfCompletionCommandsAndPostInstallationInstructionsAreOptional(
+        self,
+        _mockIsAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockCopyFile: Mock,
+        mockRunWithSh: Mock,
+    ) -> None:
+        settingsMapping: List[ApplicationSettingsMapping] = [
+            {
+                "resourceName": "fish",
+                "destination": "~/.config/fish",
+            }
+        ]
+
+        postInstallationInstructions = copyApplicationSettings(settingsMapping)
+
+        mockRunWithSh.assert_not_called()
+        self.assertEqual([], postInstallationInstructions)
+
+    def testIfAMappingWithARelativeDestinationIsIgnored(
+        self,
+        mockIsAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockGetAbsolutePath: Mock,
+        mockCopyFile: Mock,
+        _mockRunWithSh: Mock,
+    ) -> None:
+        invalidSettingsMapping: ApplicationSettingsMapping = {
+            "resourceName": "fish",
+            "destination": "./.config/fish",
+        }
+        validSettingsMapping: ApplicationSettingsMapping = {
+            "resourceName": ".gitconfig",
+            "destination": "~/.gitconfig",
+        }
+
+        def isAbsolutePath(path: str) -> bool:
+            return path == validSettingsMapping["destination"]
+
+        mockIsAbsolutePath.side_effect = isAbsolutePath
+        settingMappings = [invalidSettingsMapping, validSettingsMapping]
+
+        with self.assertLogs(level=LOGGING_LEVEL_ERROR) as loggerSpy:
+            unwrap(copyApplicationSettings)(settingMappings)
+
+        self.assertEqual(1, len(loggerSpy.records))
+        self.assertEqual(
+            f'Could not copy "{invalidSettingsMapping["resourceName"]}", an absolute path was '
+            f'expected for "destination", but "{invalidSettingsMapping["destination"]}" was '
+            "received.",
+            loggerSpy.records[0].getMessage(),
+        )
+        mockCopyFile.assert_called_once_with(src=ANY, dst=validSettingsMapping["destination"])
+
+    def testIfTheResourcesAreLoggedAsTheyAreCopied(
+        self, *_args: Tuple[Mock, Mock, Mock, Mock, Mock]
+    ) -> None:
+        settingsMappings: List[ApplicationSettingsMapping] = [
+            {
+                "resourceName": "fish",
+                "destination": "~/.config/fish",
+            },
+            {"resourceName": ".gitconfig", "destination": "~/.gitconfig"},
+        ]
+
+        with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
+            unwrap(copyApplicationSettings)(settingsMappings)
+
+        self.assertEqual(2, len(loggerSpy.records))
+        self._assertResourceCopyLog(loggerSpy.records[0], settingsMappings[0])
+        self._assertResourceCopyLog(loggerSpy.records[1], settingsMappings[1])
+
+    def _assertResourceCopyLog(
+        self, logRecord: LogRecord, settingsMapping: ApplicationSettingsMapping
+    ) -> None:
+        self.assertEqual(
+            f'Copying "{settingsMapping["resourceName"]}" to "{settingsMapping["destination"]}"...',
+            logRecord.getMessage(),
+        )
+
+
+@patch("dotfiles.installation_steps.runWithoutLogging")
+class InstallVSCodeExtensionsTests(TestCase):
+    """Contains tests for the `installVSCodeExtensions` function."""
+
+    def testIfAllExtensionsAreInstalled(self, mockRunWithoutLogging: Mock) -> None:
+        mockRunWithoutLogging.return_value.stderr = ""
+        extensions = ["theme", "linter", "another-linter", "language-support"]
+
+        with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
+            unwrap(installVSCodeExtensions)(extensions)
+
+        mockRunWithoutLogging.assert_has_calls(
+            [
+                call(["code", "--install-extension", extension], capture_output=True, check=True)
+                for extension in extensions
+            ],
+            any_order=True,
+        )
+        self.assertEqual(1, len(loggerSpy.records))
+        self.assertEqual(
+            "All extensions have been installed successfully.",
+            loggerSpy.records[0].getMessage(),
+        )
+
+    def testIfExtensionsThatCouldNotBeInstalledAreLogged(self, mockRunWithoutLogging: Mock) -> None:
+        extensionThatExists = "extension-that-exists"
+        extensionThatDoesNotExist = "extension-that-does-not-exist"
+        extensions = [extensionThatExists, extensionThatDoesNotExist]
+
+        def fillStdErrIfExtensionDoesNotExist(arguments: List[str], **_kwargs: Any) -> Mock:
+            return Mock(
+                stderr="An error has occurred..."
+                if arguments[2] == extensionThatDoesNotExist
+                else ""
+            )
+
+        mockRunWithoutLogging.side_effect = fillStdErrIfExtensionDoesNotExist
+
+        with self.assertLogs() as loggerSpy:
+            unwrap(installVSCodeExtensions)(extensions)
+
+        self.assertEqual(1, len(loggerSpy.records))
+        self.assertEqual(LOGGING_LEVEL_ERROR, loggerSpy.records[0].levelno)
+        self.assertEqual(
+            f"Could not install the following extensions:\n- {extensionThatDoesNotExist}\n",
+            loggerSpy.records[0].getMessage(),
+        )
+
+
+class GeneralTests(TestCase):
+    """Contains tests that apply to all installation steps."""
+
+    def testIfAllInstallationStepsAreDecorated(self) -> None:
+        def assertInstallationStepIsDecorated(node: FunctionDef) -> None:
+            installationStepName = node.name
+            decorators = node.decorator_list
+            self.assertTrue(
+                any(
+                    installationStep.__name__ == decorator.id
+                    for decorator in decorators
+                    if isinstance(decorator, AstName)
+                ),
+                f"`{installationStepName}` is not decorated with `{installationStep.__name__}`.",
+            )
+
+        class InstallationStepVisitor(NodeVisitor):
+            """Node visitor to check that all installation steps are decorated."""
+
+            def visit(self, node: AST) -> None:
+                if isinstance(node, FunctionDef):
+                    assertInstallationStepIsDecorated(node)
+                self.generic_visit(node)
+
+        abstractSintaxTree = parseAst(getSource(installationSteps))
+        visitor = InstallationStepVisitor()
+        visitor.visit(abstractSintaxTree)
+
+    def testIfAllInstallationStepsUseRunWithInsteadOfRun(self) -> None:
+        def assertInstalationStepUsesRunWith(functionName: str, installationStepName: str) -> None:
+            self.assertNotEqual(
+                functionName,
+                # We are assuming that `subprocess.run` is imported as `from subprocess import run`.
+                "run",
+                f"`{installationStepName}` makes use of `subprocess.run`, replace it with "
+                "`runWithSh`",
+            )
+
+        class InstallationStepVisitor(NodeVisitor):
+            """
+            Node visitor to check that all installation steps use `runWith...` instead of
+            `subprocess.run`, but allowing the latter when called within the arguments of the
+            former.
+            """
+
+            def __init__(self) -> None:
+                self.installationStepName: Optional[str] = None
+                self.isSubprocessImportedAsModule = False
+                self.isSubprocessRunRenamed = False
+
+            def _assertSubprocessRunIsImportedAsExpected(self) -> None:
+                # This is done to simplify the test.
+                assert (
+                    not self.isSubprocessImportedAsModule and not self.isSubprocessRunRenamed
+                ), "`subprocess.run` must be imported as `from subprocess import run`"
+
+            def visit(self, node: AST) -> Any:
+                super().visit(node)
+                self._assertSubprocessRunIsImportedAsExpected()
+
+            def visit_Call(self, node: Call) -> None:  # pylint: disable=invalid-name
+                if self.installationStepName and (functionName := getattr(node.func, "id", None)):
+                    assertInstalationStepUsesRunWith(functionName, self.installationStepName)
+                # It is OK to call `run` within the arguments of `runWith...`, that is why
+                # `generic_visit` is not called.
+
+            def visit_FunctionDef(self, node: FunctionDef) -> None:  # pylint: disable=invalid-name
+                self.installationStepName = node.name
+                self.generic_visit(node)
+                self.installationStepName = None
+
+            def visit_ImportFrom(self, node: ImportFrom) -> None:  # pylint: disable=invalid-name
+                if node.module == "subprocess" and any(
+                    importName.name == "run" and importName.asname is not None
+                    for importName in node.names
+                ):
+                    self.isSubprocessRunRenamed = True
+                else:
+                    self.generic_visit(node)
+
+            def visit_Import(self, node: Import) -> None:  # pylint: disable=invalid-name
+                if any(importName.name == "subprocess" for importName in node.names):
+                    self.isSubprocessImportedAsModule = True
+                else:
+                    self.generic_visit(node)
+
+        abstractSintaxTree = parseAst(getSource(installationSteps))
+        visitor = InstallationStepVisitor()
+        visitor.visit(abstractSintaxTree)

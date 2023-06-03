@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository contains installation scripts for Windows and Linux (intended to be run on WSL).
+This repository contains installation scripts for Windows and Ubuntu (intended to be run on WSL).
 
 These scripts are responsible for configuring the environment and installing and configuring the applications that I use frequently.
 
@@ -10,9 +10,9 @@ While all configurations are personal, the [customization section](#customizatio
 
 ## Instructions
 
-On a clean Windows installation, clone the repository and follow the instructions in the [Windows installation script section](#windows-installation-script). This will, among other things, install Linux on WSL.
+On a clean Windows installation, clone the repository and follow the instructions in the [Windows installation script section](#windows-installation-script). This will, among other things, install Ubuntu on WSL.
 
-Once the installation is complete, create a user and password for Linux, copy the installation files, and then follow the instructions in the [Linux installation script section](#linux-installation-script).
+Once the installation is complete, create a user and password for Ubuntu, copy the installation files, and then follow the instructions in the [Ubuntu installation script section](#ubuntu-installation-script).
 
 ## Windows installation script
 
@@ -56,17 +56,17 @@ You must enable "virtualization" in the BIOS in order to enable Hyper-V, which i
 8. Download fonts.
 9. Display post-installation instructions.
 
-## Linux installation script
+## Ubuntu installation script
 
-This script is intended to be run on Ubuntu running inside WSL.
+This script is intended to be run inside WSL.
 
 ### Requirements
 
-You must fill in the empty fields of `linux/app-settings/.gitconfig`.
+You must fill in the empty fields of `ubuntu/app-settings/.gitconfig`.
 
 ### Tasks performed
 
-### `linux/install.sh`
+### `ubuntu/install.sh`
 
 1. Update system dependencies.
 2. Install fish.
@@ -80,7 +80,7 @@ You must fill in the empty fields of `linux/app-settings/.gitconfig`.
 
 ## Customization
 
-In both `/windows` and `/linux` we can find the `settings.json` file and the `/config` and `/app-settings` directories.
+In both `/windows` and `/ubuntu` we can find the `settings.json` file and the `/config` and `/app-settings` directories.
 
 ### `settings.json`
 
