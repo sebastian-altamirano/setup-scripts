@@ -654,12 +654,16 @@ async function fillPaymentInformation(paymentInformation) {
 
 /**
  * @param {string} email
+ * @param {ValueOf<PaymentMethod>} paymentMethod
  *
  * @returns {void}
  * @throws {ElementNotFoundError} If the email input is not found or is not of the expected type.
  */
-function fillEmail(email) {
-	const emailEl = getElementOrThrow("#Email", HTMLInputElement);
+function fillEmail(email, paymentMethod) {
+	const emailEl = getElementOrThrow(
+		`#${paymentMethod === PaymentMethod.Debin ? "Email_Debin" : "Email"}`,
+		HTMLInputElement
+	);
 	changeTextInputValue(emailEl, email);
 }
 
@@ -736,7 +740,7 @@ async function main() {
 		const formValue = await readFormValueFromFile();
 		validateFormValue(formValue);
 		await fillPaymentInformation(formValue.paymentInformation);
-		fillEmail(formValue.email);
+		fillEmail(formValue.email, formValue.paymentInformation.paymentMethod);
 		fillDocument(formValue.document);
 		fillDateOfBirth(
 			formValue.dateOfBirth.year,
