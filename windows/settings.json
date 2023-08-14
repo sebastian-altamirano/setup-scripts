@@ -7,8 +7,12 @@
 			"postInstallationInstructions": "Configure the CSGO launch options in Steam to use the autoexec (see the first comment in the CFG)."
 		},
 		{
-			"resourceName": "vscode.jsonc",
+			"resourceName": "vscode-settings.jsonc",
 			"destination": "$env:AppData\\Code\\User\\settings.json"
+		},
+		{
+			"resourceName": "vscode-keybindings.jsonc",
+			"destination": "$env:AppData\\Code\\User\\keybindings.json"
 		},
 		{
 			"resourceName": "windows-terminal.json",

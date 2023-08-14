@@ -1,0 +1,11 @@
+[
+	{
+		"key": "ctrl+shift+a",
+		"command": "workbench.action.terminal.openNativeConsole",
+		"when": "!terminalFocus"
+	},
+	{
+		"key": "shift shift",
+		"command": "workbench.action.quickOpen"
+	}
+]
