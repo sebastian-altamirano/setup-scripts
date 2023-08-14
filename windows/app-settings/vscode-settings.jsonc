@@ -1,13 +1,20 @@
 {
+	// -------------------------------------- GENERAL SETTINGS ---------------------------------------
+
 	"editor.accessibilitySupport": "off",
 	"editor.bracketPairColorization.enabled": false,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true
+	},
 	"editor.codeLens": true,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.fontFamily": "JetBrains Mono",
 	"editor.fontLigatures": true,
 	"editor.fontSize": 16,
 	"editor.formatOnSave": true,
+	"editor.inlayHints.enabled": "offUnlessPressed",
 	"editor.insertSpaces": false,
+	"editor.linkedEditing": true,
 	"editor.minimap.enabled": false,
 	"editor.rulers": [80, 100],
 	"editor.stickyScroll.enabled": true,
@@ -20,15 +27,22 @@
 	"scm.repositories.sortOrder": "name",
 
 	"search.exclude": {
+		"**/.__pycache__": true,
 		"**/.git": true,
+		"**/.husky": true,
+		"**/.mypy_cache": true,
+		"**/.nyc_output": true,
+		"**/.venv": true,
+		"**/.vscode": true,
+		"**/coverage": true,
+		"**/dist": true,
 		"**/node_modules": true,
-		".husky": true,
-		".nyc_output": true,
-		".vscode": true,
-		"coverage": true,
-		"dist": true,
-		"package-lock.json": true
+		"**/package-lock.json": true,
+		"**/pnpm-lock.yaml": true,
+		"**/venv": true,
+		"**/yarn.lock": true
 	},
+	"search.searchOnType": false,
 
 	"window.autoDetectColorScheme": true,
 	"window.zoomLevel": 1,
@@ -40,7 +54,7 @@
 	"workbench.settings.editor": "json",
 	"workbench.sideBar.location": "right",
 
-	// --------------------------- OS-SPECIFIC SETTINGS --------------------------
+	// ------------------------------------ OS-SPECIFIC SETTINGS -------------------------------------
 
 	// Linux
 	"editor.selectionClipboard": false,
@@ -50,11 +64,13 @@
 	// Windows
 	"terminal.external.windowsExec": "wt",
 
-	// ------------------------ LANGUAGE-SPECIFIC SETTINGS -----------------------
+	// --------------------------------- LANGUAGE-SPECIFIC SETTINGS ----------------------------------
 
 	"css.validate": false,
 
 	"javascript.updateImportsOnFileMove.enabled": "always",
+
+	"js/ts.implicitProjectConfig.checkJs": true,
 
 	"less.validate": false,
 
@@ -62,7 +78,7 @@
 
 	"typescript.updateImportsOnFileMove.enabled": "always",
 
-	// ---------------------------- EXTENSION SETTINGS ---------------------------
+	// ------------------------------------- EXTENSION SETTINGS --------------------------------------
 
 	// Code Runner
 	"code-runner.clearPreviousOutput": true,
@@ -72,6 +88,9 @@
 	// GitLens
 	"gitlens.codeLens.enabled": false,
 	"gitlens.hovers.currentLine.over": "annotation",
+	"gitlens.plusFeatures.enabled": false,
+	"gitlens.showWelcomeOnInstall": false,
+	"gitlens.showWhatsNewAfterUpgrades": false,
 	"gitlens.statusBar.enabled": false,
 
 	// Prettier
@@ -84,11 +103,31 @@
 	"stylelint.validate": ["css", "scss"],
 
 	// TODO Highlight
+	"todohighlight.exclude": [
+		"**/*.min.*",
+		"**/*.map",
+		"**/.__pycache__/**",
+		"**/.git/**",
+		"**/.husky/**",
+		"**/.mypy_cache/**",
+		"**/.nyc_output/**",
+		"**/.venv/**",
+		"**/.vscode/**",
+		"**/coverage/**",
+		"**/dist/**",
+		"**/node_modules/**",
+		"**/package-lock.json/**",
+		"**/pnpm-lock.yaml/**",
+		"**/venv/**",
+		"**/yarn.lock/**"
+	],
 	"todohighlight.include": [
-		"**/*.html",
 		"**/*.css",
-		"**/*.scss",
+		"**/*.html",
 		"**/*.js",
+		"**/*.jsonc",
+		"**/*.py",
+		"**/*.scss",
 		"**/*.ts",
 		"**/*.tsx"
 	]
