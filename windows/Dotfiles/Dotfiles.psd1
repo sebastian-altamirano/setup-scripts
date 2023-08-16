@@ -10,10 +10,8 @@ FunctionsToExport = @(
 	"Copy-Resource",
 	"Register-ScriptExecution",
 	"Unregister-ScriptExecution",
-	"Set-WindowsTheme",
 	"Start-Logging",
 	"Stop-Logging",
-	"Test-HourWithinRange"
 )
 CmdletsToExport = @()
 VariablesToExport = @()

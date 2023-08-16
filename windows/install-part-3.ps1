@@ -47,9 +47,6 @@ Foreach ($resourceMapping in $config.settingsPaths) {
 	}
 }
 
-Write-Host "Creating scheduled tasks."
-.\create-switch-theme-task.ps1
-
 Write-Host "Downloading fonts."
 $fontsZipPath = (Resolve-Path "JetBrainsMono.zip").Path
 Invoke-WebRequest "https://fonts.google.com/download?family=JetBrains%20Mono" -OutFile $fontsZipPath

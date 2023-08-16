@@ -102,46 +102,6 @@ function Unregister-ScriptExecution {
 
 <#
 .SYNOPSIS
-Changes the Windows theme.
-
-.DESCRIPTION
-Changes the Windows theme.
-Your computer may slow down while applying the theme.
-
-.PARAMETER Theme
-Specifies the Windows theme to apply.
-
-.EXAMPLE
-Set-DotfilesWindowsTheme Dark
-#>
-function Set-WindowsTheme {
-	param (
-		[Parameter(Mandatory)]
-		[ValidateSet("Light", "Dark")]
-		[string] $Theme
-	)
-
-	$themePropertyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-	$useLightTheme = $Theme -eq "Light"
-
-	New-ItemProperty `
-		-Path $themePropertyPath `
-		-Name "SystemUsesLightTheme" `
-		-Value $useLightTheme `
-		-PropertyType DWORD `
-		-Force `
-		| Out-Null
-	New-ItemProperty `
-		-Path $themePropertyPath `
-		-Name "AppsUseLightTheme" `
-		-Value $useLightTheme `
-		-PropertyType DWORD `
-		-Force `
-		| Out-Null
-}
-
-<#
-.SYNOPSIS
 Creates a record of all or part of a PowerShell session to a log file.
 
 .DESCRIPTION
@@ -185,39 +145,4 @@ Start-DotfilesLogging
 #>
 function Stop-Logging {
 	Stop-Transcript
-}
-
-<#
-.SYNOPSIS
-Checks if the current time is within the hour range [Start, End).
-
-.PARAMETER Start
-Specifies the hour at which the time range starts.
-.PARAMETER End
-Specifies the hour at which the time range ends.
-
-.EXAMPLE
-Test-DotfilesHourWithinRange -Start 9 -End 18
-True  # If the time at which the script was executed is in the range [9-18).
-.EXAMPLE
-Test-DotfilesHourWithinRange -Start 18 -End 9
-True  # If the time at which the script was executed is in the range [0-9) U [18-23].
-#>
-function Test-HourWithinRange {
-	param (
-		[Parameter(Mandatory)]
-		[ValidateRange(0, 23)]
-		[Int32] $Start,
-		[Parameter(Mandatory)]
-		[ValidateRange(0, 23)]
-		[Int32] $End
-	)
-
-	$currentHour = (Get-Date).Hour
-
-	if ($Start -lt $End) {
-		return  $CurrentHour -ge $Start -and $CurrentHour -lt $End
-	} else {
-		return $CurrentHour -lt $End -and $CurrentHour -ge $Start
-	}
 }

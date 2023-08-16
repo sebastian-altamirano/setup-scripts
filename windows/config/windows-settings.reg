@@ -14,15 +14,6 @@ Windows Registry Editor Version 5.00
 ; Increase text size.
 "TextScaleFactor"=dword:0000007d
 
-; Enable night light between 8AM and 6PM.
-[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\DefaultAccount\Current\default$windows.data.bluelightreduction.bluelightreductionstate\windows.data.bluelightreduction.bluelightreductionstate]
-"Data"=hex:43,42,01,00,0a,02,01,00,2a,06,ba,c2,8d,96,06,2a,2b,0e,12,43,42,01,\
-  00,10,00,c6,14,ec,86,b0,df,86,fe,a3,ec,01,00,00,00,00
-[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\DefaultAccount\Current\default$windows.data.bluelightreduction.settings\windows.data.bluelightreduction.settings]
-"Data"=hex:43,42,01,00,0a,02,01,00,2a,06,c3,a7,c9,95,06,2a,2b,0e,1b,43,42,01,\
-  00,02,01,ca,14,0e,12,00,ca,1e,0e,08,00,cf,28,de,2f,ca,32,00,ca,3c,00,00,00,\
-  00,00
-
 [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
 ; Show hidden folders.
 "Hidden"=dword:00000001
