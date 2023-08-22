@@ -9,9 +9,9 @@ class _ApplicationSettingsMapping(TypedDict, total=False):
 
 
 class ApplicationSettingsMapping(_ApplicationSettingsMapping):
-    """Defines a source-destination mapping of a resource located in the `app-settings` folder.
+    """Defines a source-destination mapping of a resource located in the `/config/ubuntu` folder.
 
-    Matches what is defined in `/settings.schema.json` for the `settingsPath` key.
+    Matches what is defined in `/config/settings.schema.json` for the `settingsPath` key.
     """
 
     resourceName: str
@@ -27,10 +27,9 @@ class Arguments(TypedDict):
 class Config(TypedDict, total=False):
     """Configuration accepted by the Dotfiles.
 
-    Matches what is defined in `/settings.schema.json`.
+    Matches what is defined in `/config/settings.schema.json`.
     """
 
-    quickAccessFolders: List[str]
     settingsPaths: List[ApplicationSettingsMapping]
     vscodeExtensions: List[str]
 

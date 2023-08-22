@@ -2,7 +2,7 @@
 	"folders": [
 		{
 			"name": "Ubuntu dotfiles",
-			"path": "../ubuntu"
+			"path": "../src/ubuntu"
 		}
 	],
 	"extensions": {
@@ -19,12 +19,6 @@
 		// General
 
 		"files.eol": "\n",
-		"json.schemas": [
-			{
-				"fileMatch": ["settings.json"],
-				"url": "../settings.schema.json"
-			}
-		],
 		"search.exclude": {
 			"**/.__pycache__": true,
 			"**/.mypy_cache": true,

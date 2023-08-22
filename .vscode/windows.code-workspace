@@ -2,19 +2,13 @@
 	"folders": [
 		{
 			"name": "Windows dotfiles",
-			"path": "../windows"
+			"path": "../src/windows"
 		}
 	],
 	"extensions": {
 		"recommendations": ["ms-vscode.powershell"]
 	},
 	"settings": {
-		"files.eol": "\n",
-		"json.schemas": [
-			{
-				"fileMatch": ["settings.json"],
-				"url": "../settings.schema.json"
-			}
-		]
+		"files.eol": "\n"
 	}
 }

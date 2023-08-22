@@ -2,27 +2,20 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"title": "Dotfiles configuration",
 	"type": "object",
-	"properties": {
-		"quickAccessFolders": {
-			"type": "array",
-			"description": "Contains a list of folders to create and add to the quick access section of the file explorer.",
-			"items": {
-				"type": "string"
-			}
-		},
+	"$defs": {
 		"settingsPaths": {
 			"type": "array",
 			"description": "Contains a list of application settings mappings.",
 			"items": {
 				"type": "object",
-				"description": "Defines a source-destination mapping of a resource located in the `app-settings` folder.",
+				"description": "Defines a source-destination mapping of a resource located in the `/config/ubuntu` or `/config/windows` folder (as appropriate).",
 				"properties": {
 					"resourceName": {
 						"description": "The name of the file or directory.",
 						"type": "string"
 					},
 					"destination": {
-						"description": "The destination path. It must be an absolute path.",
+						"description": "The destination path, it must be an absolute path.",
 						"type": "string"
 					},
 					"completionCommands": {
@@ -41,6 +34,7 @@
 						"type": "string"
 					}
 				},
+				"additionalProperties": false,
 				"required": ["resourceName", "destination"]
 			}
 		},
@@ -51,5 +45,33 @@
 				"type": "string"
 			}
 		}
-	}
+	},
+	"properties": {
+		"ubuntu": {
+			"type": "object",
+			"description": "Ubuntu configuration.",
+			"properties": {
+				"settingsPaths": { "$ref": "#/$defs/settingsPaths" },
+				"vscodeExtensions": { "$ref": "#/$defs/vscodeExtensions" }
+			},
+			"additionalProperties": false
+		},
+		"windows": {
+			"type": "object",
+			"description": "Windows configuration.",
+			"properties": {
+				"quickAccessFolders": {
+					"type": "array",
+					"description": "Contains a list of folders to create and add to the quick access section of the file explorer.",
+					"items": {
+						"type": "string"
+					}
+				},
+				"settingsPaths": { "$ref": "#/$defs/settingsPaths" },
+				"vscodeExtensions": { "$ref": "#/$defs/vscodeExtensions" }
+			},
+			"additionalProperties": false
+		}
+	},
+	"additionalProperties": false
 }

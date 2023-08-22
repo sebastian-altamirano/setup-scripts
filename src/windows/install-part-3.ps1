@@ -9,8 +9,8 @@ Start-DotfilesLogging $LogFilePath
 
 Unregister-DotfilesScriptExecution -TaskPath Dotfiles -TaskName ResumeInstalation
 
-$configPath = ".\config"
-$config = Get-Content "settings.json" | ConvertFrom-Json
+$configPath = "..\..\config\windows"
+$config = (Get-Content "..\..\config\settings.json" | ConvertFrom-Json).windows
 
 Write-Host "Installing winget packages."
 winget import --accept-package-agreements --accept-source-agreements "$configPath\winget-packages.json"
@@ -35,7 +35,7 @@ reg import "$configPath\windows-settings.reg"
 
 Write-Host "Importing application settings."
 Foreach ($resourceMapping in $config.settingsPaths) {
-	$path = Join-Path ".\app-settings" $resourceMapping.resourceName
+	$path = Join-Path $configPath $resourceMapping.resourceName
 	$destination = $ExecutionContext.InvokeCommand.ExpandString($resourceMapping.destination)
 	Copy-DotfilesResource -Path $path -Destination $destination
 

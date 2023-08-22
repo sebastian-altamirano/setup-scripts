@@ -113,7 +113,7 @@ def copyApplicationSettings(settingsMappings: List[ApplicationSettingsMapping]) 
             continue
         createDirectories(settingsMapping["destination"], exist_ok=True)
         copyFile(
-            src=getAbsolutePath(f"app-settings/{settingsMapping['resourceName']}"),
+            src=getAbsolutePath(f"../../../config/ubuntu/{settingsMapping['resourceName']}"),
             dst=settingsMapping["destination"],
         )
 

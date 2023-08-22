@@ -16,7 +16,7 @@ Once the installation is complete, create a user and password for Ubuntu, copy t
 
 ## Windows installation script
 
-Run `windows/install.ps1` as administrator on a clean Windows installation. The computer will reboot a few times during the process. When finished, a series of post-installation steps will be printed out for you to follow.
+Run `/src/windows/install.ps1` as administrator on a clean Windows installation. The computer will reboot a few times during the process. When finished, a series of post-installation steps will be printed out for you to follow.
 
 A log of the process can be found in the `dotfiles-install.log` file inside `My Documents`.
 
@@ -26,25 +26,25 @@ You must enable "virtualization" in the BIOS in order to enable Hyper-V, which i
 
 ### Tasks performed
 
-#### `windows/install.ps1`
+#### `/src/windows/install.ps1`
 
 1. Install the latest version of PowerShell.
-2. Run `windows/install-part-1.ps1` using the latest version of PowerShell.
+2. Run `/src/windows/install-part-1.ps1` using the latest version of PowerShell.
 
-#### `windows/install-part-1.ps1`
+#### `/src/windows/install-part-1.ps1`
 
 1. [Install the Dotfiles's module for PowerShell](https://github.com/sebastian-altamirano/dotfiles/tree/main/windows/Dotfiles). It contains a few utility functions that will be used throughout the installation process.
 2. Enable Hyper-V.
-3. Create a scheduled task to run `windows/install-part-2.ps1` the next time the computer is turned on.
+3. Create a scheduled task to run `/src/windows/install-part-2.ps1` the next time the computer is turned on.
 4. Restart the computer.
 
-#### `windows/install-part-2.ps1`
+#### `/src/windows/install-part-2.ps1`
 
 1. Install Ubuntu on WSL2.
-2. Create a scheduled task to run `windows/install-part-3.ps1` the next time the computer is turned on.
+2. Create a scheduled task to run `/src/windows/install-part-3.ps1` the next time the computer is turned on.
 3. Restart the computer.
 
-#### `windows/3-install-apps-and-settings.ps1`
+#### `/src/windows/install-part-3.ps1`
 
 1. Install applications using winget.
 2. Install VSCode extensions.
@@ -61,11 +61,11 @@ This script is intended to be run inside WSL.
 
 ### Requirements
 
-You must fill in the empty fields of `ubuntu/app-settings/.gitconfig`.
+You must fill in the empty fields of `/config/ubuntu/.gitconfig`.
 
 ### Tasks performed
 
-### `ubuntu/install.sh`
+### `/src/ubuntu/install.sh`
 
 1. Update system dependencies.
 2. Install fish.
@@ -79,18 +79,4 @@ You must fill in the empty fields of `ubuntu/app-settings/.gitconfig`.
 
 ## Customization
 
-In both `/windows` and `/ubuntu` we can find the `settings.json` file and the `/config` and `/app-settings` directories.
-
-### `settings.json`
-
-It is a configuration file allows us to customize some tasks performed during the installation process without the need to modify the scripts.
-
-### `/app-settings`
-
-Some applications store their settings inside one or many configuration files. The purpose of this folder is to store these settings so that they can be copied to their destination path during the installation process.
-
-The `settingsPaths` property, located within the aforementioned `settings.json` file, contains a list of objects that store the source resource name and destination path of these settings. On Windows the destination path may include PowerShell environment variables, such as `$env:AppData`.
-
-### `/config`
-
-It contains configuration files that are used during the installation process and have no use once the installation is complete.
+You can use `/config/settings.json` to customize some tasks performed during the installation process without the need to modify the scripts, see `/config/settings.schema.json` for more information.

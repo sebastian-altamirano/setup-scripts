@@ -53,7 +53,9 @@ class CopyApplicationSettingsTests(TestCase):
             [
                 call.mockIsAbsolutePath(settingsMapping["destination"]),
                 call.mockCreateDirectories(settingsMapping["destination"], exist_ok=True),
-                call.mockGetAbsolutePath(f"app-settings/{settingsMapping['resourceName']}"),
+                call.mockGetAbsolutePath(
+                    f"../../../config/ubuntu/{settingsMapping['resourceName']}"
+                ),
                 call.mockCopyFile(
                     src=mockGetAbsolutePath.return_value, dst=settingsMapping["destination"]
                 ),

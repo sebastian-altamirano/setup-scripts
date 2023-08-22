@@ -1,7 +1,7 @@
 """Installation script for Ubuntu dotfiles."""
 
 from json import loads as readJson
-from typing import List
+from typing import List, get_type_hints
 
 from dotfiles.helpers.utils import logCompletionMessage, warnAboutUnsupportedOrUnrecognizedConfig
 from dotfiles.installation_steps import (
@@ -12,12 +12,6 @@ from dotfiles.installation_steps import (
     upgradeSystemDependencies,
 )
 from dotfiles.type_definitions import Config
-
-SUPPORTED_CONFIGURATION_KEYS = [
-    "settingsPaths",
-    "vscodeExtensions"
-    # `quickAccessFolders` is not supported because this program is intended to be run inside WSL.
-]
 
 
 def install() -> None:
@@ -34,8 +28,9 @@ def install() -> None:
     config: Config = readJson("settings.json")
 
     # Issue the warning before starting to do any work.
+    supportedConfigurationKeys = get_type_hints(Config).keys()
     for key in config:
-        if key not in SUPPORTED_CONFIGURATION_KEYS:
+        if key not in supportedConfigurationKeys:
             warnAboutUnsupportedOrUnrecognizedConfig(key)
 
     if "vscodeExtensions" in config:

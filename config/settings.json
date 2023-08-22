@@ -1,0 +1,58 @@
+{
+	"ubuntu": {
+		"settingsPaths": [
+			{
+				"resourceName": "fish",
+				"destination": "~/.config/fish"
+			},
+			{
+				"resourceName": ".gitconfig",
+				"destination": "~/.gitconfig"
+			},
+			{
+				"resourceName": "gpg-agent.conf",
+				"destination": "~/.gnupg/gpg-agent.conf",
+				"completionCommands": [["gpg-connect-agent", "reloadagent", "/bye"]]
+			},
+			{
+				"resourceName": "ssh-config",
+				"destination": "~/.ssh/config"
+			}
+		],
+		"vscodeExtensions": [
+			"dbaeumer.vscode-eslint",
+			"eamodio.gitlens",
+			"esbenp.prettier-vscode",
+			"formulahendry.code-runner",
+			"stylelint.vscode-stylelint"
+		]
+	},
+	"windows": {
+		"quickAccessFolders": ["Github", "Notas", "Playground"],
+		"settingsPaths": [
+			{
+				"resourceName": "csgo-autoexec.cfg",
+				"destination": "${env:ProgramFiles(x86)}\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg\\autoexec.cfg",
+				"postInstallationInstructions": "Configure the CSGO launch options in Steam to use the autoexec (see the first comment in the CFG)."
+			},
+			{
+				"resourceName": "vscode-settings.jsonc",
+				"destination": "$env:AppData\\Code\\User\\settings.json"
+			},
+			{
+				"resourceName": "vscode-keybindings.jsonc",
+				"destination": "$env:AppData\\Code\\User\\keybindings.json"
+			},
+			{
+				"resourceName": "windows-terminal.json",
+				"destination": "$env:LocalAppData\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
+			}
+		],
+		"vscodeExtensions": [
+			"github.github-vscode-theme",
+			"jgclark.vscode-todo-highlight",
+			"ms-vscode.Theme-TomorrowKit",
+			"ms-vscode-remote.remote-wsl"
+		]
+	}
+}
