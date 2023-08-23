@@ -55,21 +55,28 @@ class InstallTests(TestCase):
         _mockUpgradeSystemDependencies: Mock,
         _mockInstallFish: Mock,
     ) -> None:
+        configurationPostInstalationInstructions = (
+            "Post-installation instructions related to configuration restoration..."
+        )
         configuration: Config = {
+            "postInstallationInstructions": ["General post-installation instructions..."],
             "settingsPaths": [
                 {
                     "resourceName": "fish",
                     "destination": "~/.config/fish",
-                    "completionCommands": [["echo", "Hello"], ["echo", "Bye"]],
+                    "postInstallationInstructions": configurationPostInstalationInstructions,
                 }
-            ]
+            ],
         }
         mockReadJson.return_value = configuration
-        mockInstallPackages.return_value = ["Post installation instructions..."]
-        mockCopyApplicationSettings.return_value = ["More post installation instructions..."]
+        mockInstallPackages.return_value = [
+            "Post-installation instructions related to package installation..."
+        ]
+        mockCopyApplicationSettings.return_value = [configurationPostInstalationInstructions]
         expectedPostInstallationInstructions = [
             *mockInstallPackages.return_value,
             *mockCopyApplicationSettings.return_value,
+            *configuration["postInstallationInstructions"],
         ]
 
         install()

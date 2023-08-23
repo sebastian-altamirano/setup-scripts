@@ -30,6 +30,7 @@ class Config(TypedDict, total=False):
     Matches what is defined in `/config/settings.schema.json`.
     """
 
+    postInstallationInstructions: List[str]
     settingsPaths: List[ApplicationSettingsMapping]
     vscodeExtensions: List[str]
 

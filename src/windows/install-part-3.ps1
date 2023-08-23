@@ -55,11 +55,13 @@ Expand-Archive $fontsZip -DestinationPath "fonts"
 Write-Host -BackgroundColor Green -ForegroundColor Black "Finished!"
 Write-Host "Now there are some manual steps you need to perform:"
 Write-Host "- Install the fonts that have been downloaded to $fontsZipPath."
-Write-Host "- Change the screen refresh rate to the maximum available value."
 Foreach ($resourceMapping in $config.settingsPaths) {
 	if ($resourceMapping.postInstallationInstructions) {
 		Write-Host "- $($resourceMapping.postInstallationInstructions)"
 	}
+}
+Foreach ($instruction in $config.postInstallationInstructions) {
+	Write-Host "- $($instruction)"
 }
 
 Stop-DotfilesLogging

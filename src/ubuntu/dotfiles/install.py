@@ -37,5 +37,7 @@ def install() -> None:
         installVSCodeExtensions(config["vscodeExtensions"])
     if "settingsPaths" in config:
         postInstallationInstructions += copyApplicationSettings(config["settingsPaths"])
+    if "postInstallationInstructions" in config:
+        postInstallationInstructions += config["postInstallationInstructions"]
 
     logCompletionMessage(postInstallationInstructions)

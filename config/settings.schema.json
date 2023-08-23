@@ -3,6 +3,13 @@
 	"title": "Dotfiles configuration",
 	"type": "object",
 	"$defs": {
+		"postInstallationInstructions": {
+			"description": "Instructions to be displayed at the end of the installation process. Use it to explain the remaining tasks that cannot be automated.",
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
 		"settingsPaths": {
 			"type": "array",
 			"description": "Contains a list of application settings mappings.",
@@ -30,7 +37,7 @@
 						}
 					},
 					"postInstallationInstructions": {
-						"description": "Post-installation instructions to be displayed at the end of the installation process.",
+						"description": "Instructions to be displayed at the end of the installation process. Use it to explain the remaining tasks that cannot be automated.",
 						"type": "string"
 					}
 				},
@@ -51,6 +58,7 @@
 			"type": "object",
 			"description": "Ubuntu configuration.",
 			"properties": {
+				"postInstallationInstructions": { "$ref": "#/$defs/postInstallationInstructions" },
 				"settingsPaths": { "$ref": "#/$defs/settingsPaths" },
 				"vscodeExtensions": { "$ref": "#/$defs/vscodeExtensions" }
 			},
@@ -60,6 +68,7 @@
 			"type": "object",
 			"description": "Windows configuration.",
 			"properties": {
+				"postInstallationInstructions": { "$ref": "#/$defs/postInstallationInstructions" },
 				"quickAccessFolders": {
 					"type": "array",
 					"description": "Contains a list of folders to create and add to the quick access section of the file explorer.",

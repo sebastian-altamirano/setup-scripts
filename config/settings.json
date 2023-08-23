@@ -28,6 +28,9 @@
 		]
 	},
 	"windows": {
+		"postInstallationInstructions": [
+			"Change the screen refresh rate to the maximum available value."
+		],
 		"quickAccessFolders": ["Github", "Notas", "Playground"],
 		"settingsPaths": [
 			{
