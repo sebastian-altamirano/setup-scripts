@@ -30,9 +30,6 @@ Foreach ($folderName in $config.quickAccessFolders) {
 	$quickAccess.Namespace($folderPath).Self.InvokeVerb("pintohome")
 }
 
-Write-Host "Importing Windows settings."
-reg import "$configPath\windows-settings.reg"
-
 Write-Host "Importing application settings."
 Foreach ($resourceMapping in $config.settingsPaths) {
 	$path = Join-Path $configPath $resourceMapping.resourceName

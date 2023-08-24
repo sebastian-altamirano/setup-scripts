@@ -29,6 +29,10 @@
 	},
 	"windows": {
 		"postInstallationInstructions": [
+			"Enable 'File name extensions' and 'Hidden items' in the File Explorer options.",
+			"Disable mouse acceleration.",
+			"Change the mouse pointer scheme and/or size",
+			"Increase the text size and/or display scale.",
 			"Change the screen refresh rate to the maximum available value."
 		],
 		"quickAccessFolders": ["Github", "Notas", "Playground"],
