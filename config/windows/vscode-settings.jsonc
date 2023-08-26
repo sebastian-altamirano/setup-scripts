@@ -19,6 +19,8 @@
 	"editor.rulers": [80, 100],
 	"editor.stickyScroll.enabled": true,
 	"editor.tabSize": 2,
+	"editor.wordWrap": "off",
+	"editor.wordWrapColumn": 100,
 
 	"files.eol": "\n",
 
@@ -42,7 +44,7 @@
 		"**/venv": true,
 		"**/yarn.lock": true
 	},
-	"search.searchOnType": false,
+	"search.searchOnTypeDebouncePeriod": 500,
 
 	"window.autoDetectColorScheme": true,
 	"window.zoomLevel": 1,
@@ -65,6 +67,18 @@
 	"terminal.external.windowsExec": "wt",
 
 	// --------------------------------- LANGUAGE-SPECIFIC SETTINGS ----------------------------------
+
+	"[json]": {
+		"editor.wordWrap": "bounded"
+	},
+
+	"[jsonc]": {
+		"editor.wordWrap": "bounded"
+	},
+
+	"[markdown]": {
+		"editor.wordWrap": "bounded"
+	},
 
 	"css.validate": false,
 
@@ -125,10 +139,14 @@
 		"**/*.css",
 		"**/*.html",
 		"**/*.js",
+		"**/*.json",
 		"**/*.jsonc",
+		"**/*.md",
 		"**/*.py",
 		"**/*.scss",
 		"**/*.ts",
-		"**/*.tsx"
+		"**/*.tsx",
+		"**/*.yaml",
+		"**/*.yml"
 	]
 }
