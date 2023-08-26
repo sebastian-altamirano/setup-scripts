@@ -29,6 +29,7 @@
 	},
 	"windows": {
 		"postInstallationInstructions": [
+			"Copy the snippets from `/src/browser-snippets` into the browser where you want to use them.",
 			"Enable 'File name extensions' and 'Hidden items' in the File Explorer options.",
 			"Disable mouse acceleration.",
 			"Change the mouse pointer scheme and/or size",
