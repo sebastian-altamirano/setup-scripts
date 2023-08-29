@@ -14,7 +14,7 @@ wsl --install -d Ubuntu
 
 Register-DotfilesScriptExecution `
 	-Path "install-part-3.ps1" `
-	-ScriptArgs $LogFilePath
+	-ScriptArgs $LogFilePath `
 	-TaskPath Dotfiles `
 	-TaskName ResumeInstallation `
 	-RunLevel Highest

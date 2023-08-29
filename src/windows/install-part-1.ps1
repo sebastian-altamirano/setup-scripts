@@ -16,7 +16,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 
 Register-DotfilesScriptExecution `
 	-Path "install-part-2.ps1" `
-	-ScriptArgs $LogFilePath
+	-ScriptArgs $LogFilePath `
 	-TaskPath Dotfiles `
 	-TaskName ResumeInstallation `
 	-RunLevel Highest
