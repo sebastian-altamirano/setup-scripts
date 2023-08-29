@@ -1,7 +1,7 @@
 #Requires -RunAsAdministrator
 
 param (
-	[string] $LogFilePath = "$env:UserProfile\Documents\dotfiles-install.log"
+	[string] $LogFilePath = "$env:UserProfile\Documents\dotfiles_install-$(Get-Date -Format 'yyyy_MM_dd-HH_mm_ss').log"
 )
 
 Import-Module ".\Dotfiles"
