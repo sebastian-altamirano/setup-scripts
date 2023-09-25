@@ -8,6 +8,8 @@ These scripts are responsible for configuring the environment and installing and
 
 While all configurations are personal, the [customization section](#customization) explains some parameters that can be customized.
 
+Since dotfiles are usually used after performing a clean OS installation, I have added documentation in `/docs` on [how to perform the installation](/docs/clean-os-install.md) and also [some things to keep in mind when assembling a computer](/docs/performance-tips.md), for when the installation is due to a hardware upgrade.
+
 ## Instructions
 
 On a clean Windows installation, clone the repository and follow the instructions in the [Windows installation script section](#windows-installation-script). This will, among other things, install Ubuntu on WSL.
