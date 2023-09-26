@@ -1,9 +1,14 @@
 [alias]
+	aliases = config --get-regexp alias
 	amend = commit --amend --date=now --no-edit
 	br = branch
+	brd = branch -D
 	ci = commit
+	cim = commit -m
 	co = checkout
+	cob = checkout -b
 	cp = cherry-pick
+	l = log
 	pl = pull
 	ps = push
 	st = status
