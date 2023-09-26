@@ -22,6 +22,9 @@
 [init]
 	defaultBranch = main
 
+[pull]
+	ff = true
+
 [push]
 	default = current
 
