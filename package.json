@@ -4,6 +4,9 @@
 	"author": "Sebastián Altamirano",
 	"license": "MIT",
 	"type": "module",
+	"engines": {
+		"node": ">=18"
+	},
 	"devDependencies": {
 		"@eslint/js": "^8.52.0",
 		"@tsconfig/strictest": "^2.0.2",
