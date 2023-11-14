@@ -1,0 +1,32 @@
+{
+	"name": "dotfiles",
+	"version": "1.0.0",
+	"author": "Sebastián Altamirano",
+	"license": "MIT",
+	"type": "module",
+	"devDependencies": {
+		"@eslint/js": "^8.52.0",
+		"@tsconfig/strictest": "^2.0.2",
+		"@types/eslint": "^8.44.6",
+		"@types/eslint__js": "^8.42.2",
+		"@types/lint-staged": "^13.2.1",
+		"eslint": "^8.52.0",
+		"husky": "^8.0.3",
+		"lint-staged": "^15.0.2",
+		"prettier": "^3.0.3",
+		"typescript": "^5.2.2"
+	},
+	"scripts": {
+		"prepare": "husky install",
+		"format": "npm run format:linux && npm run format:prettier && npm run format:windows",
+		"format:linux": "pdm run -p src/ubuntu format",
+		"format:prettier": "prettier --write --ignore-unknown .",
+		"format:windows": "pwsh scripts/format-powershell.ps1 -Path src/windows -SettingsPath src/windows/formatter-settings.psd1",
+		"lint": "npm run lint:browser-snippets && npm run lint:linux && npm run lint:windows",
+		"lint:browser-snippets": "eslint src/browser-snippets --ext .mjs",
+		"lint:linux": "pdm run -p src/ubuntu lint",
+		"lint:windows": "pwsh scripts/lint-powershell.ps1 -Path src/windows -SettingsPath src/windows/linter-settings.psd1",
+		"test": "npm run test:linux",
+		"test:linux": "pdm run -p src/ubuntu test"
+	}
+}

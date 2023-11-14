@@ -1,4 +1,10 @@
 {
+	"editor.insertSpaces": false,
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+
+	"eslint.experimental.useFlatConfig": true,
 	"[javascript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.formatOnSave": true
@@ -22,5 +28,18 @@
 	"[markdown]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.formatOnSave": true
-	}
+	},
+
+	"[powershell]": {
+		"editor.defaultFormatter": "ms-vscode.powershell",
+		"editor.formatOnSave": true
+	},
+	// The PowerShell extension does not allow specifying formatting settings using a file
+	// (https://github.com/PowerShell/vscode-powershell/issues/3024#issuecomment-1479559149), so it is
+	// not possible to use `src/windows/formatter-settings.psd1`, however this file contains the same
+	// settings as "OTBS", but using tabs instead of spaces (tabs that VSCode inserts since
+	// `editor.insertSpaces` is set to `false`).
+	"powershell.codeFormatting.preset": "OTBS",
+	"powershell.scriptAnalysis.enable": true,
+	"powershell.scriptAnalysis.settingsPath": "src/windows/linter-settings.psd1"
 }

@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx lint-staged
+
+# Workaround for https://github.com/microsoft/TypeScript/issues/27379
+# (`tsc` cannot be used with lint-staged).
+if test -n "$(git diff --name-only --cached -- '*.mjs')"; then
+	npx tsc
+fi

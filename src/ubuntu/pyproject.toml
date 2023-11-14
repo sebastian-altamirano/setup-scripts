@@ -43,8 +43,15 @@ format = [
 ]
 
 [tool.pdm.scripts]
+format = {composite = ["black dotfiles", "isort dotfiles"]}
 lint = {composite = ["mypy dotfiles", "pylint dotfiles"]}
 test = "python -m unittest discover dotfiles -v -p '*_test.py'"
+# These shortcuts may seem useless, but they are necessary to be able to run the tools with
+# lint-staged and have them use the configuration specified in `pyproject.toml`.
+black = "black"
+isort = "isort"
+pylint = "pylint"
+unittest = "python -m unittest"
 
 [tool.pdm.version]
 source = "file"

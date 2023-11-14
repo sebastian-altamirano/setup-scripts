@@ -23,7 +23,7 @@ cover/
 .dmypy.json
 dmypy.json
 
-# Environments
+# Python
 __pypackages__/
 .venv/
 venv/
@@ -31,3 +31,6 @@ venv/
 # PDM
 .pdm-python
 .pdm.toml
+
+# Node.js
+node_modules/
