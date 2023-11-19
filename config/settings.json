@@ -16,11 +16,13 @@
 			}
 		],
 		"vscodeExtensions": [
+			"Codeium.codeium",
 			"dbaeumer.vscode-eslint",
 			"eamodio.gitlens",
 			"esbenp.prettier-vscode",
 			"formulahendry.code-runner",
-			"stylelint.vscode-stylelint"
+			"stylelint.vscode-stylelint",
+			"yoavbls.pretty-ts-errors"
 		]
 	},
 	"windows": {

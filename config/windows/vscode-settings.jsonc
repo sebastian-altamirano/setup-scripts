@@ -7,7 +7,6 @@
 		"source.organizeImports": true
 	},
 	"editor.codeLens": true,
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.fontFamily": "JetBrains Mono",
 	"editor.fontLigatures": true,
 	"editor.fontSize": 16,
@@ -23,23 +22,29 @@
 	"editor.wordWrapColumn": 100,
 
 	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
 
 	"git.enableCommitSigning": true,
 
 	"scm.repositories.sortOrder": "name",
 
 	"search.exclude": {
-		"**/.__pycache__": true,
+		"**/*.map": true,
+		"**/*.min.*": true,
 		"**/.git": true,
 		"**/.husky": true,
 		"**/.mypy_cache": true,
 		"**/.nyc_output": true,
 		"**/.venv": true,
 		"**/.vscode": true,
+		"**/__pycache__": true,
+		"**/build": true,
 		"**/coverage": true,
 		"**/dist": true,
 		"**/node_modules": true,
 		"**/package-lock.json": true,
+		"**/pdm.lock": true,
 		"**/pnpm-lock.yaml": true,
 		"**/venv": true,
 		"**/yarn.lock": true
@@ -47,7 +52,8 @@
 	"search.searchOnTypeDebouncePeriod": 500,
 
 	"window.autoDetectColorScheme": true,
-	"window.zoomLevel": 1,
+	"window.titleBarStyle": "custom",
+	"window.zoomLevel": 1.5,
 
 	"workbench.colorTheme": "Tomorrow Night Eighties",
 	"workbench.editor.pinnedTabSizing": "compact",
@@ -61,23 +67,39 @@
 	// Linux
 	"editor.selectionClipboard": false,
 
-	"window.titleBarStyle": "custom",
-
 	// Windows
 	"terminal.external.windowsExec": "wt",
 
 	// --------------------------------- LANGUAGE-SPECIFIC SETTINGS ----------------------------------
 
-	"[json]": {
-		"editor.wordWrap": "bounded"
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 
-	"[jsonc]": {
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.wordWrap": "bounded"
 	},
 
 	"[markdown]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.wordWrap": "bounded"
+	},
+
+	"[powershell]": {
+		"editor.defaultFormatter": "ms-vscode.powershell"
+	},
+
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 
 	"css.validate": false,
@@ -118,34 +140,45 @@
 
 	// TODO Highlight
 	"todohighlight.exclude": [
-		"**/*.min.*",
 		"**/*.map",
-		"**/.__pycache__/**",
+		"**/*.min.*",
 		"**/.git/**",
 		"**/.husky/**",
 		"**/.mypy_cache/**",
 		"**/.nyc_output/**",
 		"**/.venv/**",
 		"**/.vscode/**",
+		"**/__pycache__/**",
+		"**/build/**",
 		"**/coverage/**",
 		"**/dist/**",
 		"**/node_modules/**",
-		"**/package-lock.json/**",
-		"**/pnpm-lock.yaml/**",
+		"**/package-lock.json",
+		"**/pdm.lock",
+		"**/pnpm-lock.yaml",
 		"**/venv/**",
-		"**/yarn.lock/**"
+		"**/yarn.lock"
 	],
 	"todohighlight.include": [
+		"**/*.cjs",
 		"**/*.css",
 		"**/*.html",
 		"**/*.js",
 		"**/*.json",
 		"**/*.jsonc",
+		"**/*.jsx",
 		"**/*.md",
+		"**/*.mdx",
+		"**/*.mjs",
+		"**/*.ps1",
+		"**/*.psd1",
+		"**/*.psm1",
 		"**/*.py",
 		"**/*.scss",
+		"**/*.toml",
 		"**/*.ts",
 		"**/*.tsx",
+		"**/*.txt",
 		"**/*.yaml",
 		"**/*.yml"
 	]
