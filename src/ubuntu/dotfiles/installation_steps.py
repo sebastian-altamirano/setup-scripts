@@ -14,6 +14,21 @@ from dotfiles.type_definitions import ApplicationSettingsMapping
 runWithoutLogging = run
 
 
+def configureGit(userName: str, email: str) -> None:
+    """Configures Git."""
+    # Copy the base `.gitconfig` if it exists.
+    try:
+        copyConfiguration(".gitconfig", "~/.gitconfig")
+    except FileNotFoundError:
+        logInfo(
+            "Could not find a base `.gitconfig` file, proceeding with the rest of the "
+            "configurations."
+        )
+
+    runWithFish("git", "config", "--global", "user.name", userName)
+    runWithFish("git", "config", "--global", "user.email", email)
+
+
 @installationStep
 def installFish() -> None:
     """Installs fish and changes the default shell to it."""

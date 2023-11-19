@@ -5,6 +5,7 @@ from typing import List, get_type_hints
 
 from dotfiles.helpers.utils import logCompletionMessage, warnAboutUnsupportedOrUnrecognizedConfig
 from dotfiles.installation_steps import (
+    configureGit,
     copyApplicationSettings,
     installFish,
     installPackages,
@@ -37,7 +38,12 @@ def install() -> None:
         installVSCodeExtensions(config["vscodeExtensions"])
     if "settingsPaths" in config:
         postInstallationInstructions += copyApplicationSettings(config["settingsPaths"])
+
+    # This step must be executed after `copyApplicationSettings` in order not to lose the changes
+    # in case the user adds `.gitconfig` to `settingsPaths`.
+    if "gitConfiguration" in config:
+        configureGit(**config["gitConfiguration"])
+
     if "postInstallationInstructions" in config:
         postInstallationInstructions += config["postInstallationInstructions"]
-
     logCompletionMessage(postInstallationInstructions)

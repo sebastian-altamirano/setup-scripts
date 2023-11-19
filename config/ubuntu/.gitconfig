@@ -31,6 +31,4 @@
 # Complete the following fields before executing the installation script:
 
 [user]
-	name = 
-	email = 
-	signingkey = 
+	signingkey =

@@ -3,6 +3,12 @@
 from typing import List, TypedDict, TypeVar
 
 
+class Arguments(TypedDict):
+    """Arguments accepted by the installation script."""
+
+    logFilePath: str
+
+
 class _ApplicationSettingsMapping(TypedDict, total=False):
     completionCommands: List[List[str]]
     postInstallationInstructions: str
@@ -18,10 +24,14 @@ class ApplicationSettingsMapping(_ApplicationSettingsMapping):
     destination: str
 
 
-class Arguments(TypedDict):
-    """Arguments accepted by the installation script."""
+class GitConfiguration(TypedDict):
+    """Configuration accepted by the Dotfiles to configure Git.
 
-    logFilePath: str
+    Matches what is defined in `/config/settings.schema.json` for the `gitConfiguration` key.
+    """
+
+    email: str
+    userName: str
 
 
 class Config(TypedDict, total=False):
@@ -30,6 +40,7 @@ class Config(TypedDict, total=False):
     Matches what is defined in `/config/settings.schema.json`.
     """
 
+    gitConfiguration: GitConfiguration
     postInstallationInstructions: List[str]
     settingsPaths: List[ApplicationSettingsMapping]
     vscodeExtensions: List[str]

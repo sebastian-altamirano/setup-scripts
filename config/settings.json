@@ -6,10 +6,6 @@
 				"destination": "~/.config/fish"
 			},
 			{
-				"resourceName": ".gitconfig",
-				"destination": "~/.gitconfig"
-			},
-			{
 				"resourceName": "gpg-agent.conf",
 				"destination": "~/.gnupg/gpg-agent.conf",
 				"completionCommands": [["gpg-connect-agent", "reloadagent", "/bye"]]

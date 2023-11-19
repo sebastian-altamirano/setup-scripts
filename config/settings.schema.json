@@ -58,6 +58,22 @@
 			"type": "object",
 			"description": "Ubuntu configuration.",
 			"properties": {
+				"gitConfiguration": {
+					"description": "Git configuration. If a `.gitconfig` file exists in `/config/ubuntu`, it will be used as the base configuration and the changes described in this object will be applied to it; if any configuration collides, the configuration defined in this object will prevail.",
+					"properties": {
+						"email": {
+							"description": "The email to show in the commits, e.g. 'johndoe@example.com'.",
+							"format": "email",
+							"type": "string"
+						},
+						"userName": {
+							"description": "The name to show in the commits, e.g. 'John Doe'.",
+							"type": "string"
+						}
+					},
+					"required": ["email", "userName"],
+					"type": "object"
+				},
 				"postInstallationInstructions": { "$ref": "#/$defs/postInstallationInstructions" },
 				"settingsPaths": { "$ref": "#/$defs/settingsPaths" },
 				"vscodeExtensions": { "$ref": "#/$defs/vscodeExtensions" }
