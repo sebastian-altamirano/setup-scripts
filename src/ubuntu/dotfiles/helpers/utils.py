@@ -3,12 +3,41 @@
 from functools import wraps
 from logging import exception as logException
 from logging import info as logInfo
+from os import makedirs as createDirectories
+from os.path import abspath as getAbsolutePath
+from os.path import exists as pathExists
+from os.path import isdir as isDirectory
+from shutil import copy2 as copyFile
+from shutil import copytree as copyDirectory
 from subprocess import run
 from typing import Any, Callable, List, Optional
 from warnings import warn
 
 from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.type_definitions import InstallationStepReturnValueT
+
+
+def copyConfiguration(resourceName: str, destinationPath: str) -> None:
+    """Copies a configuration resource to the specified destination.
+
+    Args:
+        resourceName: A resource (a file or a directory) located in the `/config/ubuntu` folder.
+        destinationPath: A relative or absolute path where to copy the resource.
+
+    Raises:
+        FileNotFoundError: If the resource does not exist.
+    """
+    absoluteSourcePath = getAbsolutePath(f"../../../../config/ubuntu/{resourceName}")
+    absoluteDestinationPath = getAbsolutePath(destinationPath)
+
+    if not pathExists(absoluteSourcePath):
+        raise FileNotFoundError()
+
+    if isDirectory(absoluteSourcePath):
+        copyDirectory(src=absoluteSourcePath, dst=absoluteDestinationPath, dirs_exist_ok=True)
+    else:
+        createDirectories(absoluteDestinationPath, exist_ok=True)
+        copyFile(src=absoluteSourcePath, dst=absoluteDestinationPath)
 
 
 def logCompletionMessage(postInstallationInstructions: Optional[List[str]] = None) -> None:

@@ -22,7 +22,7 @@
 						"type": "string"
 					},
 					"destination": {
-						"description": "The destination path, it must be an absolute path.",
+						"description": "The destination path, it can be an absolute or relative path, although it is recommended to use an absolute path to avoid copying resources to unwanted locations.",
 						"type": "string"
 					},
 					"completionCommands": {

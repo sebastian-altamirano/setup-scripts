@@ -22,26 +22,15 @@ from dotfiles.type_definitions import ApplicationSettingsMapping
 
 
 @patch("dotfiles.installation_steps.runWithSh")
-@patch("dotfiles.installation_steps.copyFile")
-@patch("dotfiles.installation_steps.getAbsolutePath")
-@patch("dotfiles.installation_steps.createDirectories")
-@patch("dotfiles.installation_steps.isAbsolutePath", return_value=True)
+@patch("dotfiles.installation_steps.copyConfiguration")
 class CopyApplicationSettingsTests(TestCase):
     """Contains tests for the `copyApplicationSettings` function."""
 
     def testIfResourceIsCopied(
         self,
-        mockIsAbsolutePath: Mock,
-        mockCreateDirectories: Mock,
-        mockGetAbsolutePath: Mock,
-        mockCopyFile: Mock,
+        mockCopyConfiguration: Mock,
         _mockRunWithSh: Mock,
     ) -> None:
-        mocksManager = Mock()
-        mocksManager.attach_mock(mockIsAbsolutePath, "mockIsAbsolutePath")
-        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
-        mocksManager.attach_mock(mockGetAbsolutePath, "mockGetAbsolutePath")
-        mocksManager.attach_mock(mockCopyFile, "mockCopyFile")
         settingsMapping: ApplicationSettingsMapping = {
             "resourceName": "fish",
             "destination": "~/.config/fish",
@@ -49,26 +38,13 @@ class CopyApplicationSettingsTests(TestCase):
 
         copyApplicationSettings([settingsMapping])
 
-        self.assertEqual(
-            [
-                call.mockIsAbsolutePath(settingsMapping["destination"]),
-                call.mockCreateDirectories(settingsMapping["destination"], exist_ok=True),
-                call.mockGetAbsolutePath(
-                    f"../../../config/ubuntu/{settingsMapping['resourceName']}"
-                ),
-                call.mockCopyFile(
-                    src=mockGetAbsolutePath.return_value, dst=settingsMapping["destination"]
-                ),
-            ],
-            mocksManager.mock_calls,
+        mockCopyConfiguration.assert_called_once_with(
+            settingsMapping["resourceName"], settingsMapping["destination"]
         )
 
     def testIfAllResourcesAreCopied(
         self,
-        _mockIsAbsolutePath: Mock,
-        _mockCreateDirectories: Mock,
-        _mockGetAbsolutePath: Mock,
-        mockCopyFile: Mock,
+        mockCopyConfiguration: Mock,
         _mockRunWithSh: Mock,
     ) -> None:
         settingsMappings: List[ApplicationSettingsMapping] = [
@@ -81,18 +57,15 @@ class CopyApplicationSettingsTests(TestCase):
 
         copyApplicationSettings(settingsMappings)
 
-        self.assertEqual(len(settingsMappings), mockCopyFile.call_count)
+        self.assertEqual(len(settingsMappings), mockCopyConfiguration.call_count)
 
     def testIfCompletionCommandsAreExecutedAfterTheResourceIsCopied(
         self,
-        _mockIsAbsolutePath: Mock,
-        _mockCreateDirectories: Mock,
-        _mockGetAbsolutePath: Mock,
-        mockCopyFile: Mock,
+        mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
     ) -> None:
         mocksManager = Mock()
-        mocksManager.attach_mock(mockCopyFile, "mockCopyFile")
+        mocksManager.attach_mock(mockCopyConfiguration, "mockCopyConfiguration")
         mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
         settingMapping: ApplicationSettingsMapping = {
             "resourceName": "fish",
@@ -114,10 +87,10 @@ class CopyApplicationSettingsTests(TestCase):
 
         self.assertEqual(
             [
-                call.mockCopyFile(src=ANY, dst=settingMapping["destination"]),
+                call.mockCopyConfiguration(ANY, settingMapping["destination"]),
                 call.mockRunWithSh(*settingMapping["completionCommands"][0]),
                 call.mockRunWithSh(*settingMapping["completionCommands"][1]),
-                call.mockCopyFile(src=ANY, dst=anotherSettingsMapping["destination"]),
+                call.mockCopyConfiguration(ANY, anotherSettingsMapping["destination"]),
                 call.mockRunWithSh(*anotherSettingsMapping["completionCommands"][0]),
             ],
             mocksManager.mock_calls,
@@ -133,9 +106,7 @@ class CopyApplicationSettingsTests(TestCase):
             ),
         )
 
-    def testIfPostInstallationInstructionsAreReturned(
-        self, *_args: Tuple[Mock, Mock, Mock, Mock, Mock]
-    ) -> None:
+    def testIfPostInstallationInstructionsAreReturned(self, *_args: Tuple[Mock, Mock]) -> None:
         settingMapping: ApplicationSettingsMapping = {
             "resourceName": "fish",
             "destination": "~/.config/fish",
@@ -160,10 +131,7 @@ class CopyApplicationSettingsTests(TestCase):
 
     def testIfCompletionCommandsAndPostInstallationInstructionsAreOptional(
         self,
-        _mockIsAbsolutePath: Mock,
-        _mockCreateDirectories: Mock,
-        _mockGetAbsolutePath: Mock,
-        _mockCopyFile: Mock,
+        _mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
     ) -> None:
         settingsMapping: List[ApplicationSettingsMapping] = [
@@ -178,44 +146,7 @@ class CopyApplicationSettingsTests(TestCase):
         mockRunWithSh.assert_not_called()
         self.assertEqual([], postInstallationInstructions)
 
-    def testIfAMappingWithARelativeDestinationIsIgnored(
-        self,
-        mockIsAbsolutePath: Mock,
-        _mockCreateDirectories: Mock,
-        _mockGetAbsolutePath: Mock,
-        mockCopyFile: Mock,
-        _mockRunWithSh: Mock,
-    ) -> None:
-        invalidSettingsMapping: ApplicationSettingsMapping = {
-            "resourceName": "fish",
-            "destination": "./.config/fish",
-        }
-        validSettingsMapping: ApplicationSettingsMapping = {
-            "resourceName": ".gitconfig",
-            "destination": "~/.gitconfig",
-        }
-
-        def isAbsolutePath(path: str) -> bool:
-            return path == validSettingsMapping["destination"]
-
-        mockIsAbsolutePath.side_effect = isAbsolutePath
-        settingMappings = [invalidSettingsMapping, validSettingsMapping]
-
-        with self.assertLogs(level=LOGGING_LEVEL_ERROR) as loggerSpy:
-            unwrap(copyApplicationSettings)(settingMappings)
-
-        self.assertEqual(1, len(loggerSpy.records))
-        self.assertEqual(
-            f'Could not copy "{invalidSettingsMapping["resourceName"]}", an absolute path was '
-            f'expected for "destination", but "{invalidSettingsMapping["destination"]}" was '
-            "received.",
-            loggerSpy.records[0].getMessage(),
-        )
-        mockCopyFile.assert_called_once_with(src=ANY, dst=validSettingsMapping["destination"])
-
-    def testIfTheResourcesAreLoggedAsTheyAreCopied(
-        self, *_args: Tuple[Mock, Mock, Mock, Mock, Mock]
-    ) -> None:
+    def testIfTheResourcesAreLoggedAsTheyAreCopied(self, *_args: Tuple[Mock, Mock]) -> None:
         settingsMappings: List[ApplicationSettingsMapping] = [
             {
                 "resourceName": "fish",

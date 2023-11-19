@@ -2,16 +2,13 @@
 
 from logging import error as logError
 from logging import info as logInfo
-from os import makedirs as createDirectories
 from os.path import abspath as getAbsolutePath
 from os.path import dirname as getDirectoryName
-from os.path import isabs as isAbsolutePath
 from os.path import join as joinPaths
-from shutil import copy2 as copyFile
 from subprocess import run
 from typing import List
 
-from dotfiles.helpers.utils import installationStep, runWithFish, runWithSh
+from dotfiles.helpers.utils import copyConfiguration, installationStep, runWithFish, runWithSh
 from dotfiles.type_definitions import ApplicationSettingsMapping
 
 runWithoutLogging = run
@@ -101,21 +98,14 @@ def copyApplicationSettings(settingsMappings: List[ApplicationSettingsMapping]) 
             settingsMapping["resourceName"],
             settingsMapping["destination"],
         )
-        if not isAbsolutePath(settingsMapping["destination"]):
-            # We could convert the relative path to absolute, but this could result in resources
-            # being copied to unwanted locations, which is why this restriction is imposed.
+
+        try:
+            copyConfiguration(settingsMapping["resourceName"], settingsMapping["destination"])
+        except FileNotFoundError:
             logError(
-                'Could not copy "%s", an absolute path was expected for "destination", but "%s" '
-                "was received.",
+                'Could not copy "%s" because the resource does not exist.',
                 settingsMapping["resourceName"],
-                settingsMapping["destination"],
             )
-            continue
-        createDirectories(settingsMapping["destination"], exist_ok=True)
-        copyFile(
-            src=getAbsolutePath(f"../../../config/ubuntu/{settingsMapping['resourceName']}"),
-            dst=settingsMapping["destination"],
-        )
 
         if "completionCommands" in settingsMapping:
             logInfo("Running completion commands...")

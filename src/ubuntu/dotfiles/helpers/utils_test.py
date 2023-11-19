@@ -12,6 +12,7 @@ from unittest.mock import ANY, Mock, call, patch
 
 from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.helpers.utils import (
+    copyConfiguration,
     installationStep,
     logCompletionMessage,
     runWithFish,
@@ -70,6 +71,90 @@ class BaseTests:  # pylint: disable=too-few-public-methods
                 mocksManager.mock_calls,
             )
             mockLogInfo.assert_called_once()
+
+
+@patch("dotfiles.helpers.utils.copyFile")
+@patch("dotfiles.helpers.utils.createDirectories")
+@patch("dotfiles.helpers.utils.copyDirectory")
+@patch("dotfiles.helpers.utils.isDirectory")
+@patch("dotfiles.helpers.utils.pathExists")
+@patch("dotfiles.helpers.utils.getAbsolutePath")
+class CopyConfigurationTests(TestCase):
+    """Contains tests for the `copyConfiguration` function."""
+
+    def testIfFileIsCopied(  # pylint: disable=too-many-arguments
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockIsDirectory: Mock,
+        mockCopyDirectory: Mock,
+        mockCreateDirectories: Mock,
+        mockCopyFile: Mock,
+    ) -> None:
+        fileName = ".gitconfig"
+        sourcePath = f"../../../../config/ubuntu/{fileName}"
+        destinationPath = "~/.gitconfig"
+        mockGetAbsolutePath.side_effect = self._mockGetAbsolutePath
+        mockPathExists.return_value = True
+        mockIsDirectory.return_value = False
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
+        mocksManager.attach_mock(mockCopyFile, "mockCopyFile")
+
+        copyConfiguration(fileName, destinationPath)
+
+        mockCopyDirectory.assert_not_called()
+        self.assertEqual(
+            [
+                call.mockCreateDirectories(f"/abs/{destinationPath}", exist_ok=True),
+                call.mockCopyFile(src=f"/abs/{sourcePath}", dst=f"/abs/{destinationPath}"),
+            ],
+            mocksManager.mock_calls,
+        )
+
+    def testIfDirectoryIsCopied(  # pylint: disable=too-many-arguments
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockIsDirectory: Mock,
+        mockCopyDirectory: Mock,
+        mockCreateDirectories: Mock,
+        mockCopyFile: Mock,
+    ) -> None:
+        dirName = "fish"
+        sourcePath = f"../../../../config/ubuntu/{dirName}"
+        destinationPath = "~/.config/fish"
+        mockGetAbsolutePath.side_effect = self._mockGetAbsolutePath
+        mockPathExists.return_value = True
+        mockIsDirectory.return_value = True
+
+        copyConfiguration(dirName, destinationPath)
+
+        mockCreateDirectories.assert_not_called()
+        mockCopyFile.assert_not_called()
+        mockCopyDirectory.assert_called_once_with(
+            src=f"/abs/{sourcePath}", dst=f"/abs/{destinationPath}", dirs_exist_ok=True
+        )
+
+    def testIfResourceCannotBeANonExistentResource(
+        self,
+        _mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        _mockIsDirectory: Mock,
+        _mockCopyDirectory: Mock,
+        _mockCreateDirectories: Mock,
+        _mockCopyFile: Mock,
+    ) -> None:
+        nonExistentResource = "asdasdsa"
+        destinationPath = '~/.config/fish"'
+        mockPathExists.return_value = False
+
+        with self.assertRaises(FileNotFoundError):
+            copyConfiguration(nonExistentResource, destinationPath)
+
+    @staticmethod
+    def _mockGetAbsolutePath(path: str) -> str:
+        return f"/abs/{path}"
 
 
 class InstallationStepTests(TestCase):
