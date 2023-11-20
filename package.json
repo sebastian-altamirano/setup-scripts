@@ -23,7 +23,7 @@
 		"format:prettier": "prettier --write --ignore-unknown .",
 		"format:windows": "pwsh scripts/format-powershell.ps1 -Path src/windows -SettingsPath src/windows/formatter-settings.psd1",
 		"lint": "npm run lint:browser-snippets && npm run lint:linux && npm run lint:windows",
-		"lint:browser-snippets": "eslint src/browser-snippets --ext .mjs",
+		"lint:browser-snippets": "eslint src/browser-snippets",
 		"lint:linux": "pdm run -p src/ubuntu lint",
 		"lint:windows": "pwsh scripts/lint-powershell.ps1 -Path src/windows -SettingsPath src/windows/linter-settings.psd1",
 		"prepare": "husky install",

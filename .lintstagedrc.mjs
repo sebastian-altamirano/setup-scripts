@@ -18,7 +18,7 @@ function lintPowerShellScript(fileName) {
  * @type {import('lint-staged').Config}
  */
 export default {
-	"*.{code-workspace,json,md}": "prettier --write",
+	"*.{json,md}": "prettier --write",
 	"*.{mjs,js}": ["prettier --write", "eslint"],
 	"*.psd1": (fileNames) => fileNames.map(formatPowerShellScript),
 	"*.{ps1,psm1}": (fileNames) =>

@@ -2,8 +2,6 @@
  * @file Fills out the Plus Pagos form using data from a file, but does not click on the pay button.
  */
 
-// @ts-check
-
 // ------------------------------------------ JSDoc utils ------------------------------------------
 
 /**
@@ -197,7 +195,7 @@ function getElementOrThrow(selectors, elementType) {
 
 	throw new ElementNotFoundError(
 		`An element was found for selector: "${selectors}", but it is not an instance of the expected \
-type.`
+type.`,
 	);
 }
 
@@ -302,7 +300,7 @@ function isValidDate(year, month, day) {
  * @returns {boolean}
  */
 function isValidEmail(email) {
-	const EMAIL_REGEX = /^([a-z0-9_\.\+-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+	const EMAIL_REGEX = /^([a-z0-9_.+-]+)@([\da-z.-]+)\.([a-z.]{2,6})$/;
 	return EMAIL_REGEX.test(email);
 }
 
@@ -359,7 +357,7 @@ function getPaymentMethodInformationOrThrow(paymentInformation, paymentMethodInf
 	const paymentMethodInformation = paymentInformation[paymentMethodInformationJsonKey];
 	if (!paymentMethodInformation) {
 		throw new FormValueValidationError(
-			`\`/paymentInformation/${paymentMethodInformationJsonKey}\` is not provided.`
+			`\`/paymentInformation/${paymentMethodInformationJsonKey}\` is not provided.`,
 		);
 	}
 
@@ -382,18 +380,18 @@ function validatePaymentCard(paymentCard, paymentCardJsonKey) {
 	const expirationDate = paymentCard.expirationDate;
 	if (!isValidDate(expirationDate.year, expirationDate.month, LAST_DAY_OF_THE_MONTH)) {
 		throw new FormValueValidationError(
-			`\`/paymentInformation/${paymentCardJsonKey}/expirationDate\` is not a valid date.`
+			`\`/paymentInformation/${paymentCardJsonKey}/expirationDate\` is not a valid date.`,
 		);
 	}
 
 	const parsedCardExpirationDate = new Date(
 		expirationDate.year,
 		expirationDate.month - 1,
-		LAST_DAY_OF_THE_MONTH
+		LAST_DAY_OF_THE_MONTH,
 	);
 	if (new Date() > parsedCardExpirationDate) {
 		throw new FormValueValidationError(
-			`\`/paymentInformation/${paymentCardJsonKey}/expirationDate\` is expired.`
+			`\`/paymentInformation/${paymentCardJsonKey}/expirationDate\` is expired.`,
 		);
 	}
 }
@@ -410,7 +408,7 @@ function validateDebin(debin) {
 	if (!("alias" in debin || "cbu" in debin)) {
 		throw new FormValueValidationError(
 			"`/paymentInformation/debin` requires `/alias` or `/cbu` to be defined, but neither is \
-provided."
+provided.",
 		);
 	}
 }
@@ -427,33 +425,36 @@ function validatePaymentInformation(paymentInformation) {
 	/** @type {"creditCard" | "debitCard" | "debin"} */
 	let paymentMethodInformationJsonKey;
 	switch (paymentInformation.paymentMethod) {
-		case PaymentMethod.CreditCard:
+		case PaymentMethod.CreditCard: {
 			paymentMethodInformationJsonKey = "creditCard";
 			const creditCardInformation = getPaymentMethodInformationOrThrow(
 				paymentInformation,
-				paymentMethodInformationJsonKey
+				paymentMethodInformationJsonKey,
 			);
 			validatePaymentCard(creditCardInformation, paymentMethodInformationJsonKey);
 			break;
-		case PaymentMethod.DebitCard:
+		}
+		case PaymentMethod.DebitCard: {
 			paymentMethodInformationJsonKey = "debitCard";
 			const debitCardInformation = getPaymentMethodInformationOrThrow(
 				paymentInformation,
-				paymentMethodInformationJsonKey
+				paymentMethodInformationJsonKey,
 			);
 			validatePaymentCard(debitCardInformation, paymentMethodInformationJsonKey);
 			break;
-		case PaymentMethod.Debin:
+		}
+		case PaymentMethod.Debin: {
 			paymentMethodInformationJsonKey = "debin";
 			const debinInformation = getPaymentMethodInformationOrThrow(
 				paymentInformation,
-				paymentMethodInformationJsonKey
+				paymentMethodInformationJsonKey,
 			);
 			validateDebin(debinInformation);
 			break;
+		}
 		default:
 			throw new FormValueValidationError(
-				"`/paymentInformation/paymentMethod` is not a valid payment method."
+				"`/paymentInformation/paymentMethod` is not a valid payment method.",
 			);
 	}
 }
@@ -471,7 +472,7 @@ function validatePaymentInformation(paymentInformation) {
  * @returns {Promise<FormValue>}
  */
 async function readFormValueFromFile() {
-	/** @type FileSystemFileHandle[] */
+	/** @type [FileSystemFileHandle] */
 	// @ts-expect-error At the time of writing this, `showOpenFilePicker` is experimental and is not
 	// included in the `Window` interface.
 	const [fileHandle] = await window.showOpenFilePicker({
@@ -523,7 +524,7 @@ function choosePaymentMethod(paymentMethod) {
 	const paymentMethodEl = getElementOrThrow("#TipoMedioPago", HTMLSelectElement);
 	if (!Object.values(paymentMethodEl.options).some((option) => option.value === paymentMethod)) {
 		throw new UnallowedPaymentMethodError(
-			`The selected payment method is not allowed for the tax that you want to pay.`
+			`The selected payment method is not allowed for the tax that you want to pay.`,
 		);
 	}
 
@@ -565,7 +566,7 @@ async function fillPaymentCard(paymentCard) {
 		if (error instanceof MaxRetriesError) {
 			throw new MaxRetriesError(
 				"Max retries exceeded while waiting for the card number to be validated. Increase the \
-maximum number of retries or the delay between retries and try again."
+maximum number of retries or the delay between retries and try again.",
 			);
 		}
 
@@ -577,11 +578,11 @@ maximum number of retries or the delay between retries and try again."
 
 	const paymentCardExpirationDateMonthEl = getElementOrThrow(
 		"#mesVencimiento",
-		HTMLSelectElement
+		HTMLSelectElement,
 	);
 	changeSelectValue(
 		paymentCardExpirationDateMonthEl,
-		formatDayOrMonthForSelect(paymentCard.expirationDate.month)
+		formatDayOrMonthForSelect(paymentCard.expirationDate.month),
 	);
 
 	const paymentCardExpirationDateYearEl = getElementOrThrow("#anios", HTMLSelectElement);
@@ -605,7 +606,7 @@ function fillDebin(debin) {
 	if ("alias" in debin) {
 		const chooseAliasEl = getElementOrThrow(
 			"input[name='tipovalor'][value='Alias']",
-			HTMLInputElement
+			HTMLInputElement,
 		);
 		chooseAliasEl.click();
 		const aliasEl = getElementOrThrow("#ValorAlias", HTMLInputElement);
@@ -613,7 +614,7 @@ function fillDebin(debin) {
 	} else {
 		const chooseCbuEl = getElementOrThrow(
 			"input[name='tipovalor'][value='CBU']",
-			HTMLInputElement
+			HTMLInputElement,
 		);
 		chooseCbuEl.click();
 		const cbuEl = getElementOrThrow("#ValorCBU", HTMLInputElement);
@@ -662,7 +663,7 @@ async function fillPaymentInformation(paymentInformation) {
 function fillEmail(email, paymentMethod) {
 	const emailEl = getElementOrThrow(
 		`#${paymentMethod === PaymentMethod.Debin ? "Email_Debin" : "Email"}`,
-		HTMLInputElement
+		HTMLInputElement,
 	);
 	changeTextInputValue(emailEl, email);
 }
@@ -711,7 +712,7 @@ function fillDateOfBirth(year, month, day) {
 function acceptTermsAndConditions() {
 	const acceptTermsAndConditionsEl = getElementOrThrow(
 		"#AceptTerminosyCondiciones",
-		HTMLInputElement
+		HTMLInputElement,
 	);
 	acceptTermsAndConditionsEl.click();
 }
@@ -745,7 +746,7 @@ async function main() {
 		fillDateOfBirth(
 			formValue.dateOfBirth.year,
 			formValue.dateOfBirth.month,
-			formValue.dateOfBirth.day
+			formValue.dateOfBirth.day,
 		);
 		acceptTermsAndConditions();
 
@@ -753,7 +754,7 @@ async function main() {
 		if (payButtonEl.disabled) {
 			throw new UnknownError(
 				"The form has been filled up without errors but the payment button has not been enabled. \
-The snippet is probably outdated or has not been thoroughly tested."
+The snippet is probably outdated or has not been thoroughly tested.",
 			);
 		}
 	} catch (error) {
