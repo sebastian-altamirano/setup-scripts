@@ -3,6 +3,8 @@
 	amend = commit --amend --date=now --no-edit
 	br = branch
 	brd = branch -D
+	brl = branch -l
+	brm = branch -m
 	ci = commit
 	cim = commit -m
 	co = checkout
