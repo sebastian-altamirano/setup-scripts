@@ -2,17 +2,17 @@
 	"ubuntu": {
 		"settingsPaths": [
 			{
-				"resourceName": "fish",
-				"destination": "~/.config/fish"
+				"destination": "~/.config/fish",
+				"resourceName": "fish"
 			},
 			{
-				"resourceName": "gpg-agent.conf",
+				"completionCommands": [["gpg-connect-agent", "reloadagent", "/bye"]],
 				"destination": "~/.gnupg/gpg-agent.conf",
-				"completionCommands": [["gpg-connect-agent", "reloadagent", "/bye"]]
+				"resourceName": "gpg-agent.conf"
 			},
 			{
-				"resourceName": "ssh-config",
-				"destination": "~/.ssh/config"
+				"destination": "~/.ssh/config",
+				"resourceName": "ssh-config"
 			}
 		],
 		"vscodeExtensions": [
@@ -37,21 +37,21 @@
 		"quickAccessFolders": ["Github", "Notas", "Playground"],
 		"settingsPaths": [
 			{
-				"resourceName": "csgo-autoexec.cfg",
 				"destination": "${env:ProgramFiles(x86)}\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg\\autoexec.cfg",
-				"postInstallationInstructions": "Configure the CSGO launch options in Steam to use the autoexec (see the first comment in the CFG)."
+				"postInstallationInstructions": "Configure the CSGO launch options in Steam to use the autoexec (see the first comment in the CFG).",
+				"resourceName": "csgo-autoexec.cfg"
 			},
 			{
-				"resourceName": "vscode-settings.jsonc",
-				"destination": "$env:AppData\\Code\\User\\settings.json"
+				"destination": "$env:AppData\\Code\\User\\settings.json",
+				"resourceName": "vscode-settings.jsonc"
 			},
 			{
-				"resourceName": "vscode-keybindings.jsonc",
-				"destination": "$env:AppData\\Code\\User\\keybindings.json"
+				"destination": "$env:AppData\\Code\\User\\keybindings.json",
+				"resourceName": "vscode-keybindings.jsonc"
 			},
 			{
-				"resourceName": "windows-terminal.json",
-				"destination": "$env:LocalAppData\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
+				"destination": "$env:LocalAppData\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json",
+				"resourceName": "windows-terminal.json"
 			}
 		],
 		"vscodeExtensions": [

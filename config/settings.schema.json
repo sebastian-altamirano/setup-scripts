@@ -1,61 +1,60 @@
 {
-	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"title": "Dotfiles configuration",
-	"type": "object",
 	"$defs": {
 		"postInstallationInstructions": {
 			"description": "Instructions to be displayed at the end of the installation process. Use it to explain the remaining tasks that cannot be automated.",
-			"type": "array",
 			"items": {
 				"type": "string"
-			}
+			},
+			"type": "array"
 		},
 		"settingsPaths": {
-			"type": "array",
 			"description": "Contains a list of application settings mappings.",
 			"items": {
-				"type": "object",
+				"additionalProperties": false,
 				"description": "Defines a source-destination mapping of a resource located in the `/config/ubuntu` or `/config/windows` folder (as appropriate).",
 				"properties": {
-					"resourceName": {
-						"description": "The name of the file or directory.",
-						"type": "string"
+					"completionCommands": {
+						"description": "Commands to execute after copying the resource.",
+						"items": {
+							"description": "Contains a list of command arguments, e.g: [\"echo\", \"Hello World!\"]",
+							"items": {
+								"type": "string"
+							},
+							"type": "array"
+						},
+						"type": "array"
 					},
 					"destination": {
 						"description": "The destination path, it can be an absolute or relative path, although it is recommended to use an absolute path to avoid copying resources to unwanted locations.",
 						"type": "string"
 					},
-					"completionCommands": {
-						"description": "Commands to execute after copying the resource.",
-						"type": "array",
-						"items": {
-							"description": "Contains a list of command arguments, e.g: [\"echo\", \"Hello World!\"]",
-							"type": "array",
-							"items": {
-								"type": "string"
-							}
-						}
-					},
 					"postInstallationInstructions": {
 						"description": "Instructions to be displayed at the end of the installation process. Use it to explain the remaining tasks that cannot be automated.",
 						"type": "string"
+					},
+					"resourceName": {
+						"description": "The name of the file or directory.",
+						"type": "string"
 					}
 				},
-				"additionalProperties": false,
-				"required": ["resourceName", "destination"]
-			}
+				"required": ["resourceName", "destination"],
+				"type": "object"
+			},
+			"type": "array"
 		},
 		"vscodeExtensions": {
-			"type": "array",
 			"description": "Contains a list of VSCode extensions to install.",
 			"items": {
 				"type": "string"
-			}
+			},
+			"type": "array"
 		}
 	},
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"additionalProperties": false,
 	"properties": {
 		"ubuntu": {
-			"type": "object",
+			"additionalProperties": false,
 			"description": "Ubuntu configuration.",
 			"properties": {
 				"gitConfiguration": {
@@ -74,29 +73,42 @@
 					"required": ["email", "userName"],
 					"type": "object"
 				},
-				"postInstallationInstructions": { "$ref": "#/$defs/postInstallationInstructions" },
-				"settingsPaths": { "$ref": "#/$defs/settingsPaths" },
-				"vscodeExtensions": { "$ref": "#/$defs/vscodeExtensions" }
+				"postInstallationInstructions": {
+					"$ref": "#/$defs/postInstallationInstructions"
+				},
+				"settingsPaths": {
+					"$ref": "#/$defs/settingsPaths"
+				},
+				"vscodeExtensions": {
+					"$ref": "#/$defs/vscodeExtensions"
+				}
 			},
-			"additionalProperties": false
+			"type": "object"
 		},
 		"windows": {
-			"type": "object",
+			"additionalProperties": false,
 			"description": "Windows configuration.",
 			"properties": {
-				"postInstallationInstructions": { "$ref": "#/$defs/postInstallationInstructions" },
+				"postInstallationInstructions": {
+					"$ref": "#/$defs/postInstallationInstructions"
+				},
 				"quickAccessFolders": {
-					"type": "array",
 					"description": "Contains a list of folders to create and add to the quick access section of the file explorer.",
 					"items": {
 						"type": "string"
-					}
+					},
+					"type": "array"
 				},
-				"settingsPaths": { "$ref": "#/$defs/settingsPaths" },
-				"vscodeExtensions": { "$ref": "#/$defs/vscodeExtensions" }
+				"settingsPaths": {
+					"$ref": "#/$defs/settingsPaths"
+				},
+				"vscodeExtensions": {
+					"$ref": "#/$defs/vscodeExtensions"
+				}
 			},
-			"additionalProperties": false
+			"type": "object"
 		}
 	},
-	"additionalProperties": false
+	"title": "Dotfiles configuration",
+	"type": "object"
 }
