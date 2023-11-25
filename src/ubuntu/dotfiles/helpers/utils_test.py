@@ -13,6 +13,7 @@ from unittest.mock import ANY, Mock, call, patch
 from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.helpers.utils import (
     copyConfiguration,
+    formatConfigurationBlocks,
     installationStep,
     logCompletionMessage,
     runWithFish,
@@ -155,6 +156,53 @@ class CopyConfigurationTests(TestCase):
     @staticmethod
     def _mockGetAbsolutePath(path: str) -> str:
         return f"/abs/{path}"
+
+
+class FormatConfigurationBlocksTests(TestCase):
+    """Contains tests for the `formatConfigurationBlocks` function."""
+
+    def testIfConfigurationBlocksAreFormattedCorrectly(self) -> None:
+        configurationBlocks = [
+            [
+                "# Cache the password for 10 hours.",
+                "cache-password true",
+                "cache-password-time 36000",
+            ],
+            ["# Allow committing from VSCode.", "allow-commiting-from-vscode true"],
+        ]
+
+        formattedConfigurationBlocks = formatConfigurationBlocks(configurationBlocks)
+
+        self.assertEqual(
+            (
+                f"{configurationBlocks[0][0]}\n"
+                f"{configurationBlocks[0][1]}\n"
+                f"{configurationBlocks[0][2]}\n\n"
+                f"{configurationBlocks[1][0]}\n"
+                f"{configurationBlocks[1][1]}\n"
+            ),
+            formattedConfigurationBlocks,
+        )
+
+    def testIfEmptyBlocksAreFilteredOut(self) -> None:
+        configurationBlocks: List[List[str]] = [
+            [],
+            ["# Allow committing from VSCode.", "allow-commiting-from-vscode true"],
+        ]
+
+        formattedConfigurationBlocks = formatConfigurationBlocks(configurationBlocks)
+
+        self.assertEqual(
+            (f"{configurationBlocks[1][0]}\n" f"{configurationBlocks[1][1]}\n"),
+            formattedConfigurationBlocks,
+        )
+
+    def testIfAnEmptyStringIsReturnedIfThereAreNoBlocks(self) -> None:
+        configurationBlocks: List[List[str]] = []
+
+        formattedConfigurationBlocks = formatConfigurationBlocks(configurationBlocks)
+
+        self.assertEqual("", formattedConfigurationBlocks)
 
 
 class InstallationStepTests(TestCase):

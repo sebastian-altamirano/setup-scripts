@@ -40,6 +40,26 @@ def copyConfiguration(resourceName: str, destinationPath: str) -> None:
         copyFile(src=absoluteSourcePath, dst=absoluteDestinationPath)
 
 
+def formatConfigurationBlocks(configurationBlocks: List[List[str]]) -> str:
+    """Formats the given configuration blocks into a single string."""
+    filteredConfigurationBlocks = [
+        configurationBlock
+        for configurationBlock in configurationBlocks
+        if configurationBlock
+        if len(configurationBlock) > 0
+    ]
+
+    if len(filteredConfigurationBlocks) == 0:
+        return ""
+
+    return (
+        "\n\n".join(
+            ["\n".join(configurationBlock) for configurationBlock in filteredConfigurationBlocks]
+        )
+        + "\n"
+    )
+
+
 def logCompletionMessage(postInstallationInstructions: Optional[List[str]] = None) -> None:
     """Logs a completion message and post-installation instructions, if any."""
     logInfo("%sFinished!%s", GREEN_BG_BLACK_FG, COLOR_TERMINATOR)
