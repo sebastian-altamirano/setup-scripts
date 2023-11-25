@@ -29,8 +29,3 @@
 
 [push]
 	default = current
-
-# Complete the following fields before executing the installation script:
-
-[user]
-	signingkey =

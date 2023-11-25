@@ -2,7 +2,7 @@
 
 ## Requirements
 
-You must fill in `signingkey` in [`/config/ubuntu/.gitconfig`](/config/ubuntu/.gitconfig) and provide a value for `/ubuntu/gitConfiguration` in [`/config/settings.json`](/config/settings.json).
+You must configure `/ubuntu/gitConfiguration` in [`/config/settings.json`](/config/settings.json).
 
 ## Instructions
 

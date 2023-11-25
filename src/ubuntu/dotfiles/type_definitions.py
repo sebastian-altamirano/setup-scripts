@@ -1,6 +1,6 @@
 """Contains type definitions."""
 
-from typing import List, TypedDict, TypeVar
+from typing import List, Literal, TypedDict, TypeVar
 
 
 class Arguments(TypedDict):
@@ -17,17 +17,39 @@ class _ApplicationSettingsMapping(TypedDict, total=False):
 class ApplicationSettingsMapping(_ApplicationSettingsMapping):
     """Defines a source-destination mapping of a resource located in the `/config/ubuntu` folder.
 
-    Matches what is defined in `/config/settings.schema.json` for the `settingsPath` key.
+    Matches what is defined in `/config/settings.schema.json` for the `/ubuntu/settingsPath` JSON
+    Pointer.
     """
 
     resourceName: str
     destination: str
 
 
-class GitConfiguration(TypedDict):
+class _GitCommitSigningConfiguration(TypedDict, total=False):
+    allowCommittingFromVSCode: bool
+    cachePassPhraseDuringSession: bool
+
+
+class GitCommitSigningConfiguration(_GitCommitSigningConfiguration):
     """Configuration accepted by the Dotfiles to configure Git.
 
-    Matches what is defined in `/config/settings.schema.json` for the `gitConfiguration` key.
+    Matches what is defined in `/config/settings.schema.json` for the
+    `/ubuntu/gitConfiguration/commitSigning` JSON Pointer.
+    """
+
+    privateKeyName: str
+    signingMethod: Literal["gpg", "ssh"]
+
+
+class _GitConfiguration(TypedDict, total=False):
+    commitSigning: GitCommitSigningConfiguration
+
+
+class GitConfiguration(_GitConfiguration):
+    """Configuration accepted by the Dotfiles to configure Git.
+
+    Matches what is defined in `/config/settings.schema.json` for the `/ubuntu/gitConfiguration`
+    JSON Pointer.
     """
 
     email: str
@@ -37,7 +59,7 @@ class GitConfiguration(TypedDict):
 class Config(TypedDict, total=False):
     """Configuration accepted by the Dotfiles.
 
-    Matches what is defined in `/config/settings.schema.json`.
+    Matches what is defined in `/config/settings.schema.json` for the `/ubuntu` JSON Pointer.
     """
 
     gitConfiguration: GitConfiguration
