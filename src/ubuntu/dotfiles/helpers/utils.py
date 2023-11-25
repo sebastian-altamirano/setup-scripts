@@ -40,6 +40,14 @@ def copyConfiguration(resourceName: str, destinationPath: str) -> None:
         copyFile(src=absoluteSourcePath, dst=absoluteDestinationPath)
 
 
+def createFileWithContent(path: str, content: str) -> None:
+    """Creates a file at the specified path with the specified content."""
+    absolutePath = getAbsolutePath(path)
+    createDirectories(absolutePath, exist_ok=True)
+    with open(absolutePath, mode="w", encoding="utf-8") as file:
+        file.write(content)
+
+
 def formatConfigurationBlocks(configurationBlocks: List[List[str]]) -> str:
     """Formats the given configuration blocks into a single string."""
     filteredConfigurationBlocks = [

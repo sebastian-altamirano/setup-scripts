@@ -13,6 +13,7 @@ from unittest.mock import ANY, Mock, call, patch
 from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.helpers.utils import (
     copyConfiguration,
+    createFileWithContent,
     formatConfigurationBlocks,
     installationStep,
     logCompletionMessage,
@@ -156,6 +157,39 @@ class CopyConfigurationTests(TestCase):
     @staticmethod
     def _mockGetAbsolutePath(path: str) -> str:
         return f"/abs/{path}"
+
+
+class CreateFileWithContentTests(TestCase):
+    """Contains tests for the `createFileWithContent` function."""
+
+    @patch("dotfiles.helpers.utils.open")
+    @patch("dotfiles.helpers.utils.createDirectories")
+    @patch("dotfiles.helpers.utils.getAbsolutePath")
+    def testIfFileIsCreatedWithContent(
+        self, mockGetAbsolutePath: Mock, mockCreateDirectories: Mock, mockFileOpen: Mock
+    ) -> None:
+        filePath = "~/.gnupg/gpg-agent.conf"
+        fileContent = "Lorem ipsum dolor."
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockGetAbsolutePath, "mockGetAbsolutePath")
+        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
+        mocksManager.attach_mock(
+            mockFileOpen.return_value.__enter__.return_value.write, "mockFileWrite"
+        )
+
+        createFileWithContent(filePath, fileContent)
+
+        self.assertEqual(
+            [
+                call.mockGetAbsolutePath(filePath),
+                call.mockCreateDirectories(mockGetAbsolutePath.return_value, exist_ok=True),
+                call.mockFileWrite(fileContent),
+            ],
+            mocksManager.mock_calls,
+        )
+        mockFileOpen.assert_called_once_with(
+            mockGetAbsolutePath.return_value, mode="w", encoding="utf-8"
+        )
 
 
 class FormatConfigurationBlocksTests(TestCase):
