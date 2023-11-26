@@ -9,7 +9,7 @@ from os.path import exists as pathExists
 from os.path import isdir as isDirectory
 from shutil import copy2 as copyFile
 from shutil import copytree as copyDirectory
-from subprocess import run
+from subprocess import CompletedProcess, run
 from typing import Any, Callable, List, Optional
 from warnings import warn
 
@@ -99,12 +99,12 @@ def installationStep(
     return runInstallationStep
 
 
-def _runWith(*args: str) -> None:
+def _runWith(*args: str) -> "CompletedProcess[str]":
     logInfo(*args)
-    run([*args], check=True)
+    return run([*args], capture_output=True, check=True, text=True)
 
 
-def runWithFish(*args: str) -> None:
+def runWithFish(*args: str) -> "CompletedProcess[str]":
     """Runs a command with fish.
 
     The command is logged before being executed.
@@ -112,10 +112,10 @@ def runWithFish(*args: str) -> None:
     Raises:
         CalledProcessError: If the command execution failed.
     """
-    _runWith("fish", "-c", *args)
+    return _runWith("fish", "-c", *args)
 
 
-def runWithSh(*args: str) -> None:
+def runWithSh(*args: str) -> "CompletedProcess[str]":
     """Runs a command with sh.
 
     The command is logged before being executed.
@@ -123,7 +123,7 @@ def runWithSh(*args: str) -> None:
     Raises:
         CalledProcessError: If the command execution failed.
     """
-    _runWith(*args)
+    return _runWith(*args)
 
 
 def warnAboutUnsupportedOrUnrecognizedConfig(key: str) -> None:

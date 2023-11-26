@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from logging import ERROR as LOGGING_LEVEL_ERROR
 from logging import INFO as LOGGING_LEVEL_INFO
 from logging import LogRecord
+from subprocess import CompletedProcess
 from typing import Any, Callable, List, Optional
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
@@ -31,7 +32,7 @@ class BaseTests:  # pylint: disable=too-few-public-methods
         """Contains base tests for `runWith...` functions."""
 
         @abstractmethod
-        def getRunFunction(self) -> Callable[..., None]:
+        def getRunFunction(self) -> Callable[..., "CompletedProcess[str]"]:
             """Returns the function used to run the commands."""
 
         def getShell(self) -> Optional[str]:
@@ -51,7 +52,9 @@ class BaseTests:  # pylint: disable=too-few-public-methods
 
             mockRun.assert_called_once_with(
                 self.getFinalArgs(*args),
+                capture_output=True,
                 check=True,
+                text=True,
             )
 
         @patch("dotfiles.helpers.utils.logInfo")
@@ -68,7 +71,7 @@ class BaseTests:  # pylint: disable=too-few-public-methods
             self.assertEqual(
                 [
                     call.mockLogInfo(*self.getFinalArgs(*args)),
-                    call.mockRun(ANY, check=True),
+                    call.mockRun(ANY, capture_output=True, check=True, text=True),
                 ],
                 mocksManager.mock_calls,
             )
@@ -338,14 +341,14 @@ class RunWithFishTests(BaseTests.RunWithBaseTests):
     def getShell(self) -> Optional[str]:
         return "fish"
 
-    def getRunFunction(self) -> Callable[..., None]:
+    def getRunFunction(self) -> Callable[..., "CompletedProcess[str]"]:
         return runWithFish
 
 
 class RunWithShTests(BaseTests.RunWithBaseTests):
     """Contains tests for the `runWithSh`function."""
 
-    def getRunFunction(self) -> Callable[..., None]:
+    def getRunFunction(self) -> Callable[..., "CompletedProcess[str]"]:
         return runWithSh
 
 
