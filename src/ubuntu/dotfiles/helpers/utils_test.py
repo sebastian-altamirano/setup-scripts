@@ -7,14 +7,14 @@ from logging import ERROR as LOGGING_LEVEL_ERROR
 from logging import INFO as LOGGING_LEVEL_INFO
 from logging import LogRecord
 from subprocess import CompletedProcess
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, cast
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
 
 from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.helpers.utils import (
     copyConfiguration,
-    createFileWithContent,
+    createOrUpdateFile,
     formatConfigurationBlocks,
     installationStep,
     logCompletionMessage,
@@ -162,37 +162,178 @@ class CopyConfigurationTests(TestCase):
         return f"/abs/{path}"
 
 
-class CreateFileWithContentTests(TestCase):
-    """Contains tests for the `createFileWithContent` function."""
+@patch("dotfiles.helpers.utils.open")
+@patch("dotfiles.helpers.utils.createDirectories")
+@patch("dotfiles.helpers.utils.pathExists")
+@patch("dotfiles.helpers.utils.getAbsolutePath")
+class CreateOrUpdateFileTests(TestCase):
+    """Contains tests for the `createOrUpdateFile` function."""
 
-    @patch("dotfiles.helpers.utils.open")
-    @patch("dotfiles.helpers.utils.createDirectories")
-    @patch("dotfiles.helpers.utils.getAbsolutePath")
-    def testIfFileIsCreatedWithContent(
-        self, mockGetAbsolutePath: Mock, mockCreateDirectories: Mock, mockFileOpen: Mock
+    def setUp(self) -> None:
+        self.filePath = "~/.config/fish/config.fish"
+        self.fileContent = "set -gx GPG_TTY (tty)"
+
+    def testIfFileIsCreated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
     ) -> None:
-        filePath = "~/.gnupg/gpg-agent.conf"
-        fileContent = "Lorem ipsum dolor."
-        mocksManager = Mock()
-        mocksManager.attach_mock(mockGetAbsolutePath, "mockGetAbsolutePath")
-        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
-        mocksManager.attach_mock(
-            mockFileOpen.return_value.__enter__.return_value.write, "mockFileWrite"
+        mockPathExists.return_value = False
+        mocksManager = self._getMocksManager(
+            mockGetAbsolutePath, mockPathExists, mockCreateDirectories, mockFileOpen
         )
 
-        createFileWithContent(filePath, fileContent)
+        createOrUpdateFile(self.filePath, self.fileContent)
 
         self.assertEqual(
             [
-                call.mockGetAbsolutePath(filePath),
+                call.mockGetAbsolutePath(self.filePath),
+                call.mockPathExists(mockGetAbsolutePath.return_value),
                 call.mockCreateDirectories(mockGetAbsolutePath.return_value, exist_ok=True),
-                call.mockFileWrite(fileContent),
+                call.mockFileWrite(self.fileContent),
+                call.mockFileWrite("\n"),
             ],
             mocksManager.mock_calls,
         )
         mockFileOpen.assert_called_once_with(
             mockGetAbsolutePath.return_value, mode="w", encoding="utf-8"
         )
+
+    def testIfEmptyFileIsUpdated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = ""
+        expectedFileWriteCalls = [
+            call.mockFileWrite(self.fileContent),
+            call.mockFileWrite("\n"),
+        ]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def testIfFileThatEndsWithNewlineIsUpdated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = "eval $(ssh-agent -c)\n"
+        expectedFileWriteCalls = [
+            call.mockFileWrite(self.fileContent),
+            call.mockFileWrite("\n"),
+        ]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def testIfFileThatDoesNotEndWithNewlineIsUpdated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = "eval $(ssh-agent -c)"
+        expectedFileWriteCalls = [
+            call.mockFileWrite("\n"),
+            call.mockFileWrite(self.fileContent),
+            call.mockFileWrite("\n"),
+        ]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def testIfNewlineIsNotAddedWhenContentAlreadyEndsWithIt(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        self.fileContent = "set -gx GPG_TTY (tty)\n"
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = ""
+        expectedFileWriteCalls = [call.mockFileWrite(self.fileContent)]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def _assertFileIsUpdated(  # pylint: disable=too-many-arguments
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+        expectedFileWriteCalls: List[Any],
+    ) -> None:
+        mockPathExists.return_value = True
+        mocksManager = self._getMocksManager(
+            mockGetAbsolutePath, mockPathExists, mockCreateDirectories, mockFileOpen
+        )
+
+        createOrUpdateFile(self.filePath, self.fileContent)
+
+        self.assertEqual(
+            [
+                call.mockGetAbsolutePath(self.filePath),
+                call.mockPathExists(mockGetAbsolutePath.return_value),
+                *expectedFileWriteCalls,
+            ],
+            mocksManager.mock_calls,
+        )
+        mockFileOpen.assert_called_once_with(
+            mockGetAbsolutePath.return_value, mode="r+", encoding="utf-8"
+        )
+
+    @staticmethod
+    def _getMockFileRead(mockFileOpen: Mock) -> Mock:
+        return cast(Mock, mockFileOpen.return_value.__enter__.return_value.read)
+
+    @staticmethod
+    def _getMocksManager(
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> Mock:
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockGetAbsolutePath, "mockGetAbsolutePath")
+        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
+        mocksManager.attach_mock(mockPathExists, "mockPathExists")
+        mocksManager.attach_mock(
+            mockFileOpen.return_value.__enter__.return_value.write, "mockFileWrite"
+        )
+        return mocksManager
 
 
 class FormatConfigurationBlocksTests(TestCase):

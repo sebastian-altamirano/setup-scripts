@@ -1,6 +1,7 @@
 """Contains utility functions."""
 
 from functools import wraps
+from io import TextIOWrapper
 from logging import exception as logException
 from logging import info as logInfo
 from os import makedirs as createDirectories
@@ -40,12 +41,26 @@ def copyConfiguration(resourceName: str, destinationPath: str) -> None:
         copyFile(src=absoluteSourcePath, dst=absoluteDestinationPath)
 
 
-def createFileWithContent(path: str, content: str) -> None:
-    """Creates a file at the specified path with the specified content."""
+def createOrUpdateFile(path: str, content: str) -> None:
+    """Creates or updates the specified file with the given content."""
     absolutePath = getAbsolutePath(path)
-    createDirectories(absolutePath, exist_ok=True)
-    with open(absolutePath, mode="w", encoding="utf-8") as file:
+
+    def writeContent(file: TextIOWrapper, content: str) -> None:
         file.write(content)
+        if not content.endswith("\n"):
+            file.write("\n")
+
+    if pathExists(absolutePath):
+        with open(absolutePath, mode="r+", encoding="utf-8") as file:
+            fileContent = file.read()
+            if not fileContent.endswith("\n") and not len(fileContent) == 0:
+                file.write("\n")
+
+            writeContent(file, content)
+    else:
+        createDirectories(absolutePath, exist_ok=True)
+        with open(absolutePath, mode="w", encoding="utf-8") as file:
+            writeContent(file, content)
 
 
 def formatConfigurationBlocks(configurationBlocks: List[List[str]]) -> str:
