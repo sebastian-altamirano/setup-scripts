@@ -54,6 +54,21 @@ class BaseTests:  # pylint: disable=too-few-public-methods
                 self.getFinalArgs(*args),
                 capture_output=True,
                 check=True,
+                input=None,
+                text=True,
+            )
+
+        def testIfCommandIsExecutedWithPipedInput(self, mockRun: Mock) -> None:
+            args = ["wc", "--chars"]
+            pipedInput = "Hello World!"
+
+            self.getRunFunction()(*args, pipedInput=pipedInput)
+
+            mockRun.assert_called_once_with(
+                self.getFinalArgs(*args),
+                capture_output=True,
+                check=True,
+                input=pipedInput,
                 text=True,
             )
 
@@ -71,7 +86,7 @@ class BaseTests:  # pylint: disable=too-few-public-methods
             self.assertEqual(
                 [
                     call.mockLogInfo(*self.getFinalArgs(*args)),
-                    call.mockRun(ANY, capture_output=True, check=True, text=True),
+                    call.mockRun(ANY, capture_output=True, check=True, input=None, text=True),
                 ],
                 mocksManager.mock_calls,
             )

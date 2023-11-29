@@ -114,12 +114,12 @@ def installationStep(
     return runInstallationStep
 
 
-def _runWith(*args: str) -> "CompletedProcess[str]":
+def _runWith(*args: str, pipedInput: Optional[str] = None) -> "CompletedProcess[str]":
     logInfo(*args)
-    return run([*args], capture_output=True, check=True, text=True)
+    return run([*args], capture_output=True, check=True, input=pipedInput, text=True)
 
 
-def runWithFish(*args: str) -> "CompletedProcess[str]":
+def runWithFish(*args: str, pipedInput: Optional[str] = None) -> "CompletedProcess[str]":
     """Runs a command with fish.
 
     The command is logged before being executed.
@@ -127,10 +127,10 @@ def runWithFish(*args: str) -> "CompletedProcess[str]":
     Raises:
         CalledProcessError: If the command execution failed.
     """
-    return _runWith("fish", "-c", *args)
+    return _runWith("fish", "-c", *args, pipedInput=pipedInput)
 
 
-def runWithSh(*args: str) -> "CompletedProcess[str]":
+def runWithSh(*args: str, pipedInput: Optional[str] = None) -> "CompletedProcess[str]":
     """Runs a command with sh.
 
     The command is logged before being executed.
@@ -138,7 +138,7 @@ def runWithSh(*args: str) -> "CompletedProcess[str]":
     Raises:
         CalledProcessError: If the command execution failed.
     """
-    return _runWith(*args)
+    return _runWith(*args, pipedInput=pipedInput)
 
 
 def warnAboutUnsupportedOrUnrecognizedConfig(key: str) -> None:
