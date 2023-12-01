@@ -28,8 +28,13 @@ warn_unused_ignores = true
 [tool.pylint.basic]
 argument-naming-style = "camelCase"
 attr-naming-style = "camelCase"
+class-attribute-naming-style = "camelCase"
+class-const-naming-style = "UPPER_CASE"
+class-naming-style = "PascalCase"
+const-naming-style = "UPPER_CASE"
 function-naming-style = "camelCase"
 method-naming-style = "camelCase"
+module-naming-style = "snake_case"
 variable-naming-style = "camelCase"
 
 [tool.pdm.dev-dependencies]
