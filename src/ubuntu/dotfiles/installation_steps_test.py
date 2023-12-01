@@ -17,8 +17,133 @@ from unittest.mock import ANY, Mock, call, patch
 
 import dotfiles.installation_steps as installationSteps
 from dotfiles.helpers.utils import installationStep
-from dotfiles.installation_steps import copyApplicationSettings, installVSCodeExtensions
-from dotfiles.type_definitions import ApplicationSettingsMapping
+from dotfiles.installation_steps import (
+    configureGit,
+    copyApplicationSettings,
+    installVSCodeExtensions,
+)
+from dotfiles.type_definitions import ApplicationSettingsMapping, GitConfiguration
+
+
+@patch("dotfiles.installation_steps.formatConfigurationBlocks")
+@patch("dotfiles.installation_steps.createOrUpdateFile")
+@patch("dotfiles.installation_steps.getAbsolutePath")
+@patch("dotfiles.installation_steps.runWithSh")
+@patch("dotfiles.installation_steps.copyConfiguration")
+class ConfigureGitTests(TestCase):
+    """Contains tests for the `configureGit` function."""
+
+    def setUp(self) -> None:
+        self.gpgKeyId = "BIH6SLDZCKZ7L8TG2BCTY4HDIT0MOZUQQNTZ8HOF"
+        self.gpgKeyInformation = (
+            "sec   rsa4096 2024-01-01 [SC]\n"
+            f"{self.gpgKeyId}\n"
+            "uid                      John Doe <john.doe@example.com>\n"
+            "ssb   rsa4096 2024-01-01 [E]\n"
+        )
+        self.gitConfigurationWithoutCommitSigning: GitConfiguration = {
+            "userName": "John Doe",
+            "email": "john.doe@example.com",
+        }
+        self.gitConfigurationWithGpgCommitSigning: GitConfiguration = {
+            **self.gitConfigurationWithoutCommitSigning,
+            "commitSigning": {
+                "signingMethod": "gpg",
+                "privateKeyName": "github.gpg",
+            },
+        }
+
+    def testIfKeyIdIsParsedCorrectly(
+        self,
+        _mockCopyConfiguration: Mock,
+        mockRunWithSh: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockCreateOrUpdateFile: Mock,
+        _mockFormatConfigurationBlocks: Mock,
+    ) -> None:
+        mockRunWithSh.return_value.stdout = self.gpgKeyInformation
+
+        configureGit(self.gitConfigurationWithGpgCommitSigning)
+
+        mockRunWithSh.assert_any_call("git", "config", "--global", "user.signingkey", self.gpgKeyId)
+
+    def testIfKeyTrustLevelIsChangedToUltimate(
+        self,
+        _mockCopyConfiguration: Mock,
+        mockRunWithSh: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockCreateOrUpdateFile: Mock,
+        _mockFormatConfigurationBlocks: Mock,
+    ) -> None:
+        mockRunWithSh.return_value.stdout = self.gpgKeyInformation
+
+        configureGit(self.gitConfigurationWithGpgCommitSigning)
+
+        mockRunWithSh.assert_any_call(
+            "gpg", "--import-ownertrust", pipedInput=f"{self.gpgKeyId}:6:\n"
+        )
+
+    def testIfGpgAgentConfigurationIsCreated(
+        self,
+        _mockCopyConfiguration: Mock,
+        mockRunWithSh: Mock,
+        _mockGetAbsolutePath: Mock,
+        mockCreateOrUpdateFile: Mock,
+        mockFormatConfigurationBlocks: Mock,
+    ) -> None:
+        gitConfiguration: GitConfiguration = {
+            **self.gitConfigurationWithoutCommitSigning,
+            "commitSigning": {
+                "signingMethod": "gpg",
+                "privateKeyName": "github.gpg",
+                "allowCommittingFromVSCode": True,
+                "cachePassPhraseDuringSession": True,
+            },
+        }
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockCreateOrUpdateFile, "mockCreateOrUpdateFile")
+        mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
+
+        configureGit(gitConfiguration)
+
+        mockFormatConfigurationBlocks.assert_called_once()
+        mocksManager.assert_has_calls(
+            [
+                call.mockCreateOrUpdateFile(
+                    "~/.gnupg/gpg-agent.conf", mockFormatConfigurationBlocks.return_value
+                ),
+                call.mockRunWithSh("gpg-connect-agent", "reloadagent", "/bye"),
+            ]
+        )
+
+    def testIfGpgAgentConfigurationIsNotCreated(
+        self,
+        _mockCopyConfiguration: Mock,
+        mockRunWithSh: Mock,
+        _mockGetAbsolutePath: Mock,
+        mockCreateOrUpdateFile: Mock,
+        mockFormatConfigurationBlocks: Mock,
+    ) -> None:
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockCreateOrUpdateFile, "mockRunWithSh")
+        mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
+
+        configureGit(self.gitConfigurationWithGpgCommitSigning)
+
+        mockFormatConfigurationBlocks.assert_not_called()
+        self.assertTrue(
+            call("~/.gnupg/gpg-agent.conf", mockFormatConfigurationBlocks.return_value)
+            not in mockCreateOrUpdateFile.mock_calls
+        )
+        self.assertTrue(
+            call(
+                "gpg-connect-agent",
+                "reloadagent",
+                "/bye",
+                mockFormatConfigurationBlocks.return_value,
+            )
+            not in mockRunWithSh.mock_calls
+        )
 
 
 @patch("dotfiles.installation_steps.runWithSh")

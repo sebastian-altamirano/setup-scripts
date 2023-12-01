@@ -34,3 +34,10 @@ venv/
 
 # Node.js
 node_modules/
+
+# SSH and GPG keys
+*.pub
+*.gpg
+id_ecdsa
+id_ed25519
+id_rsa
