@@ -15,9 +15,6 @@
 	ps = push
 	st = status
 
-[commit]
-	gpgsign = true
-
 [core]
 	editor = nano
 

@@ -1,71 +1,121 @@
 """Contains type definitions."""
 
-from typing import List, Literal, TypedDict, TypeVar
+from __future__ import annotations
+
+from typing import List, Literal, TypeVar, Union, final
+
+from typing_extensions import NotRequired, TypedDict
 
 
+@final
 class Arguments(TypedDict):
     """Arguments accepted by the installation script."""
 
     logFilePath: str
 
 
-class _ApplicationSettingsMapping(TypedDict, total=False):
-    completionCommands: List[List[str]]
-    postInstallationInstructions: str
-
-
-class ApplicationSettingsMapping(_ApplicationSettingsMapping):
+@final
+class ApplicationSettingsMapping(TypedDict):
     """Defines a source-destination mapping of a resource located in the `/config/ubuntu` folder.
 
-    Matches what is defined in `/config/settings.schema.json` for the `/ubuntu/settingsPath` JSON
-    Pointer.
+    Matches what is defined in `/config/settings.schema.json` for `/ubuntu/settingsPath`.
     """
 
-    resourceName: str
+    completionCommands: NotRequired[List[List[str]]]
     destination: str
+    resourceName: str
+    postInstallationInstructions: NotRequired[str]
 
 
-class _GitCommitSigningConfiguration(TypedDict, total=False):
-    allowCommittingFromVSCode: bool
-    cachePassPhraseDuringSession: bool
+@final
+class GitCommitSigningConfiguration(TypedDict):
+    """Configuration accepted by the Dotfiles to configure Git commit signing.
+
+    Matches what is defined in `/config/settings.schema.json` for `/ubuntu/git/commitSigning`.
+    """
+
+    allowCommittingFromVSCode: NotRequired[bool]
+    cachePassPhraseDuringSession: NotRequired[bool]
 
 
-class GitCommitSigningConfiguration(_GitCommitSigningConfiguration):
-    """Configuration accepted by the Dotfiles to configure Git.
+@final
+class GpgConfiguration(TypedDict):
+    """Configuration accepted by the Dotfiles to configure Git commit signing.
 
-    Matches what is defined in `/config/settings.schema.json` for the
-    `/ubuntu/gitConfiguration/commitSigning` JSON Pointer.
+    Matches what is defined in `/config/settings.schema.json` for `/ubuntu/git/gpg`.
     """
 
     privateKeyName: str
-    signingMethod: Literal["gpg", "ssh"]
 
 
-class _GitConfiguration(TypedDict, total=False):
-    commitSigning: GitCommitSigningConfiguration
+@final
+class SshConfiguration(TypedDict):
+    """Configuration accepted by the Dotfiles to configure Git access and commit signing.
 
-
-class GitConfiguration(_GitConfiguration):
-    """Configuration accepted by the Dotfiles to configure Git.
-
-    Matches what is defined in `/config/settings.schema.json` for the `/ubuntu/gitConfiguration`
-    JSON Pointer.
+    Matches what is defined in `/config/settings.schema.json` for `/ubuntu/git/ssh`.
     """
 
+    hostname: str
+    privateKeyName: str
+    publicKeyName: str
+
+
+class _BaseGitConfiguration(TypedDict):
     email: str
     userName: str
 
 
-class Config(TypedDict, total=False):
+@final
+class BasicGitConfiguration(_BaseGitConfiguration):
+    """Basic configuration accepted by the Dotfiles to configure Git."""
+
+    ssh: NotRequired[SshConfiguration]
+    """Used to configure SSH access to the Git provider."""
+
+
+class _BaseGitConfigurationWithCommitSigning(_BaseGitConfiguration):
+    commitSigning: NotRequired[GitCommitSigningConfiguration]
+
+
+@final
+class GitConfigurationWithGpgCommitSigning(_BaseGitConfigurationWithCommitSigning):
+    """Configuration accepted by the Dotfiles to configure Git with GPG signing."""
+
+    gpg: GpgConfiguration
+    signingMethod: Literal["gpg"]
+    ssh: NotRequired[SshConfiguration]
+
+
+@final
+class GitConfigurationWithSshCommitSigning(_BaseGitConfigurationWithCommitSigning):
+    """Configuration accepted by the Dotfiles to configure Git with SSH access and signing."""
+
+    signingMethod: Literal["ssh"]
+    ssh: SshConfiguration
+
+
+GitConfiguration = Union[
+    BasicGitConfiguration,
+    GitConfigurationWithGpgCommitSigning,
+    GitConfigurationWithSshCommitSigning,
+]
+"""Configuration accepted by the Dotfiles to configure Git.
+
+Matches what is defined in `/config/settings.schema.json` for `/ubuntu/git`.
+"""
+
+
+@final
+class Config(TypedDict):
     """Configuration accepted by the Dotfiles.
 
-    Matches what is defined in `/config/settings.schema.json` for the `/ubuntu` JSON Pointer.
+    Matches what is defined in `/config/settings.schema.json` for `/ubuntu`.
     """
 
-    gitConfiguration: GitConfiguration
-    postInstallationInstructions: List[str]
-    settingsPaths: List[ApplicationSettingsMapping]
-    vscodeExtensions: List[str]
+    git: NotRequired[GitConfiguration]
+    postInstallationInstructions: NotRequired[List[str]]
+    settingsPaths: NotRequired[List[ApplicationSettingsMapping]]
+    vscodeExtensions: NotRequired[List[str]]
 
 
 InstallationStepReturnValueT = TypeVar("InstallationStepReturnValueT")

@@ -36,40 +36,43 @@ def configureGit(configuration: GitConfiguration) -> None:
     runWithSh("git", "config", "--global", "user.name", configuration["userName"])
     runWithSh("git", "config", "--global", "user.email", configuration["email"])
 
-    if "commitSigning" in configuration:
-        commitSigningConfiguration = configuration["commitSigning"]
-        if commitSigningConfiguration["signingMethod"] == "ssh":
-            pass
-        else:
-            privateKeyPath = getAbsolutePath(
-                f"../../../config/ubuntu/{commitSigningConfiguration['privateKeyName']}"
-            )
+    if "signingMethod" not in configuration:
+        return
 
-            # Import the key.
-            runWithSh("gpg", "--import", privateKeyPath, "--batch")
+    if configuration["signingMethod"] == "ssh":
+        pass
+    else:
+        privateKeyPath = getAbsolutePath(
+            f"../../../config/ubuntu/{configuration['gpg']['privateKeyName']}"
+        )
 
-            # Remove previous signing configuration.
-            try:
-                runWithSh("git", "config", "--global", "--unset", "gpg.format")
-            except CalledProcessError as exception:
-                # The command returns 5 when you try to unset an option which does not exist.
-                if exception.returncode != 5:
-                    raise exception
+        # Import the key.
+        runWithSh("gpg", "--import", privateKeyPath, "--batch")
 
-            # Add new signing configuration.
-            keyInformation = runWithSh("gpg", "--show-keys", privateKeyPath).stdout
-            keyId = keyInformation.split("\n")[1].strip()
-            runWithSh("git", "config", "--global", "user.signingkey", keyId)
-            runWithSh("git", "config", "--global", "commit.gpgsign", "true")
+        # Remove previous signing configuration.
+        try:
+            runWithSh("git", "config", "--global", "--unset", "gpg.format")
+        except CalledProcessError as exception:
+            # The command returns 5 when you try to unset an option which does not exist.
+            if exception.returncode != 5:
+                raise exception
 
-            # Add the key to the fish startup file.
-            createOrUpdateFile("~/.config/fish/config.fish", "set -gx GPG_TTY (tty)")
+        # Add new signing configuration.
+        keyInformation = runWithSh("gpg", "--show-keys", privateKeyPath).stdout
+        keyId = keyInformation.split("\n")[1].strip()
+        runWithSh("git", "config", "--global", "user.signingkey", keyId)
+        runWithSh("git", "config", "--global", "commit.gpgsign", "true")
 
-            # Change the trust level of the key to ultimate.
-            runWithSh("gpg", "--import-ownertrust", pipedInput=f"{keyId}:6:\n")
+        # Add the key to the fish startup file.
+        createOrUpdateFile("~/.config/fish/config.fish", "set -gx GPG_TTY (tty)")
 
-            # Configure `gpg-agent`.
+        # Change the trust level of the key to ultimate.
+        runWithSh("gpg", "--import-ownertrust", pipedInput=f"{keyId}:6:\n")
+
+        # Configure `gpg-agent`.
+        if "commitSigning" in configuration:
             gpgAgentConfiguration: List[List[str]] = []
+            commitSigningConfiguration = configuration["commitSigning"]
 
             if commitSigningConfiguration.get("allowCommittingFromVSCode", False):
                 gpgAgentConfiguration.append(

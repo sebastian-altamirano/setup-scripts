@@ -22,7 +22,12 @@ from dotfiles.installation_steps import (
     copyApplicationSettings,
     installVSCodeExtensions,
 )
-from dotfiles.type_definitions import ApplicationSettingsMapping, GitConfiguration
+from dotfiles.type_definitions import (
+    ApplicationSettingsMapping,
+    BasicGitConfiguration,
+    GitConfiguration,
+    GitConfigurationWithGpgCommitSigning,
+)
 
 
 @patch("dotfiles.installation_steps.formatConfigurationBlocks")
@@ -41,16 +46,16 @@ class ConfigureGitTests(TestCase):
             "uid                      John Doe <john.doe@example.com>\n"
             "ssb   rsa4096 2024-01-01 [E]\n"
         )
-        self.gitConfigurationWithoutCommitSigning: GitConfiguration = {
+        self.gitConfigurationWithoutCommitSigning: BasicGitConfiguration = {
             "userName": "John Doe",
             "email": "john.doe@example.com",
         }
-        self.gitConfigurationWithGpgCommitSigning: GitConfiguration = {
+        self.gitConfigurationWithGpgCommitSigning: GitConfigurationWithGpgCommitSigning = {
             **self.gitConfigurationWithoutCommitSigning,
-            "commitSigning": {
-                "signingMethod": "gpg",
+            "gpg": {
                 "privateKeyName": "github.gpg",
             },
+            "signingMethod": "gpg",
         }
 
     def testIfKeyIdIsParsedCorrectly(
@@ -94,11 +99,13 @@ class ConfigureGitTests(TestCase):
         gitConfiguration: GitConfiguration = {
             **self.gitConfigurationWithoutCommitSigning,
             "commitSigning": {
-                "signingMethod": "gpg",
-                "privateKeyName": "github.gpg",
                 "allowCommittingFromVSCode": True,
                 "cachePassPhraseDuringSession": True,
             },
+            "gpg": {
+                "privateKeyName": "github.gpg",
+            },
+            "signingMethod": "gpg",
         }
         mocksManager = Mock()
         mocksManager.attach_mock(mockCreateOrUpdateFile, "mockCreateOrUpdateFile")

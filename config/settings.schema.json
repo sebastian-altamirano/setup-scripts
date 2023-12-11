@@ -37,7 +37,7 @@
 						"type": "string"
 					}
 				},
-				"required": ["resourceName", "destination"],
+				"required": ["destination", "resourceName"],
 				"type": "object"
 			},
 			"type": "array"
@@ -57,8 +57,36 @@
 			"additionalProperties": false,
 			"description": "Ubuntu configuration.",
 			"properties": {
-				"gitConfiguration": {
+				"git": {
 					"additionalProperties": false,
+					"allOf": [
+						{
+							"if": {
+								"properties": {
+									"signingMethod": {
+										"const": "ssh"
+									}
+								},
+								"required": ["signingMethod"]
+							},
+							"then": {
+								"required": ["ssh"]
+							}
+						},
+						{
+							"if": {
+								"properties": {
+									"signingMethod": {
+										"const": "gpg"
+									}
+								},
+								"required": ["signingMethod"]
+							},
+							"then": {
+								"required": ["gpg"]
+							}
+						}
+					],
 					"description": "Git configuration. If a `.gitconfig` file exists in `/config/ubuntu`, it will be used as the base configuration and the changes described in this object will be applied to it; if any configuration collides, the configuration defined in this object will prevail.",
 					"properties": {
 						"commitSigning": {
@@ -66,29 +94,54 @@
 							"description": "Commit signing configuration.",
 							"properties": {
 								"allowCommittingFromVSCode": {
-									"description": "Whether to allow committing from VSCode. You need to have Gpg4win installed on Windows for this to work.",
+									"description": "Whether to allow committing from VSCode. If `/ubuntu/git/signingMethod` is 'gpg', you need to have Gpg4win installed on Windows for this to work.",
 									"type": "boolean"
 								},
 								"cachePassPhraseDuringSession": {
 									"description": "Whether to cache the passphrase during the session.",
 									"type": "boolean"
-								},
-								"privateKeyName": {
-									"description": "The name of the private key to be used to sign the commits, it must be the name of a file located in the `/config/ubuntu` folder.",
-									"type": "string"
-								},
-								"signingMethod": {
-									"description": "The commit signing method.",
-									"enum": ["gpg", "ssh"],
-									"type": "string"
 								}
-							},
-							"required": ["privateKeyName", "signingMethod"]
+							}
 						},
 						"email": {
 							"description": "The email to show in the commits, e.g. 'johndoe@example.com'.",
 							"format": "email",
 							"type": "string"
+						},
+						"gpg": {
+							"additionalProperties": false,
+							"description": "GPG configuration used to sign commits when `/ubuntu/git/signingMethod` is 'gpg'.",
+							"properties": {
+								"privateKeyName": {
+									"description": "The name of the private key to be used to sign the commits, it must be the name of a file located in the `/config/ubuntu` folder.",
+									"type": "string"
+								}
+							},
+							"required": ["privateKeyName"]
+						},
+						"signingMethod": {
+							"description": "The commit signing method.",
+							"enum": ["gpg", "ssh"],
+							"type": "string"
+						},
+						"ssh": {
+							"additionalProperties": false,
+							"description": "SSH configuration used to access repositories using SSH and to sign commits when `/ubuntu/git/signingMethod` is 'ssh'.",
+							"properties": {
+								"hostname": {
+									"description": "The hostname of the Git provider, for example 'github.com'.",
+									"type": "string"
+								},
+								"privateKeyName": {
+									"description": "The name of the private key, it must be the name of a file located in the `/config/ubuntu` folder.",
+									"type": "string"
+								},
+								"publicKeyName": {
+									"description": "The name of the public key, it must be the name of a file located in the `/config/ubuntu` folder.",
+									"type": "string"
+								}
+							},
+							"required": ["hostname", "privateKeyName", "publicKeyName"]
 						},
 						"userName": {
 							"description": "The name to show in the commits, e.g. 'John Doe'.",
