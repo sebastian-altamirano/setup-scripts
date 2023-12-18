@@ -15,9 +15,6 @@
 	ps = push
 	st = status
 
-[commit]
-	gpgsign = true
-
 [core]
 	editor = nano
 
@@ -29,8 +26,3 @@
 
 [push]
 	default = current
-
-# Complete the following fields before executing the installation script:
-
-[user]
-	signingkey =

@@ -1,20 +1,5 @@
 {
 	"ubuntu": {
-		"settingsPaths": [
-			{
-				"destination": "~/.config/fish",
-				"resourceName": "fish"
-			},
-			{
-				"completionCommands": [["gpg-connect-agent", "reloadagent", "/bye"]],
-				"destination": "~/.gnupg/gpg-agent.conf",
-				"resourceName": "gpg-agent.conf"
-			},
-			{
-				"destination": "~/.ssh/config",
-				"resourceName": "ssh-config"
-			}
-		],
 		"vscodeExtensions": [
 			"Codeium.codeium",
 			"dbaeumer.vscode-eslint",

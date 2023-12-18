@@ -1,6 +1,7 @@
 """Contains utility functions."""
 
 from functools import wraps
+from io import TextIOWrapper
 from logging import exception as logException
 from logging import info as logInfo
 from os import makedirs as createDirectories
@@ -9,7 +10,7 @@ from os.path import exists as pathExists
 from os.path import isdir as isDirectory
 from shutil import copy2 as copyFile
 from shutil import copytree as copyDirectory
-from subprocess import run
+from subprocess import CompletedProcess, run
 from typing import Any, Callable, List, Optional
 from warnings import warn
 
@@ -38,6 +39,48 @@ def copyConfiguration(resourceName: str, destinationPath: str) -> None:
     else:
         createDirectories(absoluteDestinationPath, exist_ok=True)
         copyFile(src=absoluteSourcePath, dst=absoluteDestinationPath)
+
+
+def createOrUpdateFile(path: str, content: str) -> None:
+    """Creates or updates the specified file with the given content."""
+    absolutePath = getAbsolutePath(path)
+
+    def writeContent(file: TextIOWrapper, content: str) -> None:
+        file.write(content)
+        if not content.endswith("\n"):
+            file.write("\n")
+
+    if pathExists(absolutePath):
+        with open(absolutePath, mode="r+", encoding="utf-8") as file:
+            fileContent = file.read()
+            if not fileContent.endswith("\n") and not len(fileContent) == 0:
+                file.write("\n")
+
+            writeContent(file, content)
+    else:
+        createDirectories(absolutePath, exist_ok=True)
+        with open(absolutePath, mode="w", encoding="utf-8") as file:
+            writeContent(file, content)
+
+
+def formatConfigurationBlocks(configurationBlocks: List[List[str]]) -> str:
+    """Formats the given configuration blocks into a single string."""
+    filteredConfigurationBlocks = [
+        configurationBlock
+        for configurationBlock in configurationBlocks
+        if configurationBlock
+        if len(configurationBlock) > 0
+    ]
+
+    if len(filteredConfigurationBlocks) == 0:
+        return ""
+
+    return (
+        "\n\n".join(
+            ["\n".join(configurationBlock) for configurationBlock in filteredConfigurationBlocks]
+        )
+        + "\n"
+    )
 
 
 def logCompletionMessage(postInstallationInstructions: Optional[List[str]] = None) -> None:
@@ -71,12 +114,12 @@ def installationStep(
     return runInstallationStep
 
 
-def _runWith(*args: str) -> None:
+def _runWith(*args: str, pipedInput: Optional[str] = None) -> "CompletedProcess[str]":
     logInfo(*args)
-    run([*args], check=True)
+    return run([*args], capture_output=True, check=True, input=pipedInput, text=True)
 
 
-def runWithFish(*args: str) -> None:
+def runWithFish(*args: str, pipedInput: Optional[str] = None) -> "CompletedProcess[str]":
     """Runs a command with fish.
 
     The command is logged before being executed.
@@ -84,10 +127,10 @@ def runWithFish(*args: str) -> None:
     Raises:
         CalledProcessError: If the command execution failed.
     """
-    _runWith("fish", "-c", *args)
+    return _runWith("fish", "-c", *args, pipedInput=pipedInput)
 
 
-def runWithSh(*args: str) -> None:
+def runWithSh(*args: str, pipedInput: Optional[str] = None) -> "CompletedProcess[str]":
     """Runs a command with sh.
 
     The command is logged before being executed.
@@ -95,7 +138,7 @@ def runWithSh(*args: str) -> None:
     Raises:
         CalledProcessError: If the command execution failed.
     """
-    _runWith(*args)
+    return _runWith(*args, pipedInput=pipedInput)
 
 
 def warnAboutUnsupportedOrUnrecognizedConfig(key: str) -> None:

@@ -6,13 +6,16 @@ from abc import ABC, abstractmethod
 from logging import ERROR as LOGGING_LEVEL_ERROR
 from logging import INFO as LOGGING_LEVEL_INFO
 from logging import LogRecord
-from typing import Any, Callable, List, Optional
+from subprocess import CompletedProcess
+from typing import Any, Callable, List, Optional, cast
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
 
 from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.helpers.utils import (
     copyConfiguration,
+    createOrUpdateFile,
+    formatConfigurationBlocks,
     installationStep,
     logCompletionMessage,
     runWithFish,
@@ -29,7 +32,7 @@ class BaseTests:  # pylint: disable=too-few-public-methods
         """Contains base tests for `runWith...` functions."""
 
         @abstractmethod
-        def getRunFunction(self) -> Callable[..., None]:
+        def getRunFunction(self) -> Callable[..., "CompletedProcess[str]"]:
             """Returns the function used to run the commands."""
 
         def getShell(self) -> Optional[str]:
@@ -49,7 +52,24 @@ class BaseTests:  # pylint: disable=too-few-public-methods
 
             mockRun.assert_called_once_with(
                 self.getFinalArgs(*args),
+                capture_output=True,
                 check=True,
+                input=None,
+                text=True,
+            )
+
+        def testIfCommandIsExecutedWithPipedInput(self, mockRun: Mock) -> None:
+            args = ["wc", "--chars"]
+            pipedInput = "Hello World!"
+
+            self.getRunFunction()(*args, pipedInput=pipedInput)
+
+            mockRun.assert_called_once_with(
+                self.getFinalArgs(*args),
+                capture_output=True,
+                check=True,
+                input=pipedInput,
+                text=True,
             )
 
         @patch("dotfiles.helpers.utils.logInfo")
@@ -66,7 +86,7 @@ class BaseTests:  # pylint: disable=too-few-public-methods
             self.assertEqual(
                 [
                     call.mockLogInfo(*self.getFinalArgs(*args)),
-                    call.mockRun(ANY, check=True),
+                    call.mockRun(ANY, capture_output=True, check=True, input=None, text=True),
                 ],
                 mocksManager.mock_calls,
             )
@@ -155,6 +175,227 @@ class CopyConfigurationTests(TestCase):
     @staticmethod
     def _mockGetAbsolutePath(path: str) -> str:
         return f"/abs/{path}"
+
+
+@patch("dotfiles.helpers.utils.open")
+@patch("dotfiles.helpers.utils.createDirectories")
+@patch("dotfiles.helpers.utils.pathExists")
+@patch("dotfiles.helpers.utils.getAbsolutePath")
+class CreateOrUpdateFileTests(TestCase):
+    """Contains tests for the `createOrUpdateFile` function."""
+
+    def setUp(self) -> None:
+        self.filePath = "~/.config/fish/config.fish"
+        self.fileContent = "set -gx GPG_TTY (tty)"
+
+    def testIfFileIsCreated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        mockPathExists.return_value = False
+        mocksManager = self._getMocksManager(
+            mockGetAbsolutePath, mockPathExists, mockCreateDirectories, mockFileOpen
+        )
+
+        createOrUpdateFile(self.filePath, self.fileContent)
+
+        self.assertEqual(
+            [
+                call.mockGetAbsolutePath(self.filePath),
+                call.mockPathExists(mockGetAbsolutePath.return_value),
+                call.mockCreateDirectories(mockGetAbsolutePath.return_value, exist_ok=True),
+                call.mockFileWrite(self.fileContent),
+                call.mockFileWrite("\n"),
+            ],
+            mocksManager.mock_calls,
+        )
+        mockFileOpen.assert_called_once_with(
+            mockGetAbsolutePath.return_value, mode="w", encoding="utf-8"
+        )
+
+    def testIfEmptyFileIsUpdated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = ""
+        expectedFileWriteCalls = [
+            call.mockFileWrite(self.fileContent),
+            call.mockFileWrite("\n"),
+        ]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def testIfFileThatEndsWithNewlineIsUpdated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = "eval $(ssh-agent -c)\n"
+        expectedFileWriteCalls = [
+            call.mockFileWrite(self.fileContent),
+            call.mockFileWrite("\n"),
+        ]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def testIfFileThatDoesNotEndWithNewlineIsUpdated(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = "eval $(ssh-agent -c)"
+        expectedFileWriteCalls = [
+            call.mockFileWrite("\n"),
+            call.mockFileWrite(self.fileContent),
+            call.mockFileWrite("\n"),
+        ]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def testIfNewlineIsNotAddedWhenContentAlreadyEndsWithIt(
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> None:
+        self.fileContent = "set -gx GPG_TTY (tty)\n"
+        mockFileRead = self._getMockFileRead(mockFileOpen)
+        mockFileRead.return_value = ""
+        expectedFileWriteCalls = [call.mockFileWrite(self.fileContent)]
+
+        self._assertFileIsUpdated(
+            mockGetAbsolutePath,
+            mockPathExists,
+            mockCreateDirectories,
+            mockFileOpen,
+            expectedFileWriteCalls,
+        )
+
+    def _assertFileIsUpdated(  # pylint: disable=too-many-arguments
+        self,
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+        expectedFileWriteCalls: List[Any],
+    ) -> None:
+        mockPathExists.return_value = True
+        mocksManager = self._getMocksManager(
+            mockGetAbsolutePath, mockPathExists, mockCreateDirectories, mockFileOpen
+        )
+
+        createOrUpdateFile(self.filePath, self.fileContent)
+
+        self.assertEqual(
+            [
+                call.mockGetAbsolutePath(self.filePath),
+                call.mockPathExists(mockGetAbsolutePath.return_value),
+                *expectedFileWriteCalls,
+            ],
+            mocksManager.mock_calls,
+        )
+        mockFileOpen.assert_called_once_with(
+            mockGetAbsolutePath.return_value, mode="r+", encoding="utf-8"
+        )
+
+    @staticmethod
+    def _getMockFileRead(mockFileOpen: Mock) -> Mock:
+        return cast(Mock, mockFileOpen.return_value.__enter__.return_value.read)
+
+    @staticmethod
+    def _getMocksManager(
+        mockGetAbsolutePath: Mock,
+        mockPathExists: Mock,
+        mockCreateDirectories: Mock,
+        mockFileOpen: Mock,
+    ) -> Mock:
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockGetAbsolutePath, "mockGetAbsolutePath")
+        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
+        mocksManager.attach_mock(mockPathExists, "mockPathExists")
+        mocksManager.attach_mock(
+            mockFileOpen.return_value.__enter__.return_value.write, "mockFileWrite"
+        )
+        return mocksManager
+
+
+class FormatConfigurationBlocksTests(TestCase):
+    """Contains tests for the `formatConfigurationBlocks` function."""
+
+    def testIfConfigurationBlocksAreFormattedCorrectly(self) -> None:
+        configurationBlocks = [
+            [
+                "# Cache the password for 10 hours.",
+                "cache-password true",
+                "cache-password-time 36000",
+            ],
+            ["# Allow committing from VSCode.", "allow-commiting-from-vscode true"],
+        ]
+
+        formattedConfigurationBlocks = formatConfigurationBlocks(configurationBlocks)
+
+        self.assertEqual(
+            (
+                f"{configurationBlocks[0][0]}\n"
+                f"{configurationBlocks[0][1]}\n"
+                f"{configurationBlocks[0][2]}\n\n"
+                f"{configurationBlocks[1][0]}\n"
+                f"{configurationBlocks[1][1]}\n"
+            ),
+            formattedConfigurationBlocks,
+        )
+
+    def testIfEmptyBlocksAreFilteredOut(self) -> None:
+        configurationBlocks: List[List[str]] = [
+            [],
+            ["# Allow committing from VSCode.", "allow-commiting-from-vscode true"],
+        ]
+
+        formattedConfigurationBlocks = formatConfigurationBlocks(configurationBlocks)
+
+        self.assertEqual(
+            (f"{configurationBlocks[1][0]}\n" f"{configurationBlocks[1][1]}\n"),
+            formattedConfigurationBlocks,
+        )
+
+    def testIfAnEmptyStringIsReturnedIfThereAreNoBlocks(self) -> None:
+        configurationBlocks: List[List[str]] = []
+
+        formattedConfigurationBlocks = formatConfigurationBlocks(configurationBlocks)
+
+        self.assertEqual("", formattedConfigurationBlocks)
 
 
 class InstallationStepTests(TestCase):
@@ -256,14 +497,14 @@ class RunWithFishTests(BaseTests.RunWithBaseTests):
     def getShell(self) -> Optional[str]:
         return "fish"
 
-    def getRunFunction(self) -> Callable[..., None]:
+    def getRunFunction(self) -> Callable[..., "CompletedProcess[str]"]:
         return runWithFish
 
 
 class RunWithShTests(BaseTests.RunWithBaseTests):
     """Contains tests for the `runWithSh`function."""
 
-    def getRunFunction(self) -> Callable[..., None]:
+    def getRunFunction(self) -> Callable[..., "CompletedProcess[str]"]:
         return runWithSh
 
 
