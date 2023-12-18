@@ -1,11 +1,19 @@
 {
 	"$defs": {
+		"cachePassPhraseDuringSession": {
+			"description": "Whether to cache the passphrase during the session.",
+			"type": "boolean"
+		},
 		"postInstallationInstructions": {
 			"description": "Instructions to be displayed at the end of the installation process. Use it to explain the remaining tasks that cannot be automated.",
 			"items": {
 				"type": "string"
 			},
 			"type": "array"
+		},
+		"privateKeyName": {
+			"description": "The name of the private key, it must be the name of a file located in the `/config/ubuntu` folder.",
+			"type": "string"
 		},
 		"settingsPaths": {
 			"description": "Contains a list of application settings mappings.",
@@ -96,10 +104,6 @@
 								"allowCommittingFromVSCode": {
 									"description": "Whether to allow committing from VSCode. If `/ubuntu/git/signingMethod` is 'gpg', you need to have Gpg4win installed on Windows for this to work.",
 									"type": "boolean"
-								},
-								"cachePassPhraseDuringSession": {
-									"description": "Whether to cache the passphrase during the session.",
-									"type": "boolean"
 								}
 							}
 						},
@@ -112,9 +116,11 @@
 							"additionalProperties": false,
 							"description": "GPG configuration used to sign commits when `/ubuntu/git/signingMethod` is 'gpg'.",
 							"properties": {
+								"cachePassPhraseDuringSession": {
+									"$ref": "#/$defs/cachePassPhraseDuringSession"
+								},
 								"privateKeyName": {
-									"description": "The name of the private key to be used to sign the commits, it must be the name of a file located in the `/config/ubuntu` folder.",
-									"type": "string"
+									"$ref": "#/$defs/privateKeyName"
 								}
 							},
 							"required": ["privateKeyName"]
@@ -128,13 +134,15 @@
 							"additionalProperties": false,
 							"description": "SSH configuration used to access repositories using SSH and to sign commits when `/ubuntu/git/signingMethod` is 'ssh'.",
 							"properties": {
+								"cachePassPhraseDuringSession": {
+									"$ref": "#/$defs/cachePassPhraseDuringSession"
+								},
 								"hostname": {
 									"description": "The hostname of the Git provider, for example 'github.com'.",
 									"type": "string"
 								},
 								"privateKeyName": {
-									"description": "The name of the private key, it must be the name of a file located in the `/config/ubuntu` folder.",
-									"type": "string"
+									"$ref": "#/$defs/privateKeyName"
 								},
 								"publicKeyName": {
 									"description": "The name of the public key, it must be the name of a file located in the `/config/ubuntu` folder.",

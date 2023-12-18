@@ -35,7 +35,6 @@ class GitCommitSigningConfiguration(TypedDict):
     """
 
     allowCommittingFromVSCode: NotRequired[bool]
-    cachePassPhraseDuringSession: NotRequired[bool]
 
 
 @final
@@ -45,6 +44,7 @@ class GpgConfiguration(TypedDict):
     Matches what is defined in `/config/settings.schema.json` for `/ubuntu/git/gpg`.
     """
 
+    cachePassPhraseDuringSession: NotRequired[bool]
     privateKeyName: str
 
 
@@ -55,6 +55,7 @@ class SshConfiguration(TypedDict):
     Matches what is defined in `/config/settings.schema.json` for `/ubuntu/git/ssh`.
     """
 
+    cachePassPhraseDuringSession: NotRequired[bool]
     hostname: str
     privateKeyName: str
     publicKeyName: str

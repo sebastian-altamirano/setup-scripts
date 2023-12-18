@@ -1,15 +1,5 @@
 {
 	"ubuntu": {
-		"settingsPaths": [
-			{
-				"destination": "~/.config/fish",
-				"resourceName": "fish"
-			},
-			{
-				"destination": "~/.ssh/config",
-				"resourceName": "ssh-config"
-			}
-		],
 		"vscodeExtensions": [
 			"Codeium.codeium",
 			"dbaeumer.vscode-eslint",

@@ -31,8 +31,12 @@ from dotfiles.type_definitions import (
 
 
 @patch("dotfiles.installation_steps.formatConfigurationBlocks")
-@patch("dotfiles.installation_steps.createOrUpdateFile")
+@patch("dotfiles.installation_steps.getDirectoryName")
+@patch("dotfiles.installation_steps.joinPaths")
 @patch("dotfiles.installation_steps.getAbsolutePath")
+@patch("dotfiles.installation_steps.createOrUpdateFile")
+@patch("dotfiles.installation_steps.changeResourceMode")
+@patch("dotfiles.installation_steps.createDirectories")
 @patch("dotfiles.installation_steps.runWithSh")
 @patch("dotfiles.installation_steps.copyConfiguration")
 class ConfigureGitTests(TestCase):
@@ -50,6 +54,15 @@ class ConfigureGitTests(TestCase):
             "userName": "John Doe",
             "email": "john.doe@example.com",
         }
+        self.gitConfigurationWithSshAccess: BasicGitConfiguration = {
+            **self.gitConfigurationWithoutCommitSigning,
+            "ssh": {
+                "cachePassPhraseDuringSession": True,
+                "hostname": "github.com",
+                "privateKeyName": "id_ed25519",
+                "publicKeyName": "id_ed25519.pub",
+            },
+        }
         self.gitConfigurationWithGpgCommitSigning: GitConfigurationWithGpgCommitSigning = {
             **self.gitConfigurationWithoutCommitSigning,
             "gpg": {
@@ -58,12 +71,16 @@ class ConfigureGitTests(TestCase):
             "signingMethod": "gpg",
         }
 
-    def testIfKeyIdIsParsedCorrectly(
+    def testIfGpgKeyIdIsParsedCorrectly(
         self,
         _mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
-        _mockGetAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockChangeResourceMode: Mock,
         _mockCreateOrUpdateFile: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockGetDirectoryName: Mock,
         _mockFormatConfigurationBlocks: Mock,
     ) -> None:
         mockRunWithSh.return_value.stdout = self.gpgKeyInformation
@@ -72,12 +89,16 @@ class ConfigureGitTests(TestCase):
 
         mockRunWithSh.assert_any_call("git", "config", "--global", "user.signingkey", self.gpgKeyId)
 
-    def testIfKeyTrustLevelIsChangedToUltimate(
+    def testIfGpgKeyTrustLevelIsChangedToUltimate(
         self,
         _mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
-        _mockGetAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockChangeResourceMode: Mock,
         _mockCreateOrUpdateFile: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockGetDirectoryName: Mock,
         _mockFormatConfigurationBlocks: Mock,
     ) -> None:
         mockRunWithSh.return_value.stdout = self.gpgKeyInformation
@@ -92,17 +113,21 @@ class ConfigureGitTests(TestCase):
         self,
         _mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
-        _mockGetAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockChangeResourceMode: Mock,
         mockCreateOrUpdateFile: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockGetDirectoryName: Mock,
         mockFormatConfigurationBlocks: Mock,
     ) -> None:
         gitConfiguration: GitConfiguration = {
             **self.gitConfigurationWithoutCommitSigning,
             "commitSigning": {
                 "allowCommittingFromVSCode": True,
-                "cachePassPhraseDuringSession": True,
             },
             "gpg": {
+                "cachePassPhraseDuringSession": True,
                 "privateKeyName": "github.gpg",
             },
             "signingMethod": "gpg",
@@ -127,8 +152,12 @@ class ConfigureGitTests(TestCase):
         self,
         _mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
-        _mockGetAbsolutePath: Mock,
+        _mockCreateDirectories: Mock,
+        _mockChangeResourceMode: Mock,
         mockCreateOrUpdateFile: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockGetDirectoryName: Mock,
         mockFormatConfigurationBlocks: Mock,
     ) -> None:
         mocksManager = Mock()
@@ -150,6 +179,38 @@ class ConfigureGitTests(TestCase):
                 mockFormatConfigurationBlocks.return_value,
             )
             not in mockRunWithSh.mock_calls
+        )
+
+    def testIfSshKeyIsCopiedWithTheCorrectPermissions(
+        self,
+        mockCopyConfiguration: Mock,
+        _mockRunWithSh: Mock,
+        mockCreateDirectories: Mock,
+        mockChangeResourceMode: Mock,
+        _mockCreateOrUpdateFile: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockGetDirectoryName: Mock,
+        _mockFormatConfigurationBlocks: Mock,
+    ) -> None:
+        mocksManager = Mock()
+        mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
+        mocksManager.attach_mock(mockCopyConfiguration, "mockCopyConfiguration")
+        mocksManager.attach_mock(mockChangeResourceMode, "mockChangeResourceMode")
+        publicKeyName = self.gitConfigurationWithSshAccess["ssh"]["publicKeyName"]
+        privateKeyName = self.gitConfigurationWithSshAccess["ssh"]["privateKeyName"]
+
+        configureGit(self.gitConfigurationWithSshAccess)
+
+        mocksManager.assert_has_calls(
+            [
+                call.mockCopyConfiguration(".gitconfig", "~/.gitconfig"),
+                call.mockCreateDirectories("~/.ssh", mode=0o700),
+                call.mockCopyConfiguration(publicKeyName, "~/.ssh"),
+                call.mockChangeResourceMode(f"~/.ssh/{publicKeyName}", 0o644),
+                call.mockCopyConfiguration(privateKeyName, "~/.ssh"),
+                call.mockChangeResourceMode(f"~/.ssh/{privateKeyName}", 0o600),
+            ]
         )
 
 
