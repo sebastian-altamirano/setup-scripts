@@ -53,7 +53,7 @@ class InstallationStepsTests(TestCase):
             """Node visitor to count the number of functions decorated with `installationStep`."""
 
             def __init__(self) -> None:
-                self.numberOfDecoratedFunctions = 0
+                self._numberOfDecoratedFunctions = 0
 
             @staticmethod
             def _checkIfFunctionIsDecorated(node: FunctionDef) -> bool:
@@ -63,23 +63,32 @@ class InstallationStepsTests(TestCase):
                     for decorator in decorators
                 )
 
-            def visit_FunctionDef(self, node: FunctionDef) -> None:  # pylint: disable=invalid-name
+            def visitFunctionDef(self, node: FunctionDef) -> None:
                 """Tracks the number of functions decorated with `installationStep`."""
                 if self._checkIfFunctionIsDecorated(node):
-                    self.numberOfDecoratedFunctions += 1
+                    self._numberOfDecoratedFunctions += 1
+
+                self.generic_visit(node)
+
+            def visit(self, node: AST) -> int:
+                """Visits a node."""
+                nodeName = node.__class__.__name__
+                visitor = getattr(self, f"visit{nodeName}", self.generic_visit)
+                visitor(node)
+
+                return self._numberOfDecoratedFunctions
 
         for filePath, abstractSintaxTree in self._installationStepsMetadata():
             visitor = InstallationStepVisitor()
 
-            visitor.visit(abstractSintaxTree)
+            numberOfDecoratedFunctions = visitor.visit(abstractSintaxTree)
 
             self.assertEqual(
                 1,
-                visitor.numberOfDecoratedFunctions,
-                f"Exactly one function in `{filePath}` should be decorated with "
-                "`installationStep`, but there "
-                f"{'are' if visitor.numberOfDecoratedFunctions > 1 else 'is'}"
-                f"{visitor.numberOfDecoratedFunctions}.",
+                numberOfDecoratedFunctions,
+                f"Exactly one function in `{filePath}` should be decorated with `installationStep`,"
+                f" but there {'are' if numberOfDecoratedFunctions > 1 else 'is'} "
+                f"{numberOfDecoratedFunctions}.",
             )
 
     def testIfInstallationStepsDoNotUseSubprocessRun(self) -> None:
@@ -92,8 +101,8 @@ class InstallationStepsTests(TestCase):
             """Node visitor to check if `subprocess.run` is being used."""
 
             def __init__(self) -> None:
-                self.isUsingSubprocess = False
-                self.isUsingSubprocessRun = False
+                self._isUsingSubprocess = False
+                self._isUsingSubprocessRun = False
 
             def _checkIfTheAssignmentIsSubprocessRun(self, node: Attribute) -> bool:
                 return (
@@ -104,7 +113,7 @@ class InstallationStepsTests(TestCase):
 
             def visitAssign(self, node: Assign) -> Any:
                 """Checks if `subprocess.run` is being assigned to a variable."""
-                if not self.isUsingSubprocess:
+                if not self._isUsingSubprocess:
                     return
 
                 if (
@@ -118,12 +127,12 @@ class InstallationStepsTests(TestCase):
                         for subNode in node.value.elts
                     )
                 ):
-                    self.isUsingSubprocessRun = True
+                    self._isUsingSubprocessRun = True
                     raise StopIteration()
 
             def visitCall(self, node: Call) -> None:
                 """Checks if `subprocess.run` is being called."""
-                if not self.isUsingSubprocess:
+                if not self._isUsingSubprocess:
                     return
 
                 if (
@@ -132,7 +141,7 @@ class InstallationStepsTests(TestCase):
                     and node.func.value.id == "subprocess"
                     and node.func.attr == "run"
                 ):
-                    self.isUsingSubprocessRun = True
+                    self._isUsingSubprocessRun = True
                     raise StopIteration()
 
                 self.generic_visit(node)
@@ -142,13 +151,13 @@ class InstallationStepsTests(TestCase):
                 if node.module == "subprocess" and any(
                     importName.name == "run" for importName in node.names
                 ):
-                    self.isUsingSubprocessRun = True
+                    self._isUsingSubprocessRun = True
                     raise StopIteration()
 
             def visitImport(self, node: Import) -> None:
                 """Checks if `subprocess` is being imported."""
                 if any(importName.name == "subprocess" for importName in node.names):
-                    self.isUsingSubprocess = True
+                    self._isUsingSubprocess = True
 
             def visit(self, node: AST) -> bool:
                 """Visits a node."""
@@ -160,7 +169,7 @@ class InstallationStepsTests(TestCase):
                 except StopIteration:
                     pass
 
-                return self.isUsingSubprocessRun
+                return self._isUsingSubprocessRun
 
         for filePath, abstractSintaxTree in self._installationStepsMetadata():
             visitor = InstallationStepVisitor()
