@@ -1,13 +1,25 @@
 """Contains tests for static analysis."""
 
-from ast import FunctionDef, Module, Name, NodeVisitor
+from ast import (
+    AST,
+    Assign,
+    Attribute,
+    Call,
+    FunctionDef,
+    Import,
+    ImportFrom,
+    List,
+    Module,
+    Name,
+    NodeVisitor,
+)
 from ast import parse as parseAst
 from glob import glob
 from os.path import abspath as getAbsolutePath
 from os.path import dirname as getDirectoryName
 from os.path import join as joinPaths
 from pathlib import Path
-from typing import Generator, Tuple
+from typing import Any, Generator, Tuple
 from unittest import TestCase
 
 from dotfiles.helpers.utils import installationStep
@@ -31,7 +43,7 @@ class InstallationStepsTests(TestCase):
             for filePath in installationStepPaths
         )
 
-    def testIfAllInstallationStepsAreDecorated(self) -> None:
+    def testIfInstallationStepsAreDecorated(self) -> None:
         """
         Checks that for all scripts located in `/installation_steps`, exactly one function is
         decorated with `installationStep`.
@@ -68,4 +80,95 @@ class InstallationStepsTests(TestCase):
                 "`installationStep`, but there "
                 f"{'are' if visitor.numberOfDecoratedFunctions > 1 else 'is'}"
                 f"{visitor.numberOfDecoratedFunctions}.",
+            )
+
+    def testIfInstallationStepsDoNotUseSubprocessRun(self) -> None:
+        """
+        Checks that for all scripts located in `/installation_steps`, `subprocess.run` is not being
+        used directly.
+        """
+
+        class InstallationStepVisitor(NodeVisitor):
+            """Node visitor to check if `subprocess.run` is being used."""
+
+            def __init__(self) -> None:
+                self.isUsingSubprocess = False
+                self.isUsingSubprocessRun = False
+
+            def _checkIfTheAssignmentIsSubprocessRun(self, node: Attribute) -> bool:
+                return (
+                    isinstance(node.value, Name)
+                    and node.value.id == "subprocess"
+                    and node.attr == "run"
+                )
+
+            def visitAssign(self, node: Assign) -> Any:
+                """Checks if `subprocess.run` is being assigned to a variable."""
+                if not self.isUsingSubprocess:
+                    return
+
+                if (
+                    isinstance(node.value, Attribute)
+                    and self._checkIfTheAssignmentIsSubprocessRun(node.value)
+                ) or (
+                    isinstance(node.value, List)
+                    and any(
+                        isinstance(subNode, Attribute)
+                        and self._checkIfTheAssignmentIsSubprocessRun(subNode)
+                        for subNode in node.value.elts
+                    )
+                ):
+                    self.isUsingSubprocessRun = True
+                    raise StopIteration()
+
+            def visitCall(self, node: Call) -> None:
+                """Checks if `subprocess.run` is being called."""
+                if not self.isUsingSubprocess:
+                    return
+
+                if (
+                    isinstance(node.func, Attribute)
+                    and isinstance(node.func.value, Name)
+                    and node.func.value.id == "subprocess"
+                    and node.func.attr == "run"
+                ):
+                    self.isUsingSubprocessRun = True
+                    raise StopIteration()
+
+                self.generic_visit(node)
+
+            def visitImportFrom(self, node: ImportFrom) -> None:
+                """Checks if `subprocess.run` is being imported."""
+                if node.module == "subprocess" and any(
+                    importName.name == "run" for importName in node.names
+                ):
+                    self.isUsingSubprocessRun = True
+                    raise StopIteration()
+
+            def visitImport(self, node: Import) -> None:
+                """Checks if `subprocess` is being imported."""
+                if any(importName.name == "subprocess" for importName in node.names):
+                    self.isUsingSubprocess = True
+
+            def visit(self, node: AST) -> bool:
+                """Visits a node."""
+                nodeName = node.__class__.__name__
+                visitor = getattr(self, f"visit{nodeName}", self.generic_visit)
+
+                try:
+                    visitor(node)
+                except StopIteration:
+                    pass
+
+                return self.isUsingSubprocessRun
+
+        for filePath, abstractSintaxTree in self._installationStepsMetadata():
+            visitor = InstallationStepVisitor()
+
+            isUsingSubprocessRun = visitor.visit(abstractSintaxTree)
+
+            self.assertFalse(
+                isUsingSubprocessRun,
+                f"`{filePath}` makes use of `subprocess.run`, replace it with `runWithSh` or "
+                "`runWithFish`.",
             )

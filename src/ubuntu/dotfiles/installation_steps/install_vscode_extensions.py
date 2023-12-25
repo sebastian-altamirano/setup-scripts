@@ -2,12 +2,9 @@
 
 from logging import error as logError
 from logging import info as logInfo
-from subprocess import run
 from typing import List
 
-from dotfiles.helpers.utils import installationStep
-
-runWithoutLogging = run
+from dotfiles.helpers.utils import installationStep, runWithSh
 
 
 @installationStep
@@ -15,9 +12,7 @@ def installVSCodeExtensions(extensions: List[str]) -> None:
     """Installs extensions for VSCode."""
     extensionThatCouldNotBeInstalled = ""
     for extension in extensions:
-        commandOutput = runWithoutLogging(
-            ["code", "--install-extension", extension], capture_output=True, check=True
-        )
+        commandOutput = runWithSh("code", "--install-extension", extension)
         if commandOutput.stderr:
             extensionThatCouldNotBeInstalled += f"- {extension}\n"
 
