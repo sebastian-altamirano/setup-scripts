@@ -12,4 +12,4 @@ Once you have installed all the requirements, run [`/scripts/install-dependencie
 
 ## VSCode configuration
 
-Ubuntu dotfiles have a VSCode workspace that you must use, it configures formatting, linting, testing and other things. To use it open [`.vscode/ubuntu.code-workspace`](.vscode/ubuntu.code-workspace) with VSCode.
+Use `.vscode/dotfiles.code-workspace` at all times, this workspace configures formatting, debugging, linting, testing and other things.

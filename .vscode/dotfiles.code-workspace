@@ -1,0 +1,131 @@
+{
+	"folders": [
+		{
+			"name": "Dotfiles",
+			"path": ".."
+		},
+		{
+			"name": "Browser snippets",
+			"path": "../src/browser-snippets"
+		},
+		{
+			"name": "Ubuntu dotfiles",
+			"path": "../src/ubuntu"
+		},
+		{
+			"name": "Windows dotfiles",
+			"path": "../src/windows"
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"dbaeumer.vscode-eslint",
+			"esbenp.prettier-vscode",
+			"ms-python.python",
+			"ms-python.vscode-pylance",
+			"ms-python.black-formatter",
+			"ms-python.isort",
+			"ms-python.mypy-type-checker",
+			"ms-python.pylint",
+			"ms-vscode.powershell"
+		]
+	},
+	"launch": {
+		"configurations": [
+			{
+				"justMyCode": false,
+				"name": "Python: Debug tests",
+				"program": "${file}",
+				"purpose": ["debug-test"],
+				"request": "launch",
+				"type": "python"
+			}
+		],
+		"version": "0.2.0"
+	},
+	"settings": {
+		// ------------------------------------------ General ------------------------------------------
+
+		"editor.insertSpaces": false,
+
+		"files.eol": "\n",
+		"files.insertFinalNewline": true,
+		"files.trimTrailingWhitespace": true,
+
+		"search.exclude": {
+			"**/venv": true,
+			"**/.venv": true,
+			"**/__pycache__": true,
+			"**/.mypy_cache": true,
+			"**/pdm.lock": true
+		},
+
+		// ----------------------------------------- JavaScript ----------------------------------------
+
+		"[javascript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.formatOnSave": true
+		},
+
+		"eslint.experimental.useFlatConfig": true,
+
+		// -------------------------------------------- JSON -------------------------------------------
+
+		"[json]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.formatOnSave": true
+		},
+
+		"json.schemas": [
+			{
+				"fileMatch": ["config/settings.json"],
+				"url": "../config/settings.schema.json"
+			}
+		],
+
+		// ------------------------------------------ Markdown -----------------------------------------
+
+		"[markdown]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.formatOnSave": true
+		},
+
+		// ----------------------------------------- PowerShell ----------------------------------------
+
+		"[powershell]": {
+			"editor.defaultFormatter": "ms-vscode.powershell",
+			"editor.formatOnSave": true
+		},
+
+		// The PowerShell extension does not allow specifying formatting settings using a file
+		// (https://github.com/PowerShell/vscode-powershell/issues/3024#issuecomment-1479559149), so it is
+		// not possible to use `src/windows/formatter-settings.psd1`, however this file contains the same
+		// settings as "OTBS", but using tabs instead of spaces (tabs that VSCode inserts since
+		// `editor.insertSpaces` is set to `false`).
+		"powershell.codeFormatting.preset": "OTBS",
+
+		"powershell.cwd": "Windows dotfiles",
+
+		"powershell.scriptAnalysis.enable": true,
+		"powershell.scriptAnalysis.settingsPath": "linter-settings.psd1",
+
+		// ------------------------------------------- Python ------------------------------------------
+
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter",
+			"editor.formatOnSave": true
+		},
+
+		"black-formatter.importStrategy": "fromEnvironment",
+
+		"mypy-type-checker.importStrategy": "fromEnvironment",
+
+		"pylint.importStrategy": "fromEnvironment",
+
+		"python.analysis.typeCheckingMode": "strict",
+
+		"python.testing.pytestEnabled": false,
+		"python.testing.unittestArgs": ["-v", "-p", "*_test.py"],
+		"python.testing.unittestEnabled": true
+	}
+}
