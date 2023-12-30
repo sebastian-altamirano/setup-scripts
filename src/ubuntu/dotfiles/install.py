@@ -6,15 +6,8 @@ from pathlib import Path
 from typing import List
 from typing import get_type_hints as getTypeHints
 
+from dotfiles import installation_steps as installationSteps
 from dotfiles.helpers.utils import logCompletionMessage, warnAboutUnsupportedOrUnrecognizedConfig
-from dotfiles.installation_steps import (
-    configureGit,
-    copyApplicationSettings,
-    installFish,
-    installPackages,
-    installVSCodeExtensions,
-    upgradeSystemDependencies,
-)
 from dotfiles.type_definitions import Config
 
 
@@ -25,9 +18,9 @@ def install() -> None:
     """
     postInstallationInstructions: List[str] = []
 
-    upgradeSystemDependencies()
-    installFish()
-    postInstallationInstructions += installPackages()
+    installationSteps.upgradeSystemDependencies()
+    installationSteps.installFish()
+    postInstallationInstructions += installationSteps.installPackages()
 
     settingsPath = Path(getAbsolutePath(__file__)).parents[3] / "config" / "settings.json"
     config: Config = readJson(settingsPath.read_text(encoding="utf-8"))
@@ -39,14 +32,16 @@ def install() -> None:
             warnAboutUnsupportedOrUnrecognizedConfig(key)
 
     if "vscodeExtensions" in config:
-        installVSCodeExtensions(config["vscodeExtensions"])
+        installationSteps.installVSCodeExtensions(config["vscodeExtensions"])
     if "settingsPaths" in config:
-        postInstallationInstructions += copyApplicationSettings(config["settingsPaths"])
+        postInstallationInstructions += installationSteps.copyApplicationSettings(
+            config["settingsPaths"]
+        )
 
     # This step must be executed after `copyApplicationSettings` in order not to lose the changes
     # in case the user adds `.gitconfig` to `settingsPaths`.
     if "git" in config:
-        configureGit(**config["git"])
+        installationSteps.configureGit(**config["git"])
 
     if "postInstallationInstructions" in config:
         postInstallationInstructions += config["postInstallationInstructions"]

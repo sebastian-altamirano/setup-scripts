@@ -9,51 +9,45 @@ from dotfiles.install import install
 from dotfiles.type_definitions import Config
 
 
-@patch("dotfiles.install.installFish")
-@patch("dotfiles.install.upgradeSystemDependencies")
-@patch("dotfiles.install.installPackages")
-@patch("dotfiles.install.installVSCodeExtensions")
-@patch("dotfiles.install.copyApplicationSettings")
 @patch("dotfiles.install.warnAboutUnsupportedOrUnrecognizedConfig")
 @patch("dotfiles.install.logCompletionMessage")
 @patch("dotfiles.install.readJson")
+@patch("dotfiles.install.Path")
+@patch("dotfiles.install.getAbsolutePath")
+@patch("dotfiles.install.installationSteps")
 class InstallTests(TestCase):
     """Contains tests for the `install` function."""
 
     def testIfAllConfigurationKeysAreOptional(  # pylint: disable=too-many-arguments
         self,
+        mockInstallationSteps: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockPath: Mock,
         mockReadJson: Mock,
         mockLogCompletionMessage: Mock,
         mockWarnAboutUnsupportedOrUnrecognizedConfig: Mock,
-        mockCopyApplicationSettings: Mock,
-        mockInstallVSCodeExtensions: Mock,
-        mockInstallPackages: Mock,
-        mockUpgradeSystemDependencies: Mock,
-        mockInstallFish: Mock,
     ) -> None:
         emptyConfiguration: Config = {}
         mockReadJson.return_value = emptyConfiguration
 
         install()
 
-        mockInstallFish.assert_called()
-        mockUpgradeSystemDependencies.assert_called()
-        mockInstallPackages.assert_called()
+        mockInstallationSteps.installFish.assert_called()
+        mockInstallationSteps.upgradeSystemDependencies.assert_called()
+        mockInstallationSteps.installPackages.assert_called()
         mockWarnAboutUnsupportedOrUnrecognizedConfig.assert_not_called()
-        mockInstallVSCodeExtensions.assert_not_called()
-        mockCopyApplicationSettings.assert_not_called()
+        mockInstallationSteps.installVSCodeExtensions.assert_not_called()
+        mockInstallationSteps.copyApplicationSettings.assert_not_called()
         mockLogCompletionMessage.assert_called()
 
     def testIfPostInstallationInstructionAreCollectedAndDisplayed(
         self,
+        mockInstallationSteps: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockPath: Mock,
         mockReadJson: Mock,
         mockLogCompletionMessage: Mock,
         _mockWarnAboutUnsupportedOrUnrecognizedConfig: Mock,
-        mockCopyApplicationSettings: Mock,
-        _mockInstallVSCodeExtensions: Mock,
-        mockInstallPackages: Mock,
-        _mockUpgradeSystemDependencies: Mock,
-        _mockInstallFish: Mock,
     ) -> None:
         configurationPostInstalationInstructions = (
             "Post-installation instructions related to configuration restoration..."
@@ -68,6 +62,8 @@ class InstallTests(TestCase):
                 }
             ],
         }
+        mockInstallPackages = mockInstallationSteps.installPackages
+        mockCopyApplicationSettings = mockInstallationSteps.copyApplicationSettings
         mockReadJson.return_value = configuration
         mockInstallPackages.return_value = [
             "Post-installation instructions related to package installation..."
@@ -85,14 +81,12 @@ class InstallTests(TestCase):
 
     def testIfWarningsAreProducedForUnsupportedKeys(
         self,
+        _mockInstallationSteps: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockPath: Mock,
         mockReadJson: Mock,
         _mockLogCompletionMessage: Mock,
         mockWarnAboutUnsupportedOrUnrecognizedConfig: Mock,
-        _mockCopyApplicationSettings: Mock,
-        _mockInstallVSCodeExtensions: Mock,
-        _mockInstallPackages: Mock,
-        _mockUpgradeSystemDependencies: Mock,
-        _mockInstallFish: Mock,
     ) -> None:
         unsupportedConfiguration = {"unsupportedConfigurationKey": "Unsupported configuration"}
         mockReadJson.return_value = unsupportedConfiguration
