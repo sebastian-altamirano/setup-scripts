@@ -15,11 +15,44 @@ from dotfiles.type_definitions import ApplicationSettingsMapping
 
 @patch("dotfiles.installation_steps.copy_application_settings.runWithSh")
 @patch("dotfiles.installation_steps.copy_application_settings.copyConfiguration")
+@patch("dotfiles.installation_steps.copy_application_settings.DOTFILES_SETTINGS_FILE_PATH")
+@patch("dotfiles.installation_steps.copy_application_settings.joinPaths")
+@patch("dotfiles.installation_steps.copy_application_settings.isAbsolutePath")
+@patch("dotfiles.installation_steps.copy_application_settings.getAbsolutePath")
 class CopyApplicationSettingsTests(TestCase):
     """Contains tests for the `copyApplicationSettings` function."""
 
+    def testIfAbsoluteDestinationPathIsCalculatedRelativeToTheSettingsFile(  # pylint: disable=too-many-arguments
+        self,
+        mockGetAbsolutePath: Mock,
+        mockIsAbsolutePath: Mock,
+        mockJoinPaths: Mock,
+        mockDotfilesSettingsFilePath: Mock,
+        mockCopyConfiguration: Mock,
+        _mockRunWithSh: Mock,
+    ) -> None:
+        settingsMapping: ApplicationSettingsMapping = {
+            "resourceName": "fish",
+            "destination": "../.config/fish",
+        }
+        mockIsAbsolutePath.return_value = False
+
+        copyApplicationSettings([settingsMapping])
+
+        mockJoinPaths.assert_called_once_with(
+            mockDotfilesSettingsFilePath, settingsMapping["destination"]
+        )
+        mockGetAbsolutePath.assert_called_once_with(mockJoinPaths.return_value)
+        mockCopyConfiguration.assert_called_once_with(
+            settingsMapping["resourceName"], mockGetAbsolutePath.return_value
+        )
+
     def testIfResourceIsCopied(
         self,
+        mockGetAbsolutePath: Mock,
+        _mockIsAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockDotfilesSettingsFilePath: Mock,
         mockCopyConfiguration: Mock,
         _mockRunWithSh: Mock,
     ) -> None:
@@ -31,11 +64,15 @@ class CopyApplicationSettingsTests(TestCase):
         copyApplicationSettings([settingsMapping])
 
         mockCopyConfiguration.assert_called_once_with(
-            settingsMapping["resourceName"], settingsMapping["destination"]
+            settingsMapping["resourceName"], mockGetAbsolutePath.return_value
         )
 
     def testIfAllResourcesAreCopied(
         self,
+        _mockGetAbsolutePath: Mock,
+        _mockIsAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockDotfilesSettingsFilePath: Mock,
         mockCopyConfiguration: Mock,
         _mockRunWithSh: Mock,
     ) -> None:
@@ -44,7 +81,7 @@ class CopyApplicationSettingsTests(TestCase):
                 "resourceName": "fish",
                 "destination": "~/.config/fish",
             },
-            {"resourceName": ".gitconfig", "destination": "~/.gitconfig"},
+            {"resourceName": ".bash_profile", "destination": "~/.bash_profile"},
         ]
 
         copyApplicationSettings(settingsMappings)
@@ -53,6 +90,10 @@ class CopyApplicationSettingsTests(TestCase):
 
     def testIfCompletionCommandsAreExecutedAfterTheResourceIsCopied(
         self,
+        _mockGetAbsolutePath: Mock,
+        _mockIsAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockDotfilesSettingsFilePath: Mock,
         mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
     ) -> None:
@@ -65,8 +106,8 @@ class CopyApplicationSettingsTests(TestCase):
             "completionCommands": [["echo", "Hello"], ["echo", "Bye"]],
         }
         anotherSettingsMapping: ApplicationSettingsMapping = {
-            "resourceName": ".gitconfig",
-            "destination": "~/.gitconfig",
+            "resourceName": ".bash_profile",
+            "destination": "~/.bash_profile",
             "completionCommands": [["echo", "Hello again"]],
         }
         settingsMappings: List[ApplicationSettingsMapping] = [
@@ -79,10 +120,10 @@ class CopyApplicationSettingsTests(TestCase):
 
         self.assertEqual(
             [
-                call.mockCopyConfiguration(ANY, settingMapping["destination"]),
+                call.mockCopyConfiguration(settingMapping["resourceName"], ANY),
                 call.mockRunWithSh(*settingMapping["completionCommands"][0]),
                 call.mockRunWithSh(*settingMapping["completionCommands"][1]),
-                call.mockCopyConfiguration(ANY, anotherSettingsMapping["destination"]),
+                call.mockCopyConfiguration(anotherSettingsMapping["resourceName"], ANY),
                 call.mockRunWithSh(*anotherSettingsMapping["completionCommands"][0]),
             ],
             mocksManager.mock_calls,
@@ -107,8 +148,8 @@ class CopyApplicationSettingsTests(TestCase):
             ),
         }
         anotherSettingsMapping: ApplicationSettingsMapping = {
-            "resourceName": ".gitconfig",
-            "destination": "~/.gitconfig",
+            "resourceName": ".bash_profile",
+            "destination": "~/.bash_profile",
             "postInstallationInstructions": "There is nothing else to do...",
         }
         settingMappings = [settingMapping, anotherSettingsMapping]
@@ -123,6 +164,10 @@ class CopyApplicationSettingsTests(TestCase):
 
     def testIfCompletionCommandsAndPostInstallationInstructionsAreOptional(
         self,
+        _mockGetAbsolutePath: Mock,
+        _mockIsAbsolutePath: Mock,
+        _mockJoinPaths: Mock,
+        _mockDotfilesSettingsFilePath: Mock,
         _mockCopyConfiguration: Mock,
         mockRunWithSh: Mock,
     ) -> None:
@@ -138,14 +183,21 @@ class CopyApplicationSettingsTests(TestCase):
         mockRunWithSh.assert_not_called()
         self.assertEqual([], postInstallationInstructions)
 
-    def testIfTheResourcesAreLoggedAsTheyAreCopied(self, *_args: Tuple[Mock, Mock]) -> None:
+    def testIfTheResourcesAreLoggedAsTheyAreCopied(
+        self, mockGetAbsolutePath: Mock, *_args: Tuple[Mock, Mock]
+    ) -> None:
         settingsMappings: List[ApplicationSettingsMapping] = [
             {
                 "resourceName": "fish",
                 "destination": "~/.config/fish",
             },
-            {"resourceName": ".gitconfig", "destination": "~/.gitconfig"},
+            {"resourceName": ".bash_profile", "destination": "~/.bash_profile"},
         ]
+
+        def getAbsolutePathSideEffect(path: str) -> str:
+            return path
+
+        mockGetAbsolutePath.side_effect = getAbsolutePathSideEffect
 
         with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
             unwrap(copyApplicationSettings)(settingsMappings)

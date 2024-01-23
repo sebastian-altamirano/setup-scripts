@@ -1,12 +1,10 @@
 """Defines an installation step for installing packages."""
 
 from logging import info as logInfo
-from os.path import abspath as getAbsolutePath
-from os.path import dirname as getDirectoryName
 from os.path import join as joinPaths
 from typing import List
 
-from dotfiles.helpers.utils import installationStep, runWithFish, runWithSh
+from dotfiles.helpers.utils import PROJECT_SCRIPTS_PATH, installationStep, runWithFish, runWithSh
 
 
 @installationStep
@@ -17,9 +15,7 @@ def installPackages() -> List[str]:
     logInfo("Installing fisher...")
     # Fisher is installed using an script because it requires `source`, which cannot be executed
     # with `subprocess.run`.
-    fisherInstallationScriptPath = joinPaths(
-        getDirectoryName(getAbsolutePath(__file__)), "scripts/install-fisher.fish"
-    )
+    fisherInstallationScriptPath = joinPaths(PROJECT_SCRIPTS_PATH, "install-fisher.fish")
     runWithSh(fisherInstallationScriptPath)
 
     logInfo("Installing some plugins for fisher...")

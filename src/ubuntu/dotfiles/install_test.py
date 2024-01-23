@@ -13,7 +13,7 @@ from dotfiles.type_definitions import Config
 @patch("dotfiles.install.logCompletionMessage")
 @patch("dotfiles.install.readJson")
 @patch("dotfiles.install.Path")
-@patch("dotfiles.install.getAbsolutePath")
+@patch("dotfiles.install.DOTFILES_SETTINGS_FILE_PATH")
 @patch("dotfiles.install.installationSteps")
 class InstallTests(TestCase):
     """Contains tests for the `install` function."""
@@ -21,7 +21,7 @@ class InstallTests(TestCase):
     def testIfAllConfigurationKeysAreOptional(  # pylint: disable=too-many-arguments
         self,
         mockInstallationSteps: Mock,
-        _mockGetAbsolutePath: Mock,
+        _mockDotfilesSettingsFilePath: Mock,
         _mockPath: Mock,
         mockReadJson: Mock,
         mockLogCompletionMessage: Mock,
@@ -43,7 +43,7 @@ class InstallTests(TestCase):
     def testIfPostInstallationInstructionAreCollectedAndDisplayed(
         self,
         mockInstallationSteps: Mock,
-        _mockGetAbsolutePath: Mock,
+        _mockDotfilesSettingsFilePath: Mock,
         _mockPath: Mock,
         mockReadJson: Mock,
         mockLogCompletionMessage: Mock,
@@ -82,7 +82,7 @@ class InstallTests(TestCase):
     def testIfWarningsAreProducedForUnsupportedKeys(
         self,
         _mockInstallationSteps: Mock,
-        _mockGetAbsolutePath: Mock,
+        _mockDotfilesSettingsFilePath: Mock,
         _mockPath: Mock,
         mockReadJson: Mock,
         _mockLogCompletionMessage: Mock,

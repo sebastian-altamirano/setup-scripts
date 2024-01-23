@@ -15,14 +15,12 @@ from ast import (
 )
 from ast import parse as parseAst
 from glob import glob
-from os.path import abspath as getAbsolutePath
-from os.path import dirname as getDirectoryName
 from os.path import join as joinPaths
 from pathlib import Path
 from typing import Any, Generator, Tuple
 from unittest import TestCase
 
-from dotfiles.helpers.utils import installationStep
+from dotfiles.helpers.utils import PROJECT_ROOT_PATH, installationStep
 
 
 class InstallationStepsTests(TestCase):
@@ -30,8 +28,7 @@ class InstallationStepsTests(TestCase):
 
     @staticmethod
     def _installationStepsMetadata() -> Generator[Tuple[str, Module], None, None]:
-        rootPath = getDirectoryName(getDirectoryName(getAbsolutePath(__file__)))
-        scriptPaths = glob(joinPaths(rootPath, "installation_steps", "*.py"))
+        scriptPaths = glob(joinPaths(PROJECT_ROOT_PATH, "installation_steps", "*.py"))
         installationStepPaths = [
             filePath
             for filePath in scriptPaths

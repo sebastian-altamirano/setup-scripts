@@ -3,16 +3,17 @@
 from logging import info as logInfo
 from os import chmod as changeResourceMode
 from os import makedirs as createDirectories
-from os.path import abspath as getAbsolutePath
-from os.path import dirname as getDirectoryName
 from os.path import join as joinPaths
 from subprocess import CalledProcessError
 from typing import List, Optional
 
 from dotfiles.helpers.utils import (
+    PROJECT_SCRIPTS_PATH,
+    USER_SETTINGS_PATH,
     copyConfiguration,
     createOrUpdateFile,
     formatConfigurationBlocks,
+    getAbsolutePath,
     installationStep,
     runWithSh,
 )
@@ -25,26 +26,28 @@ from dotfiles.type_definitions import (
 
 
 def _configureSshAccess(sshConfiguration: SshConfiguration) -> None:
+    sshDirectoryPath = getAbsolutePath(joinPaths("~", ".ssh"))
+
     # Copy the public and private keys.
     try:
-        createDirectories("~/.ssh", mode=0o700)
+        createDirectories(sshDirectoryPath, mode=0o700)
     except OSError:
-        changeResourceMode("~/.ssh", 0o700)
+        changeResourceMode(sshDirectoryPath, 0o700)
 
     publicKeyName = sshConfiguration["publicKeyName"]
-    publicKeyPath = f"~/.ssh/{publicKeyName}"
-    copyConfiguration(publicKeyName, "~/.ssh")
+    publicKeyPath = joinPaths(sshDirectoryPath, publicKeyName)
+    copyConfiguration(publicKeyName, sshDirectoryPath)
     changeResourceMode(publicKeyPath, 0o644)
 
     privateKeyName = sshConfiguration["privateKeyName"]
-    privateKeyPath = f"~/.ssh/{privateKeyName}"
-    copyConfiguration(privateKeyName, "~/.ssh")
+    privateKeyPath = joinPaths(sshDirectoryPath, privateKeyName)
+    copyConfiguration(privateKeyName, sshDirectoryPath)
     changeResourceMode(privateKeyPath, 0o600)
 
     # Add the SSH agent configuration.
     hostname = sshConfiguration["hostname"]
     createOrUpdateFile(
-        "~/.ssh/config",
+        joinPaths(sshDirectoryPath, "config"),
         formatConfigurationBlocks(
             [
                 [
@@ -63,18 +66,16 @@ def _configureSshAccess(sshConfiguration: SshConfiguration) -> None:
     )
 
     # Add the key to the SSH agent.
-    addSshKeyScriptPath = joinPaths(
-        getDirectoryName(getAbsolutePath(__file__)), "scripts/add-ssh-key.fish"
-    )
+    addSshKeyScriptPath = joinPaths(PROJECT_SCRIPTS_PATH, "add-ssh-key.fish")
     runWithSh(addSshKeyScriptPath, privateKeyPath)
 
     # Set `ssh-agent` to start automatically.
-    createOrUpdateFile("~/.config/fish/config.fish", "eval $(ssh-agent -c)")
+    createOrUpdateFile(joinPaths("~", ".config", "fish", "config.fish"), "eval $(ssh-agent -c)")
 
 
 def _configureCommitSigningWithSshKey(sshConfiguration: SshConfiguration) -> None:
     # Add the signing configuration.
-    publicKeyPath = f"~/.ssh/{sshConfiguration['publicKeyName']}"
+    publicKeyPath = getAbsolutePath(joinPaths("~", ".ssh", sshConfiguration["publicKeyName"]))
     runWithSh("git", "config", "--global", "gpg.format", "ssh")
     runWithSh("git", "config", "--global", "user.signingkey", publicKeyPath)
 
@@ -87,7 +88,7 @@ def _configureCommitSigningWithGpgKey(
     gpgConfiguration: GpgConfiguration,
     commitSigningConfiguration: Optional[GitCommitSigningConfiguration] = None,
 ) -> None:
-    privateKeyPath = getAbsolutePath(f"../../../config/ubuntu/{gpgConfiguration['privateKeyName']}")
+    privateKeyPath = joinPaths(USER_SETTINGS_PATH, gpgConfiguration["privateKeyName"])
 
     # Import the key.
     runWithSh("gpg", "--import", privateKeyPath, "--batch")
@@ -107,7 +108,7 @@ def _configureCommitSigningWithGpgKey(
     runWithSh("git", "config", "--global", "commit.gpgsign", "true")
 
     # Add the key to the fish startup file.
-    createOrUpdateFile("~/.config/fish/config.fish", "set -gx GPG_TTY (tty)")
+    createOrUpdateFile(joinPaths("~", ".config", "fish", "config.fish"), "set -gx GPG_TTY (tty)")
 
     # Change the trust level of the key to ultimate.
     runWithSh("gpg", "--import-ownertrust", pipedInput=f"{keyId}:6:\n")
@@ -135,7 +136,8 @@ def _configureCommitSigningWithGpgKey(
 
         if len(gpgAgentConfiguration) != 0:
             createOrUpdateFile(
-                "~/.gnupg/gpg-agent.conf", formatConfigurationBlocks(gpgAgentConfiguration)
+                joinPaths("~", ".gnupg", "gpg-agent.conf"),
+                formatConfigurationBlocks(gpgAgentConfiguration),
             )
             runWithSh("gpg-connect-agent", "reloadagent", "/bye")
 
@@ -146,7 +148,7 @@ def configureGit(configuration: GitConfiguration) -> None:
     # Copy the base `.gitconfig` if it exists.
     try:
         logInfo("Trying to copy the base `.gitconfig` file...")
-        copyConfiguration(".gitconfig", "~/.gitconfig")
+        copyConfiguration(".gitconfig", joinPaths("~", ".gitconfig"))
     except FileNotFoundError:
         logInfo(
             "Could not find a base `.gitconfig` file, proceeding with the rest of the "

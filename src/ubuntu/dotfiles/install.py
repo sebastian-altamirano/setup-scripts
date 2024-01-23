@@ -1,13 +1,16 @@
 """Installation script for Ubuntu dotfiles."""
 
 from json import loads as readJson
-from os.path import abspath as getAbsolutePath
 from pathlib import Path
 from typing import List
 from typing import get_type_hints as getTypeHints
 
 from dotfiles import installation_steps as installationSteps
-from dotfiles.helpers.utils import logCompletionMessage, warnAboutUnsupportedOrUnrecognizedConfig
+from dotfiles.helpers.utils import (
+    DOTFILES_SETTINGS_FILE_PATH,
+    logCompletionMessage,
+    warnAboutUnsupportedOrUnrecognizedConfig,
+)
 from dotfiles.type_definitions import Config
 
 
@@ -22,8 +25,7 @@ def install() -> None:
     installationSteps.installFish()
     postInstallationInstructions += installationSteps.installPackages()
 
-    settingsPath = Path(getAbsolutePath(__file__)).parents[3] / "config" / "settings.json"
-    config: Config = readJson(settingsPath.read_text(encoding="utf-8"))
+    config: Config = readJson(Path(DOTFILES_SETTINGS_FILE_PATH).read_text(encoding="utf-8"))
 
     # Issue the warning before starting to do any work.
     supportedConfigurationKeys = getTypeHints(Config).keys()

@@ -33,7 +33,7 @@
 						"type": "array"
 					},
 					"destination": {
-						"description": "The destination path, it can be an absolute or relative path, although it is recommended to use an absolute path to avoid copying resources to unwanted locations.",
+						"description": "The destination path, it can be an absolute or relative path, although it is recommended to use an absolute path to avoid copying resources to unwanted locations. The path can contain environment variables such as `$env:AppData` (`$env:` is necessary because PowerShell is used to expand the path) on Windows and `$HOME` on Ubuntu. It can also contain a tilde character (~) to represent the user's home directory.",
 						"type": "string"
 					},
 					"postInstallationInstructions": {

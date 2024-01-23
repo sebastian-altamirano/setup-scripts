@@ -11,12 +11,13 @@ from typing import Any, Callable, List, Optional, cast
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
 
-from dotfiles.helpers.constants import COLOR_TERMINATOR, GREEN_BG_BLACK_FG, YELLOW_BG_BLACK_FG
 from dotfiles.helpers.utils import (
     copyConfiguration,
     createOrUpdateFile,
     formatConfigurationBlocks,
+    getAbsolutePath,
     installationStep,
+    isAbsolutePath,
     logCompletionMessage,
     runWithFish,
     runWithSh,
@@ -99,11 +100,13 @@ class BaseTests:  # pylint: disable=too-few-public-methods
 @patch("dotfiles.helpers.utils.isDirectory")
 @patch("dotfiles.helpers.utils.pathExists")
 @patch("dotfiles.helpers.utils.getAbsolutePath")
+@patch("dotfiles.helpers.utils.joinPaths")
 class CopyConfigurationTests(TestCase):
     """Contains tests for the `copyConfiguration` function."""
 
     def testIfFileIsCopied(  # pylint: disable=too-many-arguments
         self,
+        mockJoinPaths: Mock,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
         mockIsDirectory: Mock,
@@ -112,9 +115,11 @@ class CopyConfigurationTests(TestCase):
         mockCopyFile: Mock,
     ) -> None:
         fileName = ".gitconfig"
-        sourcePath = f"../../../../config/ubuntu/{fileName}"
+        absoluteSourcePath = f"/home/sebastian/GitHub/dotfiles/config/ubuntu/{fileName}"
+        mockJoinPaths.return_value = absoluteSourcePath
         destinationPath = "~/.gitconfig"
-        mockGetAbsolutePath.side_effect = self._mockGetAbsolutePath
+        absoluteDestinationPath = f"/home/sebastian/{destinationPath[2:]}"
+        mockGetAbsolutePath.return_value = absoluteDestinationPath
         mockPathExists.return_value = True
         mockIsDirectory.return_value = False
         mocksManager = Mock()
@@ -126,14 +131,15 @@ class CopyConfigurationTests(TestCase):
         mockCopyDirectory.assert_not_called()
         self.assertEqual(
             [
-                call.mockCreateDirectories(f"/abs/{destinationPath}", exist_ok=True),
-                call.mockCopyFile(src=f"/abs/{sourcePath}", dst=f"/abs/{destinationPath}"),
+                call.mockCreateDirectories(absoluteDestinationPath, exist_ok=True),
+                call.mockCopyFile(src=absoluteSourcePath, dst=absoluteDestinationPath),
             ],
             mocksManager.mock_calls,
         )
 
     def testIfDirectoryIsCopied(  # pylint: disable=too-many-arguments
         self,
+        mockJoinPaths: Mock,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
         mockIsDirectory: Mock,
@@ -141,23 +147,26 @@ class CopyConfigurationTests(TestCase):
         mockCreateDirectories: Mock,
         mockCopyFile: Mock,
     ) -> None:
-        dirName = "fish"
-        sourcePath = f"../../../../config/ubuntu/{dirName}"
+        directoryName = "fish"
+        absoluteSourcePath = f"/home/sebastian/GitHub/dotfiles/config/ubuntu/{directoryName}"
+        mockJoinPaths.return_value = absoluteSourcePath
         destinationPath = "~/.config/fish"
-        mockGetAbsolutePath.side_effect = self._mockGetAbsolutePath
+        absoluteDestinationPath = f"/home/sebastian/{destinationPath[2:]}"
+        mockGetAbsolutePath.return_value = absoluteDestinationPath
         mockPathExists.return_value = True
         mockIsDirectory.return_value = True
 
-        copyConfiguration(dirName, destinationPath)
+        copyConfiguration(directoryName, destinationPath)
 
         mockCreateDirectories.assert_not_called()
         mockCopyFile.assert_not_called()
         mockCopyDirectory.assert_called_once_with(
-            src=f"/abs/{sourcePath}", dst=f"/abs/{destinationPath}", dirs_exist_ok=True
+            src=absoluteSourcePath, dst=absoluteDestinationPath, dirs_exist_ok=True
         )
 
     def testIfResourceCannotBeANonExistentResource(
         self,
+        _mockJoinPaths: Mock,
         _mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
         _mockIsDirectory: Mock,
@@ -172,13 +181,9 @@ class CopyConfigurationTests(TestCase):
         with self.assertRaises(FileNotFoundError):
             copyConfiguration(nonExistentResource, destinationPath)
 
-    @staticmethod
-    def _mockGetAbsolutePath(path: str) -> str:
-        return f"/abs/{path}"
 
-
-@patch("dotfiles.helpers.utils.open")
 @patch("dotfiles.helpers.utils.createDirectories")
+@patch("dotfiles.helpers.utils.open")
 @patch("dotfiles.helpers.utils.pathExists")
 @patch("dotfiles.helpers.utils.getAbsolutePath")
 class CreateOrUpdateFileTests(TestCase):
@@ -192,12 +197,12 @@ class CreateOrUpdateFileTests(TestCase):
         self,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
-        mockCreateDirectories: Mock,
         mockFileOpen: Mock,
+        mockCreateDirectories: Mock,
     ) -> None:
         mockPathExists.return_value = False
         mocksManager = self._getMocksManager(
-            mockGetAbsolutePath, mockPathExists, mockCreateDirectories, mockFileOpen
+            mockGetAbsolutePath, mockPathExists, mockFileOpen, mockCreateDirectories
         )
 
         createOrUpdateFile(self.filePath, self.fileContent)
@@ -220,8 +225,8 @@ class CreateOrUpdateFileTests(TestCase):
         self,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
-        mockCreateDirectories: Mock,
         mockFileOpen: Mock,
+        mockCreateDirectories: Mock,
     ) -> None:
         mockFileRead = self._getMockFileRead(mockFileOpen)
         mockFileRead.return_value = ""
@@ -233,8 +238,8 @@ class CreateOrUpdateFileTests(TestCase):
         self._assertFileIsUpdated(
             mockGetAbsolutePath,
             mockPathExists,
-            mockCreateDirectories,
             mockFileOpen,
+            mockCreateDirectories,
             expectedFileWriteCalls,
         )
 
@@ -242,8 +247,8 @@ class CreateOrUpdateFileTests(TestCase):
         self,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
-        mockCreateDirectories: Mock,
         mockFileOpen: Mock,
+        mockCreateDirectories: Mock,
     ) -> None:
         mockFileRead = self._getMockFileRead(mockFileOpen)
         mockFileRead.return_value = "eval $(ssh-agent -c)\n"
@@ -255,8 +260,8 @@ class CreateOrUpdateFileTests(TestCase):
         self._assertFileIsUpdated(
             mockGetAbsolutePath,
             mockPathExists,
-            mockCreateDirectories,
             mockFileOpen,
+            mockCreateDirectories,
             expectedFileWriteCalls,
         )
 
@@ -264,8 +269,8 @@ class CreateOrUpdateFileTests(TestCase):
         self,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
-        mockCreateDirectories: Mock,
         mockFileOpen: Mock,
+        mockCreateDirectories: Mock,
     ) -> None:
         mockFileRead = self._getMockFileRead(mockFileOpen)
         mockFileRead.return_value = "eval $(ssh-agent -c)"
@@ -278,8 +283,8 @@ class CreateOrUpdateFileTests(TestCase):
         self._assertFileIsUpdated(
             mockGetAbsolutePath,
             mockPathExists,
-            mockCreateDirectories,
             mockFileOpen,
+            mockCreateDirectories,
             expectedFileWriteCalls,
         )
 
@@ -287,8 +292,8 @@ class CreateOrUpdateFileTests(TestCase):
         self,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
-        mockCreateDirectories: Mock,
         mockFileOpen: Mock,
+        mockCreateDirectories: Mock,
     ) -> None:
         self.fileContent = "set -gx GPG_TTY (tty)\n"
         mockFileRead = self._getMockFileRead(mockFileOpen)
@@ -298,8 +303,8 @@ class CreateOrUpdateFileTests(TestCase):
         self._assertFileIsUpdated(
             mockGetAbsolutePath,
             mockPathExists,
-            mockCreateDirectories,
             mockFileOpen,
+            mockCreateDirectories,
             expectedFileWriteCalls,
         )
 
@@ -307,13 +312,13 @@ class CreateOrUpdateFileTests(TestCase):
         self,
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
-        mockCreateDirectories: Mock,
         mockFileOpen: Mock,
+        mockCreateDirectories: Mock,
         expectedFileWriteCalls: List[Any],
     ) -> None:
         mockPathExists.return_value = True
         mocksManager = self._getMocksManager(
-            mockGetAbsolutePath, mockPathExists, mockCreateDirectories, mockFileOpen
+            mockGetAbsolutePath, mockPathExists, mockFileOpen, mockCreateDirectories
         )
 
         createOrUpdateFile(self.filePath, self.fileContent)
@@ -338,16 +343,16 @@ class CreateOrUpdateFileTests(TestCase):
     def _getMocksManager(
         mockGetAbsolutePath: Mock,
         mockPathExists: Mock,
-        mockCreateDirectories: Mock,
         mockFileOpen: Mock,
+        mockCreateDirectories: Mock,
     ) -> Mock:
         mocksManager = Mock()
         mocksManager.attach_mock(mockGetAbsolutePath, "mockGetAbsolutePath")
         mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
-        mocksManager.attach_mock(mockPathExists, "mockPathExists")
         mocksManager.attach_mock(
             mockFileOpen.return_value.__enter__.return_value.write, "mockFileWrite"
         )
+        mocksManager.attach_mock(mockPathExists, "mockPathExists")
         return mocksManager
 
 
@@ -396,6 +401,34 @@ class FormatConfigurationBlocksTests(TestCase):
         formattedConfigurationBlocks = formatConfigurationBlocks(configurationBlocks)
 
         self.assertEqual("", formattedConfigurationBlocks)
+
+
+@patch("dotfiles.helpers.utils.absolutePath")
+@patch("dotfiles.helpers.utils.expandUser")
+@patch("dotfiles.helpers.utils.expandVars")
+class GetAbsolutePathTests(TestCase):
+    """Contains tests for the `getAbsolutePath` function."""
+
+    def testIfAbsolutePathIsReturned(
+        self, _mockExpandVars: Mock, _mockExpandUser: Mock, mockAbsolutePath: Mock
+    ) -> None:
+        filePath = "~/GitHub/dotfiles/config/settings.json"
+
+        absoluteFilePath = getAbsolutePath(filePath)
+
+        self.assertEqual(mockAbsolutePath.return_value, absoluteFilePath)
+        mockAbsolutePath.assert_called_once()
+
+    def testIfUserHomeAndEnvironmentVariablesAreExpanded(
+        self, mockExpandVars: Mock, mockExpandUser: Mock, mockAbsolutePath: Mock
+    ) -> None:
+        filePath = "~/GitHub/dotfiles/config/settings.json"
+
+        getAbsolutePath(filePath)
+
+        mockExpandVars.assert_called_once_with(filePath)
+        mockExpandUser.assert_called_once_with(mockExpandVars.return_value)
+        mockAbsolutePath.assert_called_once_with(mockExpandUser.return_value)
 
 
 class InstallationStepTests(TestCase):
@@ -452,17 +485,48 @@ class InstallationStepTests(TestCase):
         self.assertIsNotNone(logRecord.exc_info)
 
 
+@patch("dotfiles.helpers.utils.isAbsolute")
+@patch("dotfiles.helpers.utils.expandUser")
+@patch("dotfiles.helpers.utils.expandVars")
+class IsAbsolutePathTests(TestCase):
+    """Contains tests for the `isAbsolutePath` function."""
+
+    def testIfTheCheckIsPerformed(
+        self, _mockExpandVars: Mock, _mockExpandUser: Mock, mockIsAbsolute: Mock
+    ) -> None:
+        filePath = "~/GitHub/dotfiles/config/settings.json"
+
+        absoluteFilePath = isAbsolutePath(filePath)
+
+        self.assertEqual(mockIsAbsolute.return_value, absoluteFilePath)
+        mockIsAbsolute.assert_called_once()
+
+    def testIfUserHomeAndEnvironmentVariablesAreExpanded(
+        self, mockExpandVars: Mock, mockExpandUser: Mock, mockIsAbsolute: Mock
+    ) -> None:
+        filePath = "~/GitHub/dotfiles/config/settings.json"
+
+        isAbsolutePath(filePath)
+
+        mockExpandVars.assert_called_once_with(filePath)
+        mockExpandUser.assert_called_once_with(mockExpandVars.return_value)
+        mockIsAbsolute.assert_called_once_with(mockExpandUser.return_value)
+
+
 class LogCompletionMessageTests(TestCase):
     """Contains tests for the `logCompletionMessage` function."""
 
     def testIfCompletionMessageIsLogged(self) -> None:
+        greenBackgroundBlackForeground = "\x1b[6;30;42m"
+        colorTerminator = "\x1b[0m"
+
         with self.assertLogs() as loggerSpy:
             logCompletionMessage()
 
             self.assertEqual(1, len(loggerSpy.records))
             self.assertEqual(LOGGING_LEVEL_INFO, loggerSpy.records[0].levelno)
             self.assertEqual(
-                f"{GREEN_BG_BLACK_FG}Finished!{COLOR_TERMINATOR}",
+                f"{greenBackgroundBlackForeground}Finished!{colorTerminator}",
                 loggerSpy.records[0].getMessage(),
             )
 
@@ -513,13 +577,15 @@ class WarnAboutUnsupportedOrUnrecognizedConfigTests(TestCase):
 
     @patch("dotfiles.helpers.utils.warn")
     def testIfAWarningIsIssued(self, mockWarn: Mock) -> None:
+        yellowBackgroundBlackForeground = "\x1b[6;30;43m"
+        colorTerminator = "\x1b[0m"
         key = "quickAccessFolders"
 
         warnAboutUnsupportedOrUnrecognizedConfig(key)
 
         mockWarn.assert_called_once_with(
-            f'{YELLOW_BG_BLACK_FG}The configuration contains a value for "{key}", but this key is '
-            f"either not recognized or is not supported by this OS.{COLOR_TERMINATOR}"
+            f'{yellowBackgroundBlackForeground}The configuration contains a value for "{key}", but '
+            f"this key is either not recognized or is not supported by this OS.{colorTerminator}"
         )
 
     def testIfKeyCannotBeAnEmptyString(self) -> None:

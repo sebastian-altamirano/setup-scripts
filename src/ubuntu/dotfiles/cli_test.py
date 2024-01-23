@@ -4,6 +4,7 @@
 
 from datetime import datetime
 from logging import ERROR as LOGGING_LEVEL_ERROR
+from os.path import join as joinPaths
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
@@ -13,20 +14,26 @@ from dotfiles.cli import main
 
 
 @patch("dotfiles.cli.install")
+@patch("dotfiles.cli.logWarnings")
+@patch("dotfiles.cli.StreamHandler")
+@patch("dotfiles.cli.getAbsolutePath")
+@patch("dotfiles.cli.FileHandler")
+@patch("dotfiles.cli.configureLogging")
 @patch(
     "dotfiles.cli.ArgumentParser",
     return_value=Mock(parse_args=Mock(return_value=Mock(logFilePath="dotfiles-install.log"))),
 )
-@patch("dotfiles.cli.configureLogging")
-@patch("dotfiles.cli.FileHandler")
 class EntryPointTests(TestCase):
     """Contains tests for the application entry point."""
 
     def testIfInstallIsCalled(
         self,
-        _mockFileHandler: Mock,
-        _mockConfigureLogging: Mock,
         _mockArgumentParser: Mock,
+        _mockConfigureLogging: Mock,
+        _mockFileHandler: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockStreamHandler: Mock,
+        _mockLogWarnings: Mock,
         mockInstall: Mock,
     ) -> None:
         main()
@@ -37,9 +44,12 @@ class EntryPointTests(TestCase):
     def testIfArgumentParserIsConfigured(
         self,
         mockDateTime: Mock,
-        _mockFileHandler: Mock,
-        _mockConfigureLogging: Mock,
         mockArgumentParser: Mock,
+        _mockConfigureLogging: Mock,
+        _mockFileHandler: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockStreamHandler: Mock,
+        _mockLogWarnings: Mock,
         _mockInstall: Mock,
     ) -> None:
         now = datetime.now()
@@ -54,7 +64,10 @@ class EntryPointTests(TestCase):
                 call(
                     "--logFilePath",
                     default=(
-                        f"{Path.home()}/dotfiles_install-{now.strftime('%Y_%m_%d-%H_%M_%S')}.log"
+                        joinPaths(
+                            Path.home(),
+                            f"dotfiles_install-{now.strftime('%Y_%m_%d-%H_%M_%S')}.log",
+                        )
                     ),
                     help=ANY,
                     type=str,
@@ -64,17 +77,14 @@ class EntryPointTests(TestCase):
         )
         mockArgumentParser.return_value.parse_args.assert_called_once_with(arguments[1:])
 
-    @patch("dotfiles.cli.getAbsolutePath")
-    @patch("dotfiles.cli.logWarnings")
-    @patch("dotfiles.cli.StreamHandler")
     def testIfLoggerIsConfigured(  # pylint: disable=too-many-arguments
         self,
+        _mockArgumentParser: Mock,
+        mockConfigureLogging: Mock,
+        mockFileHandler: Mock,
+        mockGetAbsolutePath: Mock,
         mockStreamHandler: Mock,
         mockLogWarnings: Mock,
-        mockGetAbsolutePath: Mock,
-        mockFileHandler: Mock,
-        mockConfigureLogging: Mock,
-        _mockArgumentParser: Mock,
         _mockInstall: Mock,
     ) -> None:
         logFilePath = "dotfiles-install.log"
@@ -100,9 +110,12 @@ class EntryPointTests(TestCase):
 
     def testIfExceptionsThatOccurInInstallAreLogged(
         self,
-        _mockFileHandler: Mock,
-        _mockConfigureLogging: Mock,
         _mockArgumentParser: Mock,
+        _mockConfigureLogging: Mock,
+        _mockFileHandler: Mock,
+        _mockGetAbsolutePath: Mock,
+        _mockStreamHandler: Mock,
+        _mockLogWarnings: Mock,
         mockInstall: Mock,
     ) -> None:
         mockInstall.side_effect = Exception

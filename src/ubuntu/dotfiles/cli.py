@@ -7,12 +7,13 @@ from logging import FileHandler, StreamHandler
 from logging import basicConfig as configureLogging
 from logging import captureWarnings as logWarnings
 from logging import exception as logException
-from os.path import abspath as getAbsolutePath
+from os.path import join as joinPaths
 from pathlib import Path
 from sys import argv
 from typing import Optional, Sequence, cast
 
 from dotfiles import __version__
+from dotfiles.helpers.utils import getAbsolutePath
 from dotfiles.install import install
 from dotfiles.type_definitions import Arguments
 
@@ -22,7 +23,9 @@ def _parseArguments(arguments: Optional[Sequence[str]] = None) -> Arguments:
     parser.add_argument(
         "--logFilePath",
         default=(
-            f"{Path.home()}/dotfiles_install-{datetime.now().strftime('%Y_%m_%d-%H_%M_%S')}.log"
+            joinPaths(
+                Path.home(), f"dotfiles_install-{datetime.now().strftime('%Y_%m_%d-%H_%M_%S')}.log"
+            )
         ),
         help="specifies the path where the log file will be saved",
         type=str,

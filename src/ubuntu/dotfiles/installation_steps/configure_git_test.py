@@ -13,14 +13,21 @@ from dotfiles.type_definitions import (
 )
 
 
+@patch(
+    "dotfiles.installation_steps.configure_git.USER_SETTINGS_PATH",
+    "/home/sebastian/GitHub/dotfiles/config/ubuntu",
+)
+@patch(
+    "dotfiles.installation_steps.configure_git.PROJECT_SCRIPTS_PATH",
+    "/home/sebastian/GitHub/dotfiles/src/ubuntu/dotfiles/scripts",
+)
 @patch("dotfiles.installation_steps.configure_git.formatConfigurationBlocks")
-@patch("dotfiles.installation_steps.configure_git.getDirectoryName")
-@patch("dotfiles.installation_steps.configure_git.joinPaths")
-@patch("dotfiles.installation_steps.configure_git.getAbsolutePath")
 @patch("dotfiles.installation_steps.configure_git.createOrUpdateFile")
 @patch("dotfiles.installation_steps.configure_git.changeResourceMode")
 @patch("dotfiles.installation_steps.configure_git.createDirectories")
+@patch("dotfiles.installation_steps.configure_git.getAbsolutePath")
 @patch("dotfiles.installation_steps.configure_git.runWithSh")
+@patch("dotfiles.installation_steps.configure_git.joinPaths")
 @patch("dotfiles.installation_steps.configure_git.copyConfiguration")
 class ConfigureGitTests(TestCase):
     """Contains tests for the `configureGit` function."""
@@ -57,13 +64,12 @@ class ConfigureGitTests(TestCase):
     def testIfGpgKeyIdIsParsedCorrectly(
         self,
         _mockCopyConfiguration: Mock,
+        _mockJoinPaths: Mock,
         mockRunWithSh: Mock,
+        _mockGetAbsolutePath: Mock,
         _mockCreateDirectories: Mock,
         _mockChangeResourceMode: Mock,
         _mockCreateOrUpdateFile: Mock,
-        _mockGetAbsolutePath: Mock,
-        _mockJoinPaths: Mock,
-        _mockGetDirectoryName: Mock,
         _mockFormatConfigurationBlocks: Mock,
     ) -> None:
         mockRunWithSh.return_value.stdout = self.gpgKeyInformation
@@ -75,13 +81,12 @@ class ConfigureGitTests(TestCase):
     def testIfGpgKeyTrustLevelIsChangedToUltimate(
         self,
         _mockCopyConfiguration: Mock,
+        _mockJoinPaths: Mock,
         mockRunWithSh: Mock,
+        _mockGetAbsolutePath: Mock,
         _mockCreateDirectories: Mock,
         _mockChangeResourceMode: Mock,
         _mockCreateOrUpdateFile: Mock,
-        _mockGetAbsolutePath: Mock,
-        _mockJoinPaths: Mock,
-        _mockGetDirectoryName: Mock,
         _mockFormatConfigurationBlocks: Mock,
     ) -> None:
         mockRunWithSh.return_value.stdout = self.gpgKeyInformation
@@ -92,16 +97,15 @@ class ConfigureGitTests(TestCase):
             "gpg", "--import-ownertrust", pipedInput=f"{self.gpgKeyId}:6:\n"
         )
 
-    def testIfGpgAgentConfigurationIsCreated(
+    def testIfGpgAgentConfigurationIsCreated(  # pylint: disable=too-many-arguments
         self,
         _mockCopyConfiguration: Mock,
+        mockJoinPaths: Mock,
         mockRunWithSh: Mock,
+        mockGetAbsolutePath: Mock,
         _mockCreateDirectories: Mock,
         _mockChangeResourceMode: Mock,
         mockCreateOrUpdateFile: Mock,
-        _mockGetAbsolutePath: Mock,
-        _mockJoinPaths: Mock,
-        _mockGetDirectoryName: Mock,
         mockFormatConfigurationBlocks: Mock,
     ) -> None:
         gitConfiguration: GitConfiguration = {
@@ -115,6 +119,7 @@ class ConfigureGitTests(TestCase):
             },
             "signingMethod": "gpg",
         }
+        self._configureJoinPathsAndGetAbsolutePath(mockJoinPaths, mockGetAbsolutePath)
         mocksManager = Mock()
         mocksManager.attach_mock(mockCreateOrUpdateFile, "mockCreateOrUpdateFile")
         mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
@@ -125,24 +130,25 @@ class ConfigureGitTests(TestCase):
         mocksManager.assert_has_calls(
             [
                 call.mockCreateOrUpdateFile(
-                    "~/.gnupg/gpg-agent.conf", mockFormatConfigurationBlocks.return_value
+                    "/home/sebastian/.gnupg/gpg-agent.conf",
+                    mockFormatConfigurationBlocks.return_value,
                 ),
                 call.mockRunWithSh("gpg-connect-agent", "reloadagent", "/bye"),
             ]
         )
 
-    def testIfGpgAgentConfigurationIsNotCreated(
+    def testIfGpgAgentConfigurationIsNotCreated(  # pylint: disable=too-many-arguments
         self,
         _mockCopyConfiguration: Mock,
+        mockJoinPaths: Mock,
         mockRunWithSh: Mock,
+        mockGetAbsolutePath: Mock,
         _mockCreateDirectories: Mock,
         _mockChangeResourceMode: Mock,
         mockCreateOrUpdateFile: Mock,
-        _mockGetAbsolutePath: Mock,
-        _mockJoinPaths: Mock,
-        _mockGetDirectoryName: Mock,
         mockFormatConfigurationBlocks: Mock,
     ) -> None:
+        self._configureJoinPathsAndGetAbsolutePath(mockJoinPaths, mockGetAbsolutePath)
         mocksManager = Mock()
         mocksManager.attach_mock(mockCreateOrUpdateFile, "mockRunWithSh")
         mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
@@ -151,7 +157,9 @@ class ConfigureGitTests(TestCase):
 
         mockFormatConfigurationBlocks.assert_not_called()
         self.assertTrue(
-            call("~/.gnupg/gpg-agent.conf", mockFormatConfigurationBlocks.return_value)
+            call(
+                "/home/sebastian/.gnupg/gpg-agent.conf", mockFormatConfigurationBlocks.return_value
+            )
             not in mockCreateOrUpdateFile.mock_calls
         )
         self.assertTrue(
@@ -164,18 +172,18 @@ class ConfigureGitTests(TestCase):
             not in mockRunWithSh.mock_calls
         )
 
-    def testIfSshKeyIsCopiedWithTheCorrectPermissions(
+    def testIfSshKeyIsCopiedWithTheCorrectPermissions(  # pylint: disable=too-many-arguments
         self,
         mockCopyConfiguration: Mock,
+        mockJoinPaths: Mock,
         _mockRunWithSh: Mock,
+        mockGetAbsolutePath: Mock,
         mockCreateDirectories: Mock,
         mockChangeResourceMode: Mock,
         _mockCreateOrUpdateFile: Mock,
-        _mockGetAbsolutePath: Mock,
-        _mockJoinPaths: Mock,
-        _mockGetDirectoryName: Mock,
         _mockFormatConfigurationBlocks: Mock,
     ) -> None:
+        self._configureJoinPathsAndGetAbsolutePath(mockJoinPaths, mockGetAbsolutePath)
         mocksManager = Mock()
         mocksManager.attach_mock(mockCreateDirectories, "mockCreateDirectories")
         mocksManager.attach_mock(mockCopyConfiguration, "mockCopyConfiguration")
@@ -187,11 +195,29 @@ class ConfigureGitTests(TestCase):
 
         mocksManager.assert_has_calls(
             [
-                call.mockCopyConfiguration(".gitconfig", "~/.gitconfig"),
-                call.mockCreateDirectories("~/.ssh", mode=0o700),
-                call.mockCopyConfiguration(publicKeyName, "~/.ssh"),
-                call.mockChangeResourceMode(f"~/.ssh/{publicKeyName}", 0o644),
-                call.mockCopyConfiguration(privateKeyName, "~/.ssh"),
-                call.mockChangeResourceMode(f"~/.ssh/{privateKeyName}", 0o600),
+                call.mockCopyConfiguration(".gitconfig", "/home/sebastian/.gitconfig"),
+                call.mockCreateDirectories("/home/sebastian/.ssh", mode=0o700),
+                call.mockCopyConfiguration(publicKeyName, "/home/sebastian/.ssh"),
+                call.mockChangeResourceMode(f"/home/sebastian/.ssh/{publicKeyName}", 0o644),
+                call.mockCopyConfiguration(privateKeyName, "/home/sebastian/.ssh"),
+                call.mockChangeResourceMode(f"/home/sebastian/.ssh/{privateKeyName}", 0o600),
             ]
         )
+
+    def _configureJoinPathsAndGetAbsolutePath(
+        self,
+        mockJoinPaths: Mock,
+        mockGetAbsolutePath: Mock,
+    ) -> None:
+        def getAbsolutePathSideEffect(path: str) -> str:
+            return path
+
+        def joinPathsSideEffect(*args: str) -> str:
+            if args[0] == "~":
+                return f"/home/sebastian/{'/'.join(args[1:])}"
+            if args[0].startswith("/home/sebastian"):
+                return "/".join(args)
+            return f"/{'/'.join(args)}"
+
+        mockGetAbsolutePath.side_effect = getAbsolutePathSideEffect
+        mockJoinPaths.side_effect = joinPathsSideEffect
