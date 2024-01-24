@@ -43,7 +43,7 @@ def install() -> None:
     # This step must be executed after `copyApplicationSettings` in order not to lose the changes
     # in case the user adds `.gitconfig` to `settingsPaths`.
     if "git" in config:
-        installationSteps.configureGit(**config["git"])
+        installationSteps.configureGit(config["git"])
 
     if "postInstallationInstructions" in config:
         postInstallationInstructions += config["postInstallationInstructions"]
