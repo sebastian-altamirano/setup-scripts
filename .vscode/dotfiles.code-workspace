@@ -63,6 +63,9 @@
 		// ----------------------------------------- JavaScript ----------------------------------------
 
 		"[javascript]": {
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": true
+			},
 			"editor.defaultFormatter": "esbenp.prettier-vscode",
 			"editor.formatOnSave": true
 		},
@@ -112,16 +115,22 @@
 		// ------------------------------------------- Python ------------------------------------------
 
 		"[python]": {
+			"editor.codeActionsOnSave": {
+				"source.unusedImports": true
+			},
 			"editor.defaultFormatter": "ms-python.black-formatter",
 			"editor.formatOnSave": true
 		},
 
 		"black-formatter.importStrategy": "fromEnvironment",
 
+		"isort.importStrategy": "fromEnvironment",
+
 		"mypy-type-checker.importStrategy": "fromEnvironment",
 
 		"pylint.importStrategy": "fromEnvironment",
 
+		"python.analysis.autoImportCompletions": true,
 		"python.analysis.typeCheckingMode": "strict",
 
 		"python.testing.pytestEnabled": false,
