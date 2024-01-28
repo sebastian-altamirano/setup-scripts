@@ -9,7 +9,7 @@ from typing import List, Tuple
 from unittest import TestCase
 from unittest.mock import ANY, Mock, call, patch
 
-from dotfiles.installation_steps import copyApplicationSettings
+from dotfiles.installation_steps.copy_application_settings import copyApplicationSettings
 from dotfiles.type_definitions import ApplicationSettingsMapping
 
 

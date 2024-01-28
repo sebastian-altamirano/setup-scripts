@@ -5,7 +5,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
-from dotfiles.installation_steps import configureGit
+from dotfiles.installation_steps.configure_git import configureGit
 from dotfiles.type_definitions import (
     BasicGitConfiguration,
     GitConfiguration,

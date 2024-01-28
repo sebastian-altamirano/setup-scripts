@@ -8,7 +8,7 @@ from logging import INFO as LOGGING_LEVEL_INFO
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
-from dotfiles.installation_steps import installVSCodeExtensions
+from dotfiles.installation_steps.install_vscode_extensions import installVSCodeExtensions
 
 
 @patch("dotfiles.installation_steps.install_vscode_extensions.runWithSh")
