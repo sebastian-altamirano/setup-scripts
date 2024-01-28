@@ -5,14 +5,12 @@ from logging import info as logInfo
 from os.path import join as joinPaths
 from typing import List
 
-from dotfiles.helpers.utils import (
-    DOTFILES_SETTINGS_FILE_PATH,
-    copyConfiguration,
-    getAbsolutePath,
-    installationStep,
-    isAbsolutePath,
-    runWithSh,
-)
+from dotfiles.helpers.constants import DOTFILES_SETTINGS_FILE_PATH
+from dotfiles.helpers.decorators.installation_step import installationStep
+from dotfiles.helpers.utils.copy_configuration import copyConfiguration
+from dotfiles.helpers.utils.get_absolute_path import getAbsolutePath
+from dotfiles.helpers.utils.is_absolute_path import isAbsolutePath
+from dotfiles.helpers.utils.run_with import runWithSh
 from dotfiles.type_definitions import ApplicationSettingsMapping
 
 

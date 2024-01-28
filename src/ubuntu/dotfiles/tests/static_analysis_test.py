@@ -20,7 +20,8 @@ from pathlib import Path
 from typing import Any, Generator, Tuple
 from unittest import TestCase
 
-from dotfiles.helpers.utils import PROJECT_ROOT_PATH, installationStep
+from dotfiles.helpers.constants import PROJECT_ROOT_PATH
+from dotfiles.helpers.decorators.installation_step import installationStep
 
 
 class InstallationStepsTests(TestCase):

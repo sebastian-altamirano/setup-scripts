@@ -6,9 +6,9 @@ from typing import List
 from typing import get_type_hints as getTypeHints
 
 from dotfiles import installation_steps as installationSteps
-from dotfiles.helpers.utils import (
-    DOTFILES_SETTINGS_FILE_PATH,
-    logCompletionMessage,
+from dotfiles.helpers.constants import DOTFILES_SETTINGS_FILE_PATH
+from dotfiles.helpers.utils.log_completion_message import logCompletionMessage
+from dotfiles.helpers.utils.warn_about_unsupported_or_unrecognized_config import (
     warnAboutUnsupportedOrUnrecognizedConfig,
 )
 from dotfiles.type_definitions import Config

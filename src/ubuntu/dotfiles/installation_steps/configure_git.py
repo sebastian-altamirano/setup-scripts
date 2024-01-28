@@ -7,16 +7,13 @@ from os.path import join as joinPaths
 from subprocess import CalledProcessError
 from typing import List, Optional
 
-from dotfiles.helpers.utils import (
-    PROJECT_SCRIPTS_PATH,
-    USER_SETTINGS_PATH,
-    copyConfiguration,
-    createOrUpdateFile,
-    formatConfigurationBlocks,
-    getAbsolutePath,
-    installationStep,
-    runWithSh,
-)
+from dotfiles.helpers.constants import PROJECT_SCRIPTS_PATH, USER_SETTINGS_PATH
+from dotfiles.helpers.decorators.installation_step import installationStep
+from dotfiles.helpers.utils.copy_configuration import copyConfiguration
+from dotfiles.helpers.utils.create_or_update_file import createOrUpdateFile
+from dotfiles.helpers.utils.format_configuration_blocks import formatConfigurationBlocks
+from dotfiles.helpers.utils.get_absolute_path import getAbsolutePath
+from dotfiles.helpers.utils.run_with import runWithSh
 from dotfiles.type_definitions import (
     GitCommitSigningConfiguration,
     GitConfiguration,

@@ -4,7 +4,8 @@ from logging import error as logError
 from logging import info as logInfo
 from typing import List
 
-from dotfiles.helpers.utils import installationStep, runWithSh
+from dotfiles.helpers.decorators.installation_step import installationStep
+from dotfiles.helpers.utils.run_with import runWithSh
 
 
 @installationStep

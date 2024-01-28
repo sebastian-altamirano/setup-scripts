@@ -1,6 +1,7 @@
 """Defines an installation step for upgrading system dependencies."""
 
-from dotfiles.helpers.utils import installationStep, runWithSh
+from dotfiles.helpers.decorators.installation_step import installationStep
+from dotfiles.helpers.utils.run_with import runWithSh
 
 
 @installationStep

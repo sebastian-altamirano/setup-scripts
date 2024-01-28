@@ -13,7 +13,7 @@ from sys import argv
 from typing import Optional, Sequence, cast
 
 from dotfiles import __version__
-from dotfiles.helpers.utils import getAbsolutePath
+from dotfiles.helpers.utils.get_absolute_path import getAbsolutePath
 from dotfiles.install import install
 from dotfiles.type_definitions import Arguments
 

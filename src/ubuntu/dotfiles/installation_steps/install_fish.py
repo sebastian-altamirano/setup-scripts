@@ -2,7 +2,8 @@
 
 from logging import info as logInfo
 
-from dotfiles.helpers.utils import installationStep, runWithSh
+from dotfiles.helpers.decorators.installation_step import installationStep
+from dotfiles.helpers.utils.run_with import runWithSh
 
 
 @installationStep

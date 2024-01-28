@@ -4,7 +4,9 @@ from logging import info as logInfo
 from os.path import join as joinPaths
 from typing import List
 
-from dotfiles.helpers.utils import PROJECT_SCRIPTS_PATH, installationStep, runWithFish, runWithSh
+from dotfiles.helpers.constants import PROJECT_SCRIPTS_PATH
+from dotfiles.helpers.decorators.installation_step import installationStep
+from dotfiles.helpers.utils.run_with import runWithFish, runWithSh
 
 
 @installationStep
