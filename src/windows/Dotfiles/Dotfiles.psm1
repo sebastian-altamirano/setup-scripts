@@ -107,7 +107,7 @@ Creates a record of all or part of a PowerShell session to a log file.
 .DESCRIPTION
 Creates a record of all or part of a PowerShell session to a log file.
 If the file already exists, the record is appended to the end of the file.
-Write-Host can be used to add comments.
+Write-Output can be used to add comments.
 If the command is executed inside a script, the path to the script will be logged.
 
 .PARAMETER Path
@@ -120,6 +120,7 @@ Start-DotfilesLogging $env:UserProfile\Documents\dotfiles-install.log
 Stop-DotfilesLogging
 #>
 function Start-Logging {
+	[CmdletBinding(SupportsShouldProcess)]
 	param (
 		[Parameter(Mandatory)]
 		[string] $Path
@@ -130,9 +131,10 @@ function Start-Logging {
 		-UseMinimalHeader `
 		-IncludeInvocationHeader `
 		-Append `
-		| Out-Null
+		-WhatIf:$WhatIfPreference `
+	| Out-Null
 	if ($PSCommandPath) {
-		Write-Host "--- Running $PSCommandPath ---"
+		Write-Output "--- Running $PSCommandPath ---"
 	}
 }
 
