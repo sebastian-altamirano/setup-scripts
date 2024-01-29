@@ -21,17 +21,6 @@
 				"additionalProperties": false,
 				"description": "Defines a source-destination mapping of a resource located in the `/config/ubuntu` or `/config/windows` folder (as appropriate).",
 				"properties": {
-					"completionCommands": {
-						"description": "Commands to execute after copying the resource.",
-						"items": {
-							"description": "Contains a list of command arguments, e.g: [\"echo\", \"Hello World!\"]",
-							"items": {
-								"type": "string"
-							},
-							"type": "array"
-						},
-						"type": "array"
-					},
 					"destination": {
 						"description": "The destination path, it can be an absolute or relative path, although it is recommended to use an absolute path to avoid copying resources to unwanted locations. The path can contain environment variables such as `$env:AppData` (`$env:` is necessary because PowerShell is used to expand the path) on Windows and `$HOME` on Ubuntu. It can also contain a tilde character (~) to represent the user's home directory.",
 						"type": "string"

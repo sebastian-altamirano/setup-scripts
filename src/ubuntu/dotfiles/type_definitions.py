@@ -21,7 +21,6 @@ class ApplicationSettingsMapping(TypedDict):
     Matches what is defined in `/config/settings.schema.json` for `/ubuntu/settingsPath`.
     """
 
-    completionCommands: NotRequired[List[List[str]]]
     destination: str
     resourceName: str
     postInstallationInstructions: NotRequired[str]

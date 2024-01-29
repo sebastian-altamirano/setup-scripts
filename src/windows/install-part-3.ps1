@@ -35,13 +35,6 @@ Foreach ($resourceMapping in $config.settingsPaths) {
 	$path = Join-Path $configPath $resourceMapping.resourceName
 	$destination = $ExecutionContext.InvokeCommand.ExpandString($resourceMapping.destination)
 	Copy-DotfilesResource -Path $path -Destination $destination
-
-	if ($resourceMapping.completionCommands) {
-		Foreach ($commandArgs in $resourceMapping.completionCommands) {
-      ($commandArgs -Join " ")
-			Invoke-Expression ($commandArgs -Join " ")
-		}
-	}
 }
 
 Write-Host "Downloading fonts."

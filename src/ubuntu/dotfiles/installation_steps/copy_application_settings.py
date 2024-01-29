@@ -10,7 +10,6 @@ from dotfiles.helpers.decorators.installation_step import installationStep
 from dotfiles.helpers.utils.copy_configuration import copyConfiguration
 from dotfiles.helpers.utils.get_absolute_path import getAbsolutePath
 from dotfiles.helpers.utils.is_absolute_path import isAbsolutePath
-from dotfiles.helpers.utils.run_with import runWithSh
 from dotfiles.type_definitions import ApplicationSettingsMapping
 
 
@@ -41,11 +40,6 @@ def copyApplicationSettings(settingsMappings: List[ApplicationSettingsMapping]) 
                 'Could not copy "%s" because the resource does not exist.',
                 settingsMapping["resourceName"],
             )
-
-        if "completionCommands" in settingsMapping:
-            logInfo("Running completion commands...")
-            for commandArgs in settingsMapping["completionCommands"]:
-                runWithSh(*commandArgs)
 
         if "postInstallationInstructions" in settingsMapping:
             postInstallationInstructions.append(settingsMapping["postInstallationInstructions"])

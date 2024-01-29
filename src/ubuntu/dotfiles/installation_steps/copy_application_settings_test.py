@@ -7,13 +7,12 @@ from logging import INFO as LOGGING_LEVEL_INFO
 from logging import LogRecord
 from typing import List, Tuple
 from unittest import TestCase
-from unittest.mock import ANY, Mock, call, patch
+from unittest.mock import Mock, patch
 
 from dotfiles.installation_steps.copy_application_settings import copyApplicationSettings
 from dotfiles.type_definitions import ApplicationSettingsMapping
 
 
-@patch("dotfiles.installation_steps.copy_application_settings.runWithSh")
 @patch("dotfiles.installation_steps.copy_application_settings.copyConfiguration")
 @patch("dotfiles.installation_steps.copy_application_settings.DOTFILES_SETTINGS_FILE_PATH")
 @patch("dotfiles.installation_steps.copy_application_settings.joinPaths")
@@ -29,7 +28,6 @@ class CopyApplicationSettingsTests(TestCase):
         mockJoinPaths: Mock,
         mockDotfilesSettingsFilePath: Mock,
         mockCopyConfiguration: Mock,
-        _mockRunWithSh: Mock,
     ) -> None:
         settingsMapping: ApplicationSettingsMapping = {
             "resourceName": "fish",
@@ -54,7 +52,6 @@ class CopyApplicationSettingsTests(TestCase):
         _mockJoinPaths: Mock,
         _mockDotfilesSettingsFilePath: Mock,
         mockCopyConfiguration: Mock,
-        _mockRunWithSh: Mock,
     ) -> None:
         settingsMapping: ApplicationSettingsMapping = {
             "resourceName": "fish",
@@ -74,7 +71,6 @@ class CopyApplicationSettingsTests(TestCase):
         _mockJoinPaths: Mock,
         _mockDotfilesSettingsFilePath: Mock,
         mockCopyConfiguration: Mock,
-        _mockRunWithSh: Mock,
     ) -> None:
         settingsMappings: List[ApplicationSettingsMapping] = [
             {
@@ -87,57 +83,6 @@ class CopyApplicationSettingsTests(TestCase):
         copyApplicationSettings(settingsMappings)
 
         self.assertEqual(len(settingsMappings), mockCopyConfiguration.call_count)
-
-    def testIfCompletionCommandsAreExecutedAfterTheResourceIsCopied(
-        self,
-        _mockGetAbsolutePath: Mock,
-        _mockIsAbsolutePath: Mock,
-        _mockJoinPaths: Mock,
-        _mockDotfilesSettingsFilePath: Mock,
-        mockCopyConfiguration: Mock,
-        mockRunWithSh: Mock,
-    ) -> None:
-        mocksManager = Mock()
-        mocksManager.attach_mock(mockCopyConfiguration, "mockCopyConfiguration")
-        mocksManager.attach_mock(mockRunWithSh, "mockRunWithSh")
-        settingMapping: ApplicationSettingsMapping = {
-            "resourceName": "fish",
-            "destination": "~/.config/fish",
-            "completionCommands": [["echo", "Hello"], ["echo", "Bye"]],
-        }
-        anotherSettingsMapping: ApplicationSettingsMapping = {
-            "resourceName": ".bash_profile",
-            "destination": "~/.bash_profile",
-            "completionCommands": [["echo", "Hello again"]],
-        }
-        settingsMappings: List[ApplicationSettingsMapping] = [
-            settingMapping,
-            anotherSettingsMapping,
-        ]
-
-        with self.assertLogs(level=LOGGING_LEVEL_INFO) as loggerSpy:
-            copyApplicationSettings(settingsMappings)
-
-        self.assertEqual(
-            [
-                call.mockCopyConfiguration(settingMapping["resourceName"], ANY),
-                call.mockRunWithSh(*settingMapping["completionCommands"][0]),
-                call.mockRunWithSh(*settingMapping["completionCommands"][1]),
-                call.mockCopyConfiguration(anotherSettingsMapping["resourceName"], ANY),
-                call.mockRunWithSh(*anotherSettingsMapping["completionCommands"][0]),
-            ],
-            mocksManager.mock_calls,
-        )
-        self.assertEqual(
-            len([mapping for mapping in settingsMappings if "completionCommands" in mapping]),
-            len(
-                [
-                    record.getMessage()
-                    for record in loggerSpy.records
-                    if record.getMessage() == "Running completion commands..."
-                ]
-            ),
-        )
 
     def testIfPostInstallationInstructionsAreReturned(self, *_args: Tuple[Mock, Mock]) -> None:
         settingMapping: ApplicationSettingsMapping = {
@@ -162,14 +107,13 @@ class CopyApplicationSettingsTests(TestCase):
 
         self.assertEqual(expectedPostInstallationInstructions, postInstallationInstructions)
 
-    def testIfCompletionCommandsAndPostInstallationInstructionsAreOptional(
+    def testIfPostInstallationInstructionsAreOptional(
         self,
         _mockGetAbsolutePath: Mock,
         _mockIsAbsolutePath: Mock,
         _mockJoinPaths: Mock,
         _mockDotfilesSettingsFilePath: Mock,
         _mockCopyConfiguration: Mock,
-        mockRunWithSh: Mock,
     ) -> None:
         settingsMapping: List[ApplicationSettingsMapping] = [
             {
@@ -180,7 +124,6 @@ class CopyApplicationSettingsTests(TestCase):
 
         postInstallationInstructions = copyApplicationSettings(settingsMapping)
 
-        mockRunWithSh.assert_not_called()
         self.assertEqual([], postInstallationInstructions)
 
     def testIfTheResourcesAreLoggedAsTheyAreCopied(
