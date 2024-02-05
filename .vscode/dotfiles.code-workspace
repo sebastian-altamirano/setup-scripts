@@ -24,6 +24,7 @@
 			"ms-python.python",
 			"ms-python.vscode-pylance",
 			"ms-python.black-formatter",
+			"ms-python.debugpy",
 			"ms-python.isort",
 			"ms-python.mypy-type-checker",
 			"ms-python.pylint",
@@ -38,7 +39,7 @@
 				"program": "${file}",
 				"purpose": ["debug-test"],
 				"request": "launch",
-				"type": "python"
+				"type": "debugpy"
 			}
 		],
 		"version": "0.2.0"
@@ -64,7 +65,7 @@
 
 		"[javascript]": {
 			"editor.codeActionsOnSave": {
-				"source.organizeImports": true
+				"source.organizeImports": "explicit"
 			},
 			"editor.defaultFormatter": "esbenp.prettier-vscode",
 			"editor.formatOnSave": true
@@ -116,7 +117,7 @@
 
 		"[python]": {
 			"editor.codeActionsOnSave": {
-				"source.unusedImports": true
+				"source.unusedImports": "explicit"
 			},
 			"editor.defaultFormatter": "ms-python.black-formatter",
 			"editor.formatOnSave": true
