@@ -25,6 +25,44 @@ function Copy-Resource {
 
 <#
 .SYNOPSIS
+Installs a Scoop package.
+
+.PARAMETER Package
+Specifies the name package to install.
+.PARAMETER Bucket
+Specifies the bucket to which the package belongs. This parameter is optional, since it is not
+necessary to install packages that belong to the main bucket.
+
+.NOTES
+The function requires Scoop to be installed and available in the system PATH.
+
+.EXAMPLE
+Install-DotfilesScoopPackage -Package "main/7zip"
+.EXAMPLE
+Install-DotfilesScoopPackage -Package "nerd-fonts/JetBrainsMono-NF" -Bucket "nerd-fonts"
+#>
+function Install-ScoopPackage {
+	param (
+		[Parameter(Mandatory)]
+		[string] $Package,
+		[string] $Bucket
+	)
+
+	If ($Bucket) {
+		$addBucketResult = scoop bucket add $Bucket
+		If ($addBucketResult -and $addBucketResult.StartsWith('Unknown bucket')) {
+			# The bucket does not exist.
+			Write-Error "Failed to install bucket '$Bucket'."
+		} Elseif (-not (scoop install $Package)) {
+			Write-Error "Failed to install package '$Package' from bucket '$Bucket'."
+		}
+	} Elseif (-not (scoop install $Package)) {
+		Write-Error "Failed to install package '$Package'."
+	}
+}
+
+<#
+.SYNOPSIS
 Registers an scheduled task to run a script at startup using pwsh.
 
 .PARAMETER Path

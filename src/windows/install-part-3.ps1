@@ -15,6 +15,17 @@ $config = (Get-Content "..\..\config\settings.json" | ConvertFrom-Json).windows
 Write-Output "Installing winget packages."
 winget import --accept-package-agreements --accept-source-agreements "$configPath\winget-packages.json"
 
+Write-Output "Installing Scoop."
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+
+Write-Output "Installing Scoop packages."
+Foreach ($packagesConfig in $config.scoopPackages) {
+	Foreach ($package in $packagesConfig.packages) {
+		Install-DotfilesScoopPackage -Bucket $packagesConfig.bucket -Package $package
+	}
+}
+
 Write-Output "Installing VSCode extensions."
 Foreach ($extension in $config.vscodeExtensions) {
 	code --install-extension $extension
@@ -37,22 +48,17 @@ Foreach ($resourceMapping in $config.settingsPaths) {
 	Copy-DotfilesResource -Path $path -Destination $destination
 }
 
-Write-Output "Downloading fonts."
-$fontsZipPath = (Resolve-Path "JetBrainsMono.zip").Path
-Invoke-WebRequest "https://fonts.google.com/download?family=JetBrains%20Mono" -OutFile $fontsZipPath
-Expand-Archive $fontsZip -DestinationPath "fonts"
-
 Write-Output -BackgroundColor Green -ForegroundColor Black "Finished!"
 Write-Output "Now there are some manual steps you need to perform:"
-Write-Output "- Install the fonts that have been downloaded to $fontsZipPath."
 Foreach ($resourceMapping in $config.settingsPaths) {
-	if ($resourceMapping.postInstallationInstructions) {
+	If ($resourceMapping.postInstallationInstructions) {
 		Write-Output "- $($resourceMapping.postInstallationInstructions)"
 	}
 }
 Foreach ($instruction in $config.postInstallationInstructions) {
 	Write-Output "- $($instruction)"
 }
+Write-Output "- Restart your computer for these changes to take effect."
 
 Stop-DotfilesLogging
 

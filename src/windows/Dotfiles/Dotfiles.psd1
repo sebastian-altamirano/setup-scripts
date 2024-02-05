@@ -8,6 +8,7 @@
 	RootModule           = "Dotfiles.psm1"
 	FunctionsToExport    = @(
 		"Copy-Resource",
+		"Install-ScoopPackage",
 		"Register-ScriptExecution",
 		"Unregister-ScriptExecution",
 		"Start-Logging",

@@ -20,6 +20,16 @@
 			"Change the screen refresh rate to the maximum available value."
 		],
 		"quickAccessFolders": ["Github", "Notas", "Playground"],
+		"scoopPackages": [
+			{
+				"bucket": "extras",
+				"packages": ["extras/cheat-engine"]
+			},
+			{
+				"bucket": "nerd-fonts",
+				"packages": ["nerd-fonts/JetBrainsMono-NF"]
+			}
+		],
 		"settingsPaths": [
 			{
 				"destination": "${env:ProgramFiles(x86)}\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg\\autoexec.cfg",
