@@ -52,7 +52,6 @@
 		"vscodeExtensions": [
 			"github.github-vscode-theme",
 			"jgclark.vscode-todo-highlight",
-			"ms-vscode.Theme-TomorrowKit",
 			"ms-vscode-remote.remote-wsl"
 		]
 	}

@@ -4,7 +4,7 @@
 	"editor.accessibilitySupport": "off",
 	"editor.bracketPairColorization.enabled": false,
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": true
+		"source.organizeImports": "explicit"
 	},
 	"editor.codeLens": true,
 	"editor.fontFamily": "JetBrainsMono Nerd Font",
@@ -53,11 +53,12 @@
 
 	"window.autoDetectColorScheme": true,
 	"window.titleBarStyle": "custom",
-	"window.zoomLevel": 1.5,
+	"window.zoomLevel": 1,
+	"window.zoomPerWindow": false,
 
-	"workbench.colorTheme": "Tomorrow Night Eighties",
+	"workbench.colorTheme": "GitHub Dark Dimmed",
 	"workbench.editor.pinnedTabSizing": "compact",
-	"workbench.preferredDarkColorTheme": "Tomorrow Night Eighties",
+	"workbench.preferredDarkColorTheme": "GitHub Dark Dimmed",
 	"workbench.preferredLightColorTheme": "GitHub Light Default",
 	"workbench.settings.editor": "json",
 	"workbench.sideBar.location": "right",
@@ -124,6 +125,7 @@
 	"typescript.inlayHints.parameterTypes.enabled": true,
 	"typescript.inlayHints.propertyDeclarationTypes.enabled": true,
 	"typescript.inlayHints.variableTypes.enabled": true,
+	"typescript.preferences.preferTypeOnlyAutoImports": true,
 	"typescript.updateImportsOnFileMove.enabled": "always",
 
 	// ------------------------------------- EXTENSION SETTINGS --------------------------------------

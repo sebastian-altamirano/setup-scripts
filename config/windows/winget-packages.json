@@ -17,9 +17,6 @@
 					"PackageIdentifier": "CPUID.HWMonitor"
 				},
 				{
-					"PackageIdentifier": "DeepL.DeepL"
-				},
-				{
 					"PackageIdentifier": "Discord.Discord"
 				},
 				{
@@ -33,6 +30,9 @@
 				},
 				{
 					"PackageIdentifier": "HandBrake.HandBrake"
+				},
+				{
+					"PackageIdentifier": "MHNexus.HxD"
 				},
 				{
 					"PackageIdentifier": "Insomnia.Insomnia"
