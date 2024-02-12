@@ -55,6 +55,7 @@
 
 		"search.exclude": {
 			"**/venv": true,
+			"**/.install-venv": true,
 			"**/.venv": true,
 			"**/__pycache__": true,
 			"**/.mypy_cache": true,

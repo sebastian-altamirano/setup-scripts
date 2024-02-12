@@ -18,3 +18,7 @@ USER_SETTINGS_PATH = getAbsolutePath(
 """Absolute path to `/config/ubuntu`."""
 DOTFILES_SETTINGS_FILE_PATH = getAbsolutePath(joinPaths(USER_SETTINGS_PATH, "..", "settings.json"))
 """Absolute path to `/config/settings.json`."""
+DOTFILES_SETTINGS_SCHEMA_FILE_PATH = getAbsolutePath(
+    joinPaths(USER_SETTINGS_PATH, "..", "settings.schema.json")
+)
+"""Absolute path to `/config/settings.schema.json`."""

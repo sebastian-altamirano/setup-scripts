@@ -1,20 +1,13 @@
 """Installation script for Ubuntu dotfiles."""
 
-from json import loads as readJson
-from pathlib import Path
 from typing import List
-from typing import get_type_hints as getTypeHints
 
 from dotfiles import installation_steps as installationSteps
-from dotfiles.helpers.constants import DOTFILES_SETTINGS_FILE_PATH
 from dotfiles.helpers.utils.log_completion_message import logCompletionMessage
-from dotfiles.helpers.utils.warn_about_unsupported_or_unrecognized_config import (
-    warnAboutUnsupportedOrUnrecognizedConfig,
-)
 from dotfiles.type_definitions import Config
 
 
-def install() -> None:
+def install(config: Config) -> None:
     """Installs Ubuntu dotfiles.
 
     Upgrades dependencies, installs packages and copies applications settings.
@@ -24,14 +17,6 @@ def install() -> None:
     installationSteps.upgradeSystemDependencies()
     installationSteps.installFish()
     postInstallationInstructions += installationSteps.installPackages()
-
-    config: Config = readJson(Path(DOTFILES_SETTINGS_FILE_PATH).read_text(encoding="utf-8"))
-
-    # Issue the warning before starting to do any work.
-    supportedConfigurationKeys = getTypeHints(Config).keys()
-    for key in config:
-        if key not in supportedConfigurationKeys:
-            warnAboutUnsupportedOrUnrecognizedConfig(key)
 
     if "vscodeExtensions" in config:
         installationSteps.installVSCodeExtensions(config["vscodeExtensions"])

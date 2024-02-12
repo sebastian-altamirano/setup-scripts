@@ -25,6 +25,7 @@ dmypy.json
 
 # Python
 __pypackages__/
+.install-venv/
 .venv/
 venv/
 

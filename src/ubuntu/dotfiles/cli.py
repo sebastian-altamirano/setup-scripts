@@ -15,6 +15,7 @@ from typing import Optional, Sequence, cast
 from dotfiles import __version__
 from dotfiles.helpers.utils.get_absolute_path import getAbsolutePath
 from dotfiles.install import install
+from dotfiles.read_and_validate_config import readAndValidateConfig
 from dotfiles.type_definitions import Arguments
 
 
@@ -49,7 +50,7 @@ def main() -> None:
     _configureLogging(parsedArguments["logFilePath"])
 
     try:
-        install()
+        install(readAndValidateConfig())
     except Exception as exception:
         logException("Installation failed.")
         raise exception

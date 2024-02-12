@@ -14,6 +14,7 @@ from dotfiles.cli import main
 
 
 @patch("dotfiles.cli.install")
+@patch("dotfiles.cli.readAndValidateConfig")
 @patch("dotfiles.cli.logWarnings")
 @patch("dotfiles.cli.StreamHandler")
 @patch("dotfiles.cli.getAbsolutePath")
@@ -26,7 +27,7 @@ from dotfiles.cli import main
 class EntryPointTests(TestCase):
     """Contains tests for the application entry point."""
 
-    def testIfInstallIsCalled(
+    def testIfInstallIsCalledWithAValidConfiguration(
         self,
         _mockArgumentParser: Mock,
         _mockConfigureLogging: Mock,
@@ -34,11 +35,12 @@ class EntryPointTests(TestCase):
         _mockGetAbsolutePath: Mock,
         _mockStreamHandler: Mock,
         _mockLogWarnings: Mock,
+        mockReadAndValidateConfig: Mock,
         mockInstall: Mock,
     ) -> None:
         main()
 
-        mockInstall.assert_called_once()
+        mockInstall.assert_called_once_with(mockReadAndValidateConfig.return_value)
 
     @patch("dotfiles.cli.datetime")
     def testIfArgumentParserIsConfigured(
@@ -50,6 +52,7 @@ class EntryPointTests(TestCase):
         _mockGetAbsolutePath: Mock,
         _mockStreamHandler: Mock,
         _mockLogWarnings: Mock,
+        _mockReadAndValidateConfig: Mock,
         _mockInstall: Mock,
     ) -> None:
         now = datetime.now()
@@ -85,6 +88,7 @@ class EntryPointTests(TestCase):
         mockGetAbsolutePath: Mock,
         mockStreamHandler: Mock,
         mockLogWarnings: Mock,
+        _mockReadAndValidateConfig: Mock,
         _mockInstall: Mock,
     ) -> None:
         logFilePath = "dotfiles-install.log"
@@ -116,6 +120,7 @@ class EntryPointTests(TestCase):
         _mockGetAbsolutePath: Mock,
         _mockStreamHandler: Mock,
         _mockLogWarnings: Mock,
+        _mockReadAndValidateConfig: Mock,
         mockInstall: Mock,
     ) -> None:
         mockInstall.side_effect = Exception
