@@ -1,11 +1,11 @@
 #Requires -RunAsAdministrator
 
+Write-Output "Upgrading PowerShell."
 winget install `
 	--exact --id --silent --accept-package-agreements --accept-source-agreements `
 	Microsoft.PowerShell
 
-if (!(Test-Json -Path "../../config/settings.json" -SchemaFile "../../config/settings.schema.json")) {
-	throw 'Failed to validate `settings.json` with `settings.schema.json`, fix the errors and try again.'
-}
+# Do not run anything in this script as it will most likely run in an outdated version of PowerShell
+# (which may not support what you want to run), use `install-part-{1,2,3}.ps1` instead.
 
 pwsh .\install-part-1.ps1

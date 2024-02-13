@@ -4,6 +4,11 @@ param (
 	[string] $LogFilePath = "$env:UserProfile\Documents\dotfiles_install-$(Get-Date -Format 'yyyy_MM_dd-HH_mm_ss').log"
 )
 
+Write-Output 'Validating `settings.json`.'
+if (!(Test-Json -Path "../../config/settings.json" -SchemaFile "../../config/settings.schema.json")) {
+	throw 'Failed to validate `settings.json` with `settings.schema.json`, fix the errors and try again.'
+}
+
 Import-Module ".\Dotfiles"
 
 Start-DotfilesLogging $LogFilePath
