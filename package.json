@@ -28,7 +28,8 @@
 		"lint:windows": "pwsh scripts/lint-powershell.ps1 -Path src/windows -SettingsPath src/windows/linter-settings.psd1",
 		"prepare": "husky install",
 		"test": "npm run test:linux",
-		"test:linux": "pdm run -p src/ubuntu test"
+		"test:linux": "pdm run -p src/ubuntu test",
+		"update-linux-requirements": "pdm export --format requirements --prod -p src/ubuntu > src/ubuntu/requirements.txt"
 	},
 	"type": "module",
 	"version": "1.0.0"

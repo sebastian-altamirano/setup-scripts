@@ -25,7 +25,6 @@ export default {
 		fileNames
 			.map((fileName) => [formatPowerShellScript(fileName), lintPowerShellScript(fileName)])
 			.flat(),
-
 	"*.py": [
 		"pdm run -p src/ubuntu black",
 		"pdm run -p src/ubuntu isort",
@@ -33,4 +32,6 @@ export default {
 		"pdm run -p src/ubuntu pylint",
 		"pdm run -p src/ubuntu unittest",
 	],
+	"config/settings?(.schema).json": "scripts/validate-settings.ps1",
+	"src/ubuntu/pyproject.toml": "npm run update-linux-requirements",
 };
