@@ -195,7 +195,6 @@ class ConfigureGitTests(TestCase):
 
         mocksManager.assert_has_calls(
             [
-                call.mockCopyConfiguration(".gitconfig", "/home/sebastian/.gitconfig"),
                 call.mockCreateDirectories("/home/sebastian/.ssh", mode=0o700),
                 call.mockCopyConfiguration(publicKeyName, "/home/sebastian/.ssh"),
                 call.mockChangeResourceMode(f"/home/sebastian/.ssh/{publicKeyName}", 0o644),

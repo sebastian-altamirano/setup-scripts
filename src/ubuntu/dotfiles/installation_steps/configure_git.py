@@ -142,16 +142,6 @@ def _configureCommitSigningWithGpgKey(
 @installationStep
 def configureGit(configuration: GitConfiguration) -> None:
     """Configures Git."""
-    # Copy the base `.gitconfig` if it exists.
-    try:
-        logInfo("Trying to copy the base `.gitconfig` file...")
-        copyConfiguration(".gitconfig", joinPaths("~", ".gitconfig"))
-    except FileNotFoundError:
-        logInfo(
-            "Could not find a base `.gitconfig` file, proceeding with the rest of the "
-            "configurations..."
-        )
-
     runWithSh("git", "config", "--global", "user.name", configuration["userName"])
     runWithSh("git", "config", "--global", "user.email", configuration["email"])
 
