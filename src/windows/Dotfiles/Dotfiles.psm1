@@ -1,15 +1,18 @@
 <#
 .SYNOPSIS
-Copies a file or directory recursively to another location, creating the target directory if it
-does not exist.
+Copies a file or directory recursively to another location, creating the target directory if it does
+not exist.
 
 .PARAMETER Path
-Specifies the source path.
+Specifies the source path, it can be relative or absolute and can contain environment variables.
 .PARAMETER Destination
-Specifies the destination path.
+Specifies the destination path, it can be relative or absolute and can contain environment
+variables.
 
 .EXAMPLE
-Copy-DotfilesResource -Path "Dotfiles" -Destination $env:ProgramFiles\PowerShell\Modules
+Copy-DotfilesResource -Path settings.json -Destination $env:AppData\Code\User\settings.json
+.EXAMPLE
+Copy-DotfilesResource -Path Dotfiles -Destination $env:ProgramFiles\PowerShell\Modules
 #>
 function Copy-Resource {
 	param (
@@ -66,7 +69,8 @@ function Install-ScoopPackage {
 Registers an scheduled task to run a script at startup using pwsh.
 
 .PARAMETER Path
-Specifies the path of the script, it can be relative or absolute.
+Specifies the path of the script, it can be relative or absolute and can contain environment
+variables.
 .PARAMETER TaskName
 Specifies the task name.
 .PARAMETER TaskPath
@@ -149,7 +153,8 @@ Write-Output can be used to add comments.
 If the command is executed inside a script, the path to the script will be logged.
 
 .PARAMETER Path
-Specifies the path where the log file will be saved.
+Specifies the path where the log file will be saved, it can be relative or absolute and can contain
+environment variables.
 
 .EXAMPLE
 Start-DotfilesLogging $env:UserProfile\Documents\dotfiles-install.log

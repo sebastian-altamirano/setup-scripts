@@ -19,7 +19,7 @@
 			"Increase the text size and/or display scale.",
 			"Change the screen refresh rate to the maximum available value."
 		],
-		"quickAccessFolders": ["Github", "Notas", "Playground"],
+		"quickAccessFolders": ["GitHub", "Notas", "Playground"],
 		"scoopPackages": [
 			{
 				"bucket": "extras",

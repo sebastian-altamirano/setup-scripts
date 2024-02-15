@@ -9,11 +9,13 @@ Start-DotfilesLogging $LogFilePath
 
 Unregister-DotfilesScriptExecution -TaskPath Dotfiles -TaskName ResumeInstalation
 
-$configPath = "..\..\config\windows"
-$config = (Get-Content "..\..\config\settings.json" | ConvertFrom-Json).windows
+$userSettingsDirectoryPath = Join-Path -Path $PSScriptRoot -ChildPath ".." -AdditionalChildPath "..", "config", "windows" -Resolve
+$settingsFilePath = Join-Path -Path $PSScriptRoot -ChildPath ".." -AdditionalChildPath "..", "config", "settings.json" -Resolve
+$config = (Get-Content $settingsFilePath | ConvertFrom-Json).windows
 
 Write-Output "Installing winget packages."
-winget import --accept-package-agreements --accept-source-agreements "$configPath\winget-packages.json"
+$wingetConfigPath = Join-Path -Path $userSettingsDirectoryPath -ChildPath "winget-packages.json"
+winget import --accept-package-agreements --accept-source-agreements $wingetConfigPath
 
 Write-Output "Installing Scoop."
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -43,8 +45,10 @@ Foreach ($folderName in $config.quickAccessFolders) {
 
 Write-Output "Importing application settings."
 Foreach ($resourceMapping in $config.settingsPaths) {
-	$path = Join-Path $configPath $resourceMapping.resourceName
-	$destination = $ExecutionContext.InvokeCommand.ExpandString($resourceMapping.destination)
+	$path = Join-Path $userSettingsDirectoryPath $resourceMapping.resourceName
+	$destination = (Split-Path -Path $resourceMapping.destination -IsAbsolute) `
+		? $resourceMapping.destination `
+		: (Join-Path -Path $settingsFilePath -ChildPath $resourceMapping.destination)
 	Copy-DotfilesResource -Path $path -Destination $destination
 }
 

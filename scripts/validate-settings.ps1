@@ -1,8 +1,9 @@
 #!/usr/bin/env pwsh
 
-$settingsPath = Join-Path -Path $PSScriptRoot -ChildPath ".." -AdditionalChildPath "config", "settings.json" -Resolve
-$settingsSchemaPath = Join-Path -Path $PSScriptRoot -ChildPath ".." -AdditionalChildPath "config", "settings.schema.json" -Resolve
+$configDirectoryPath = Join-Path -Path $PSScriptRoot -ChildPath ".." -AdditionalChildPath "config" -Resolve
+$settingsFilePath = Join-Path -Path $configDirectoryPath -ChildPath "settings.json"
+$settingsSchemaFilePath = Join-Path -Path $configDirectoryPath -ChildPath "settings.schema.json"
 
-if (!(Test-Json -Path $settingsPath  -SchemaFile $settingsSchemaPath)) {
+if (!(Test-Json -Path $settingsFilePath -SchemaFile $settingsSchemaFilePath)) {
 	throw 'Failed to validate `settings.json` with `settings.schema.json`.'
 }

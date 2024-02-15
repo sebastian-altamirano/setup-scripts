@@ -13,7 +13,7 @@ Write-Output "Installing Ubuntu using WSL."
 wsl --install -d Ubuntu
 
 Register-DotfilesScriptExecution `
-	-Path "install-part-3.ps1" `
+	-Path (Join-Path -Path $PSScriptRoot -ChildPath install-part-3.ps1) `
 	-ScriptArgs $LogFilePath `
 	-TaskPath Dotfiles `
 	-TaskName ResumeInstallation `
