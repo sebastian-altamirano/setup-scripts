@@ -73,12 +73,9 @@ def _configureSshAccess(sshConfiguration: SshConfiguration) -> None:
 def _configureCommitSigningWithSshKey(sshConfiguration: SshConfiguration) -> None:
     # Add the signing configuration.
     publicKeyPath = getAbsolutePath(joinPaths("~", ".ssh", sshConfiguration["publicKeyName"]))
+    runWithSh("git", "config", "--global", "commit.gpgsign", "true")
     runWithSh("git", "config", "--global", "gpg.format", "ssh")
     runWithSh("git", "config", "--global", "user.signingkey", publicKeyPath)
-
-    # NOTE: Commiting from VSCode might not work if the SSH key has a passphrase
-    # (I have not tested this):
-    # https://github.com/microsoft/vscode/issues/179517
 
 
 def _configureCommitSigningWithGpgKey(
