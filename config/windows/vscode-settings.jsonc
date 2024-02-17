@@ -4,7 +4,7 @@
 	"editor.accessibilitySupport": "off",
 	"editor.bracketPairColorization.enabled": false,
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": "explicit"
+		"source.organizeImports": "explicit",
 	},
 	"editor.codeLens": true,
 	"editor.fontFamily": "JetBrainsMono Nerd Font",
@@ -47,7 +47,7 @@
 		"**/pdm.lock": true,
 		"**/pnpm-lock.yaml": true,
 		"**/venv": true,
-		"**/yarn.lock": true
+		"**/yarn.lock": true,
 	},
 	"search.searchOnTypeDebouncePeriod": 500,
 
@@ -74,33 +74,33 @@
 	// --------------------------------- LANGUAGE-SPECIFIC SETTINGS ----------------------------------
 
 	"[javascript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 	},
 
 	"[javascriptreact]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 	},
 
 	"[json]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode",
-		"editor.wordWrap": "bounded"
+		"editor.wordWrap": "bounded",
 	},
 
 	"[markdown]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode",
-		"editor.wordWrap": "bounded"
+		"editor.wordWrap": "bounded",
 	},
 
 	"[powershell]": {
-		"editor.defaultFormatter": "ms-vscode.powershell"
+		"editor.defaultFormatter": "ms-vscode.powershell",
 	},
 
 	"[typescript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 	},
 
 	"[typescriptreact]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 	},
 
 	"css.validate": false,
@@ -171,7 +171,7 @@
 		"**/pdm.lock",
 		"**/pnpm-lock.yaml",
 		"**/venv/**",
-		"**/yarn.lock"
+		"**/yarn.lock",
 	],
 	"todohighlight.include": [
 		"**/*.cjs",
@@ -194,6 +194,6 @@
 		"**/*.tsx",
 		"**/*.txt",
 		"**/*.yaml",
-		"**/*.yml"
-	]
+		"**/*.yml",
+	],
 }

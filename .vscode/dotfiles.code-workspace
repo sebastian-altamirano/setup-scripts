@@ -2,20 +2,20 @@
 	"folders": [
 		{
 			"name": "Dotfiles",
-			"path": ".."
+			"path": "..",
 		},
 		{
 			"name": "Browser snippets",
-			"path": "../src/browser-snippets"
+			"path": "../src/browser-snippets",
 		},
 		{
 			"name": "Ubuntu dotfiles",
-			"path": "../src/ubuntu"
+			"path": "../src/ubuntu",
 		},
 		{
 			"name": "Windows dotfiles",
-			"path": "../src/windows"
-		}
+			"path": "../src/windows",
+		},
 	],
 	"extensions": {
 		"recommendations": [
@@ -28,8 +28,8 @@
 			"ms-python.isort",
 			"ms-python.mypy-type-checker",
 			"ms-python.pylint",
-			"ms-vscode.powershell"
-		]
+			"ms-vscode.powershell",
+		],
 	},
 	"launch": {
 		"configurations": [
@@ -39,10 +39,10 @@
 				"program": "${file}",
 				"purpose": ["debug-test"],
 				"request": "launch",
-				"type": "debugpy"
-			}
+				"type": "debugpy",
+			},
 		],
-		"version": "0.2.0"
+		"version": "0.2.0",
 	},
 	"settings": {
 		// ------------------------------------------ General ------------------------------------------
@@ -59,17 +59,17 @@
 			"**/.venv": true,
 			"**/__pycache__": true,
 			"**/.mypy_cache": true,
-			"**/pdm.lock": true
+			"**/pdm.lock": true,
 		},
 
 		// ----------------------------------------- JavaScript ----------------------------------------
 
 		"[javascript]": {
 			"editor.codeActionsOnSave": {
-				"source.organizeImports": "explicit"
+				"source.organizeImports": "explicit",
 			},
 			"editor.defaultFormatter": "esbenp.prettier-vscode",
-			"editor.formatOnSave": true
+			"editor.formatOnSave": true,
 		},
 
 		"eslint.experimental.useFlatConfig": true,
@@ -78,28 +78,28 @@
 
 		"[json]": {
 			"editor.defaultFormatter": "esbenp.prettier-vscode",
-			"editor.formatOnSave": true
+			"editor.formatOnSave": true,
 		},
 
 		"json.schemas": [
 			{
 				"fileMatch": ["config/settings.json"],
-				"url": "../config/settings.schema.json"
-			}
+				"url": "../config/settings.schema.json",
+			},
 		],
 
 		// ------------------------------------------ Markdown -----------------------------------------
 
 		"[markdown]": {
 			"editor.defaultFormatter": "esbenp.prettier-vscode",
-			"editor.formatOnSave": true
+			"editor.formatOnSave": true,
 		},
 
 		// ----------------------------------------- PowerShell ----------------------------------------
 
 		"[powershell]": {
 			"editor.defaultFormatter": "ms-vscode.powershell",
-			"editor.formatOnSave": true
+			"editor.formatOnSave": true,
 		},
 
 		// The PowerShell extension does not allow specifying formatting settings using a file
@@ -118,10 +118,10 @@
 
 		"[python]": {
 			"editor.codeActionsOnSave": {
-				"source.unusedImports": "explicit"
+				"source.unusedImports": "explicit",
 			},
 			"editor.defaultFormatter": "ms-python.black-formatter",
-			"editor.formatOnSave": true
+			"editor.formatOnSave": true,
 		},
 
 		"black-formatter.importStrategy": "fromEnvironment",
@@ -137,6 +137,6 @@
 
 		"python.testing.pytestEnabled": false,
 		"python.testing.unittestArgs": ["-v", "-p", "*_test.py"],
-		"python.testing.unittestEnabled": true
-	}
+		"python.testing.unittestEnabled": true,
+	},
 }

@@ -1,8 +1,6 @@
 /// <reference types="lint-staged" />
 
 import { existsSync } from "node:fs";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 
 /**
  * @param {string} fileName
@@ -82,9 +80,9 @@ export default {
 		});
 		// Always run static analysis tests.
 		operations.push(
-			`pdm run -p src/ubuntu unittest ${dirname(
-				fileURLToPath(import.meta.url),
-			)}/src/ubuntu/dotfiles/tests/static_analysis_test.py`,
+			`pdm run -p src/ubuntu unittest ${
+				import.meta.dirname
+			}/src/ubuntu/dotfiles/tests/static_analysis_test.py`,
 		);
 
 		return operations;

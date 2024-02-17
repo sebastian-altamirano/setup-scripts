@@ -1,19 +1,19 @@
 {
 	"author": "Sebastián Altamirano",
 	"devDependencies": {
-		"@eslint/js": "^8.52.0",
-		"@tsconfig/strictest": "^2.0.2",
-		"@types/eslint": "^8.44.6",
-		"@types/eslint__js": "^8.42.2",
-		"@types/lint-staged": "^13.2.1",
-		"eslint": "^8.52.0",
-		"husky": "^8.0.3",
-		"lint-staged": "^15.0.2",
-		"prettier": "^3.0.3",
-		"typescript": "^5.2.2"
+		"@eslint/js": "^8.56.0",
+		"@tsconfig/strictest": "^2.0.3",
+		"@types/eslint": "^8.56.2",
+		"@types/eslint__js": "^8.42.3",
+		"@types/lint-staged": "^13.3.0",
+		"eslint": "^8.56.0",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"prettier": "^3.2.5",
+		"typescript": "^5.3.3"
 	},
 	"engines": {
-		"node": ">=18"
+		"node": ">=20.11.0"
 	},
 	"license": "MIT",
 	"name": "dotfiles",
@@ -23,10 +23,10 @@
 		"format:prettier": "prettier --write --ignore-unknown .",
 		"format:windows": "pwsh scripts/format-powershell.ps1 -Path src/windows -SettingsPath src/windows/formatter-settings.psd1",
 		"lint": "npm run lint:browser-snippets && npm run lint:linux && npm run lint:windows",
-		"lint:browser-snippets": "eslint src/browser-snippets",
+		"lint:browser-snippets": "eslint src/browser-snippets && tsc",
 		"lint:linux": "pdm run -p src/ubuntu lint",
 		"lint:windows": "pwsh scripts/lint-powershell.ps1 -Path src/windows -SettingsPath src/windows/linter-settings.psd1",
-		"prepare": "husky install",
+		"prepare": "husky",
 		"test": "npm run test:linux",
 		"test:linux": "pdm run -p src/ubuntu test",
 		"update-linux-requirements": "pdm export --format requirements --prod -p src/ubuntu > src/ubuntu/requirements.txt"
