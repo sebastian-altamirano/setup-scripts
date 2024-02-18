@@ -20,4 +20,5 @@ A log of the process can be found in the `~/dotfiles_install-{start_time}.log`
 6. Install Git.
 7. Install VSCode extensions (some can be installed on Windows, others must be installed on WSL).
 8. Import my personal settings for some applications.
-9. Display post-installation instructions.
+9. Configure Git.
+10. Display post-installation instructions.
