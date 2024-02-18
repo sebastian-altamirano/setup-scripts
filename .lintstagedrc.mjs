@@ -3,46 +3,69 @@
 import { existsSync } from "node:fs";
 
 /**
- * @param {string} fileName
+ * @param {string} filePath
  *
  * @return {string}
  */
-function formatPowerShellScript(fileName) {
+function formatPowerShellScript(filePath) {
 	return `scripts/format-powershell.ps1 \
--Path ${fileName} \
+-Path ${filePath} \
 -SettingsPath src/windows/formatter-settings.psd1`;
 }
 
 /**
- * @param {string} fileName
+ * @param {string} filePath
  *
  * @return {string}
  */
-function lintPowerShellScript(fileName) {
+function lintPowerShellScript(filePath) {
 	return `scripts/lint-powershell.ps1 \
--Path ${fileName} \
+-Path ${filePath} \
 -SettingsPath src/windows/linter-settings.psd1`;
 }
 
 /**
- * @param {string} fileName
+ * @param {string} filePath
  *
  * @example
- * getPythonTestFileName("foo_test.py") // "foo_test.py"
+ * getPythonTestFilePath("foo_test.py") // "foo_test.py"
  * @example
- * getPythonTestFileName("foo.py") // "foo_test.py" (if it exists)
+ * getPythonTestFilePath("foo.py") // "foo_test.py" (if it exists)
  * @example
- * getPythonTestFileName("foo.py") // null (if `foo_test.py` doesn't exist)
+ * getPythonTestFilePath("foo.py") // null (if `foo_test.py` doesn't exist)
  *
  * @returns {string | null}
  */
-function getPythonTestFileName(fileName) {
-	if (fileName.endsWith("_test.py")) {
-		return fileName;
+function getPythonTestFilePath(filePath) {
+	if (filePath.endsWith("_test.py")) {
+		return filePath;
 	}
 
-	const testFileName = `${fileName.slice(0, -3)}_test.py`;
-	return existsSync(testFileName) ? testFileName : null;
+	const testFilePath = `${filePath.slice(0, -3)}_test.py`;
+	return existsSync(testFilePath) ? testFilePath : null;
+}
+
+/**
+ * @param {string[]} filePaths
+ *
+ * @returns {string[]}
+ */
+function getPythonTestFilePaths(filePaths) {
+	// Use a set to avoid running the same test more than once.
+	/** @type {Set<string>} */
+	const testFilePaths = new Set([
+		// Always run static analysis tests.
+		`${import.meta.dirname}/src/ubuntu/dotfiles/tests/static_analysis_test.py`,
+	]);
+
+	filePaths.forEach((filePath) => {
+		const testFilePath = getPythonTestFilePath(filePath);
+		if (testFilePath !== null) {
+			testFilePaths.add(testFilePath);
+		}
+	});
+
+	return [...testFilePaths];
 }
 
 /**
@@ -51,41 +74,27 @@ function getPythonTestFileName(fileName) {
 export default {
 	"*.{json,md}": "prettier --write",
 	"*.{mjs,js}": ["prettier --write", "eslint"],
-	"*.psd1": (fileNames) => fileNames.map(formatPowerShellScript),
-	"*.{ps1,psm1}": (fileNames) =>
-		fileNames.flatMap((fileName) => [
-			formatPowerShellScript(fileName),
-			lintPowerShellScript(fileName),
+	"*.psd1": (filePaths) => filePaths.map(formatPowerShellScript),
+	"*.{ps1,psm1}": (filePaths) =>
+		filePaths.flatMap((filePath) => [
+			formatPowerShellScript(filePath),
+			lintPowerShellScript(filePath),
 		]),
-	"*.py": (fileNames) => {
-		/** @type {Set<string>} */
-		const testFileNames = new Set([]);
+	"*.py": (filePaths) => {
+		const spaceSeparatedFilePaths = filePaths.join(" ");
+		const commands = [
+			`pdm run -p src/ubuntu isort ${spaceSeparatedFilePaths}`,
+			`pdm run -p src/ubuntu black ${spaceSeparatedFilePaths}`,
+			`pdm run -p src/ubuntu mypy ${spaceSeparatedFilePaths}`,
+			`pdm run -p src/ubuntu pylint ${spaceSeparatedFilePaths}`,
+		];
 
-		const operations = fileNames.flatMap((fileName) => {
-			const fileOperations = [
-				`pdm run -p src/ubuntu isort ${fileName}`,
-				`pdm run -p src/ubuntu black ${fileName}`,
-				`pdm run -p src/ubuntu mypy ${fileName}`,
-				`pdm run -p src/ubuntu pylint ${fileName}`,
-			];
+		const testFilePaths = getPythonTestFilePaths(filePaths);
+		if (testFilePaths.length) {
+			commands.push(`pdm run -p src/ubuntu unittest ${testFilePaths.join(" ")}`);
+		}
 
-			const testFileName = getPythonTestFileName(fileName);
-			// Run the test only if it has not yet run.
-			if (testFileName && !testFileNames.has(testFileName)) {
-				testFileNames.add(testFileName);
-				fileOperations.push(`pdm run -p src/ubuntu unittest ${testFileName}`);
-			}
-
-			return fileOperations;
-		});
-		// Always run static analysis tests.
-		operations.push(
-			`pdm run -p src/ubuntu unittest ${
-				import.meta.dirname
-			}/src/ubuntu/dotfiles/tests/static_analysis_test.py`,
-		);
-
-		return operations;
+		return commands;
 	},
 	"config/settings?(.schema).json": "scripts/validate-settings.ps1",
 	"src/ubuntu/pyproject.toml": "npm run update-linux-requirements",
