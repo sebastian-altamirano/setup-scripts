@@ -4,16 +4,26 @@ param (
 	[string] $LogFilePath = "$env:UserProfile\Documents\dotfiles_install-$(Get-Date -Format 'yyyy_MM_dd-HH_mm_ss').log"
 )
 
+$dotfilesModulePath = Join-Path -Path $PSScriptRoot -ChildPath Dotfiles
+Import-Module $dotfilesModulePath
+
 Write-Output 'Validating `settings.json`.'
 $configDirectoryPath = Join-Path -Path $PSScriptRoot -ChildPath ".." -AdditionalChildPath "..", "config" -Resolve
 $settingsFilePath = Join-Path -Path $configDirectoryPath -ChildPath "settings.json"
 $settingsSchemaFilePath = Join-Path -Path $configDirectoryPath -ChildPath "settings.schema.json"
-if (!(Test-Json -Path $settingsFilePath -SchemaFile $settingsSchemaFilePath)) {
-	throw 'Failed to validate `settings.json` with `settings.schema.json`, fix the errors and try again.'
+$windowsUserSettingsDirectoryPath = Join-Path -Path $configDirectoryPath -ChildPath "windows"
+$ubuntuUserSettingsDirectoryPath = Join-Path -Path $configDirectoryPath -ChildPath "ubuntu"
+if (
+	!(Test-DotfilesConfiguration `
+			-ShouldValidateUbuntu $false `
+			-SettingsFilePath $settingsFilePath `
+			-SettingsSchemaFilePath $settingsSchemaFilePath `
+			-WindowsUserSettingsDirectoryPath $windowsUserSettingsDirectoryPath`
+			-UbuntuUserSettingsDirectoryPath $ubuntuUserSettingsDirectoryPath
+	)
+) {
+	throw 'Failed to validate the settings, fix the errors and try again.'
 }
-
-$dotfilesModulePath = Join-Path -Path $PSScriptRoot -ChildPath Dotfiles
-Import-Module $dotfilesModulePath
 
 Start-DotfilesLogging $LogFilePath
 
