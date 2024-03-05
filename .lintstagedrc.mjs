@@ -96,6 +96,5 @@ export default {
 
 		return commands;
 	},
-	"config/settings?(.schema).json": "scripts/validate-settings.ps1",
 	"src/ubuntu/pyproject.toml": "npm run update-linux-requirements",
 };
