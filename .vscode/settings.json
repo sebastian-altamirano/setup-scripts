@@ -1,0 +1,38 @@
+{
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit",
+		"source.organizeImports": "explicit"
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"editor.insertSpaces": false,
+
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+
+	"search.exclude": {
+		"**/.git": true,
+		"**/.husky/_": true,
+		"**/node_modules": true,
+		"**/package-lock.json": true
+	},
+
+	"[fish]": {
+		"editor.defaultFormatter": "bmalehorn.vscode-fish",
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4
+	},
+
+	"[powershell]": {
+		"editor.defaultFormatter": "ms-vscode.powershell"
+	},
+	// The PowerShell extension does not allow specifying formatting settings using a file
+	// (https://github.com/PowerShell/vscode-powershell/issues/3024#issuecomment-1479559149), so it
+	// is not possible to use `/CodeFormatting.psd1`. However, this file contains the same settings as
+	// "OTBS", but uses tabs instead of spaces. The extension seems to respect the
+	// `editor.insertSpaces` setting.
+	"powershell.codeFormatting.preset": "OTBS",
+	"powershell.scriptAnalysis.enable": true,
+	"powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1"
+}

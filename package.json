@@ -1,35 +1,36 @@
 {
 	"author": "Sebastián Altamirano",
 	"devDependencies": {
-		"@eslint/js": "^8.56.0",
-		"@tsconfig/strictest": "^2.0.3",
-		"@types/eslint": "^8.56.2",
-		"@types/eslint__js": "^8.42.3",
-		"@types/lint-staged": "^13.3.0",
-		"eslint": "^8.56.0",
-		"husky": "^9.0.11",
-		"lint-staged": "^15.2.2",
-		"prettier": "^3.2.5",
-		"typescript": "^5.3.3"
+		"@eslint/js": "^9.33.0",
+		"@eslint/markdown": "^7.1.0",
+		"@tsconfig/strictest": "^2.0.5",
+		"@types/eslint": "^9.6.1",
+		"@types/node": "^24.2.1",
+		"eslint": "^9.33.0",
+		"eslint-config-prettier": "^10.1.8",
+		"globals": "^16.3.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.5",
+		"prettier": "3.6.2",
+		"typescript": "^5.9.2",
+		"typescript-eslint": "^8.39.1"
 	},
 	"engines": {
-		"node": ">=20.11.0"
+		"node": ">=22"
 	},
 	"license": "MIT",
 	"name": "dotfiles",
 	"scripts": {
-		"format": "npm run format:linux && npm run format:prettier && npm run format:windows",
-		"format:linux": "pdm run -p src/ubuntu format",
+		"check": "tsc",
+		"format": "npm run format:fish && npm run format:powershell && npm run format:prettier",
+		"format:fish": "fish scripts/fish-format-project.fish",
+		"format:powershell": "pwsh -File scripts/powershell-format-project.ps1",
 		"format:prettier": "prettier --write --ignore-unknown .",
-		"format:windows": "pwsh scripts/format-powershell.ps1 -Path src/windows -SettingsPath src/windows/formatter-settings.psd1",
-		"lint": "npm run lint:browser-snippets && npm run lint:linux && npm run lint:windows",
-		"lint:browser-snippets": "eslint src/browser-snippets && tsc",
-		"lint:linux": "pdm run -p src/ubuntu lint",
-		"lint:windows": "pwsh scripts/lint-powershell.ps1 -Path src/windows -SettingsPath src/windows/linter-settings.psd1",
-		"prepare": "husky",
-		"test": "npm run test:linux",
-		"test:linux": "pdm run -p src/ubuntu test",
-		"update-linux-requirements": "pdm export --format requirements --prod -p src/ubuntu > src/ubuntu/requirements.txt"
+		"lint": "npm run lint:bash && npm run lint:js && npm run lint:powershell",
+		"lint:bash": "fish scripts/bash-lint-project.fish",
+		"lint:js": "eslint",
+		"lint:powershell": "pwsh -File scripts/powershell-lint-project.ps1",
+		"prepare": "husky"
 	},
 	"type": "module",
 	"version": "1.0.0"

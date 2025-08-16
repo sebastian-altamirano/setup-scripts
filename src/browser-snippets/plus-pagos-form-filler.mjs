@@ -110,6 +110,16 @@ const IdentityDocumentType = {
 
 // ----------------------------------------- Custom errors -----------------------------------------
 
+class UnsupportedBrowserError extends Error {
+	/**
+	 * @param {string=} message
+	 */
+	constructor(message = "Your browser is not supported by this snippet.") {
+		super(message);
+		this.name = "UnsupportedBrowserError";
+	}
+}
+
 class FormValueValidationError extends Error {
 	/**
 	 * @param {string=} message
@@ -465,6 +475,7 @@ function validatePaymentInformation(paymentInformation) {
  * Reads the form value from a JSON file and returns its value.
  *
  * The promise can reject with:
+ * - UnsupportedBrowserError: If the browser is not supported.
  * - AbortError: If no file is selected.
  * - NotAllowedError: If the browser does not have permission to read the file.
  * - SyntaxError: If the selected file is not a valid JSON.
@@ -472,9 +483,10 @@ function validatePaymentInformation(paymentInformation) {
  * @returns {Promise<FormValue>}
  */
 async function readFormValueFromFile() {
-	/** @type [FileSystemFileHandle] */
-	// @ts-expect-error At the time of writing this, `showOpenFilePicker` is experimental and is not
-	// included in the `Window` interface.
+	if (!("showOpenFilePicker" in window)) {
+		throw new UnsupportedBrowserError();
+	}
+
 	const [fileHandle] = await window.showOpenFilePicker({
 		excludeAcceptAllOption: true,
 		multiple: false,
@@ -486,6 +498,7 @@ async function readFormValueFromFile() {
 		],
 	});
 	const fileData = await fileHandle.getFile();
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 	return JSON.parse(await fileData.text());
 }
 
@@ -723,6 +736,7 @@ function acceptTermsAndConditions() {
  * Fills out the Plus Pagos form using data from a file, but does not click on the pay button.
  *
  * The promise can reject with:
+ * - UnsupportedBrowserError: If the browser is not supported.
  * - AbortError: If no file is selected.
  * - NotAllowedError: If the browser does not have permission to read the file.
  * - SyntaxError: If the selected file is not a valid JSON.

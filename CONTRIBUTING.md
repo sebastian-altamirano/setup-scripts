@@ -2,14 +2,13 @@
 
 ## Requirements
 
--   Node.js 18+
--   [PDM](https://github.com/pdm-project/pdm)
--   PowerShell 5.1+
--   [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer)
--   Python 3.8+
+- Fish shell 4+
+- PowerShell 7.5+
+- Node.js (check the required version in the `engines.node` key of [`package.json`](./package.json))
+- [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer)
 
-Once you have installed all the requirements, run [`/scripts/install-dependencies.sh`](scripts/install-dependencies.sh) to install the development dependencies.
+Once all the requirements are installed, run `npm i` to install the development dependencies.
 
-## VSCode configuration
+## Development checks
 
-Use `.vscode/dotfiles.code-workspace` at all times, this workspace configures formatting, debugging, linting, testing and other things.
+Linting and formatting are executed in a pre-commit hook using lint-staged. These checks can also be run for all files using the commands configured in the `scripts` section of [`package.json`](./package.json).

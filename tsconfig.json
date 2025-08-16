@@ -3,11 +3,17 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"checkJs": true,
-		"module": "ES2022",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"noEmit": true,
 		"sourceMap": true,
-		"target": "ES2022"
+		"target": "es2022"
 	},
 	"exclude": ["node_modules"],
-	"include": ["src/browser-snippets/**/*.mjs"]
+	// TSConfig ignores files and directories starting with a dot unless explicitly included.
+	// Therefore, `.git` does not need to be listed in `exclude`, but `.lintstagedrc.mjs` must be
+	// added to `files`.
+	// See: https://github.com/microsoft/TypeScript/issues/49555.
+	"files": [".lintstagedrc.mjs"],
+	"include": ["**/*.d.ts", "**/*.js", "**/*.mjs"]
 }
