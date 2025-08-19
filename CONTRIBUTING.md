@@ -4,10 +4,11 @@
 
 - Fish shell 4+
 - PowerShell 7.5+
-- Node.js (check the required version in the `engines.node` key of [`package.json`](./package.json))
-- [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer)
+- Node.js and PNPM (check the required versions in the `devEngines` key of [`package.json`](./package.json))
+- PSScriptAnalyzer
+- ShellCheck
 
-Once all the requirements are installed, run `npm i` to install the development dependencies.
+Once all the requirements are installed, run `pnpm i` to install the development dependencies.
 
 ## Development checks
 
