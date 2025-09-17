@@ -139,9 +139,6 @@ cp "$CONFIG_PATH/id_ed25519" ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
 cp "$CONFIG_PATH/id_ed25519.pub" ~/.ssh/id_ed25519.pub
 chmod 644 ~/.ssh/id_ed25519.pub
-print_attention 'You may be prompted to enter the passphrase for your SSH key (if it has one).'
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
 # Add GitHub's SSH key to `known_hosts`.
 ssh-keyscan -t ed25519 github.com >>~/.ssh/known_hosts
 chmod 644 ~/.ssh/known_hosts
