@@ -63,6 +63,9 @@ sudo -v
 while true; do sudo -n true 2>/dev/null || true; sleep 60; done &
 SUDO_REFRESH_PID=$!
 
+print_info 'Fixing timezone...'
+sudo ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime
+
 print_info 'Upgrading system packages...'
 sudo apt update
 sudo apt upgrade -y
