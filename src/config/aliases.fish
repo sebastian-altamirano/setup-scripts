@@ -9,4 +9,9 @@ alias ... 'cd ../..'
 alias .... 'cd ../../..'
 
 alias hs 'history | grep'
+
+alias ls 'eza --group-directories-first --icons --oneline'
+alias la 'eza --group-directories-first --icons --all --oneline'
+alias ll 'eza --group-directories-first --icons --all --long --git'
+
 alias upd 'sudo apt update && sudo apt upgrade && sudo apt autoremove'

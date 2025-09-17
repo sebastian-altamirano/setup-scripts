@@ -73,11 +73,12 @@ print_info 'Upgrading system packages...'
 sudo apt update
 sudo apt upgrade -y
 
-print_info 'Installing essential packages...'
+print_info 'Installing APT packages...'
 sudo apt install -y \
 	apt-transport-https \
 	build-essential \
 	curl \
+	eza \
 	git \
 	software-properties-common \
 	unzip \
