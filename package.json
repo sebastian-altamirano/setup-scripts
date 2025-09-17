@@ -26,7 +26,7 @@
 		}
 	},
 	"license": "MIT",
-	"name": "dotfiles",
+	"name": "setup-scripts",
 	"scripts": {
 		"check": "tsc",
 		"format": "pnpm run format:fish && pnpm run format:powershell && pnpm run format:prettier",

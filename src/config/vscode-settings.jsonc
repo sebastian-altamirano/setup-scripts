@@ -12,7 +12,7 @@
 	"editor.bracketPairColorization.enabled": false,
 	"editor.codeLens": true,
 	"editor.detectIndentation": true,
-	"editor.fontFamily": "'Monaspace Neon', monospace",
+	"editor.fontFamily": "'MonaspiceNe Nerd Font', monospace",
 	"editor.fontLigatures": "'calt', 'cv01' 2, 'cv11', 'cv31', 'ss01', 'ss02', 'ss03', 'ss04', 'ss07', 'ss09', 'liga'",
 	"editor.fontSize": 16,
 	"editor.inlayHints.enabled": "offUnlessPressed",

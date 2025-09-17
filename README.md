@@ -10,7 +10,7 @@ This repository is designed to streamline system setup after formatting or hardw
 
 ### Preparation
 
-- Make a list of applications to install and their installation methods (Microsoft Store, Scoop, Steam, WinGet, etc.). If they differ from the setup scripts, update them.
+- Make a list of applications to install and their installation methods (Microsoft Store, WinGet, Chocolatey, Steam, etc.). If they differ from the setup scripts, update them.
 - Back up data (settings, documents, photos, videos, games, saved games, browser bookmarks, etc.).
 - Download the OS ISO and create a bootable USB with Rufus using "Partition scheme: GPT" and "Target system: UEFI (non CSM)." If Rufus allows you to pre-create a local user, avoid using accents or special characters, as they may cause some applications to malfunction.
 - If installing Windows, pre-download the drivers. Although Windows Update can install drivers, they are often outdated, generic, or unavailable. Save them on the bootable USB for installation after the OS.
@@ -43,8 +43,15 @@ Some BIOS settings are required for the formatting and setup scripts to work cor
     - Disable the internet connection during installation to prevent the OS from automatically installing drivers.
     - If you did not pre-create a local user with Rufus, create one now. Avoid using accents or special characters.
 4. Install the drivers.
-5. Run the setup scripts to install applications and restore configurations. Reconnect the internet before running the scripts.
-6. Restore backups.
+5. Install Windows and Microsoft Store updates:
+    - Enable internet connection.
+    - Log-in to the Microsoft Store.
+    - Download and install updates; restart the SO if required.
+    - After reboot, make sure there are no more updates pending. The reason for this is that some updates could disrupt the setup scripts.
+6. Run the [setup scripts](#setup-instructions) to install applications and restore configurations.
+7. Apply [manual settings](#manual-settings).
+8. Log-in accounts.
+9. Restore backups.
 
 ## Setup Instructions
 
@@ -59,15 +66,20 @@ Before running the scripts, ensure that your internet connection is active, as t
 
 Stay attentive during the execution of the scripts, as some commands may require your input.
 
-The scripts generate log files that you can check for errors during their execution. Each script creates a log file in the same folder, named after the script with a `.log` extension. For example, the log file for `/src/wsl/setup.bash` is `/src/wsl/setup.log`.
+The scripts generate log files that you can check for errors during their execution. Each script creates a log file in the same folder as the script, with a `.log` extension.
 
-Windows applications are installed using WinGet and Scoop, which might trigger unexpected reboots. If that happens, check the logs after the restart to determine where to resume execution. You may need to edit the scripts to skip already executed steps.
+Windows applications are installed using WinGet, which might trigger unexpected reboots. If that happens, check the logs after the restart to determine where to resume execution. You may need to edit the scripts to skip already executed steps.
 
 1. Download the repository as a ZIP file from GitHub.
 2. Copy your GitHub SSH keys to [/src/config/](/src/config/).
-3. Run [`/src/windows/setup-part-1.ps1`](/src/windows/setup-part-1.ps1) on a clean Windows installation. This will, among other things, install Ubuntu on WSL. The computer will reboot several times during the process.
-4. Start WSL and create a user.
-5. Run [/src/wsl/setup.bash](/src/wsl/setup.bash) in WSL.
+3. Allow PowerShell scripts to run:
+    1. Open PowerShell as Administrator in the repository folder.
+    2. Set the execution policy to allow local scripts with `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`.
+    3. Unblock the setup scripts:
+        - `Unblock-File -Path .\src\windows\setup-part-1.ps1`
+        - `Unblock-File -Path .\src\windows\setup-part-2.ps1`
+4. Run [`/src/windows/setup-part-1.ps1`](/src/windows/setup-part-1.ps1) in an elevated PowerShell. This performs the initial configuration and will automatically reboot the PC when finished.
+5. After the reboot, reopen PowerShell as Administrator and run [`/src/windows/setup-part-2.ps1`](/src/windows/setup-part-2.ps1). This will install applications, restore configurations and run the WSL setup script. This script may also trigger a reboot.
 6. Apply the settings that make sense from the ["Manual settings" section](#manual-settings).
 
 ## Manual Settings
