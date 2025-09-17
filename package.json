@@ -29,7 +29,8 @@
 	"name": "setup-scripts",
 	"scripts": {
 		"check": "tsc",
-		"format": "pnpm run format:fish && pnpm run format:powershell && pnpm run format:prettier",
+		"format": "pnpm run format:bash && pnpm run format:fish && pnpm run format:powershell && pnpm run format:prettier",
+		"format:bash": "fish scripts/bash-format-project.fish",
 		"format:fish": "fish scripts/fish-format-project.fish",
 		"format:powershell": "pwsh -File scripts/powershell-format-project.ps1",
 		"format:prettier": "prettier --write --ignore-unknown .",

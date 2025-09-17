@@ -23,8 +23,6 @@ export default defineConfig([
 		languageOptions: {
 			ecmaVersion: 2022,
 			globals: globals.browser,
-			// @ts-expect-error `typescript-eslint` uses the type definitions provided by TSESLint, which
-			// are not compatible with native ESLint types.
 			parser: tsParser,
 			parserOptions: {
 				projectService: true,
@@ -32,8 +30,6 @@ export default defineConfig([
 			},
 			sourceType: "module",
 		},
-		// @ts-expect-error `typescript-eslint` uses the type definitions provided by TSESLint, which
-		// are not compatible with native ESLint types.
 		plugins: { js, ts },
 		rules: {
 			"@typescript-eslint/explicit-function-return-type": "off",

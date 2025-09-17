@@ -60,7 +60,10 @@ done
 print_info 'Requesting sudo permissions...'
 sudo -v
 # Refresh `sudo` in the background.
-while true; do sudo -n true 2>/dev/null || true; sleep 60; done &
+while true; do
+	sudo -n true 2>/dev/null || true
+	sleep 60
+done &
 SUDO_REFRESH_PID=$!
 
 print_info 'Fixing timezone...'
@@ -140,7 +143,7 @@ print_attention 'You may be prompted to enter the passphrase for your SSH key (i
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
 # Add GitHub's SSH key to `known_hosts`.
-ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+ssh-keyscan -t ed25519 github.com >>~/.ssh/known_hosts
 chmod 644 ~/.ssh/known_hosts
 
 print_info 'Copying Fish shell configuration...'

@@ -13,7 +13,7 @@ function formatPathsForPowerShell(filePaths) {
  * @type {import('lint-staged').Configuration}
  */
 export default {
-	"*.bash": "shellcheck",
+	"*.bash": ["shfmt -w", "shellcheck"],
 	"*.fish": "fish_indent -w",
 	"*.{json,jsonc}": "prettier --write",
 	"*.md": ["prettier --write", "eslint --fix"],

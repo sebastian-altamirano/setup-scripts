@@ -7,6 +7,7 @@
 - Node.js and PNPM (check the required versions in the `devEngines` key of [`package.json`](./package.json))
 - PSScriptAnalyzer
 - ShellCheck
+- shfmt
 
 Once all the requirements are installed, run `pnpm i` to install the development dependencies.
 
