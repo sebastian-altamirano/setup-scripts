@@ -12,11 +12,9 @@
 	"files.trimTrailingWhitespace": true,
 
 	"search.exclude": {
-		"**/.git": true,
-		"**/.husky/_": true,
-		"**/node_modules": true,
 		"**/package-lock.json": true
 	},
+	"search.useIgnoreFiles": true,
 
 	"[fish]": {
 		"editor.defaultFormatter": "bmalehorn.vscode-fish",
