@@ -1,3 +1,5 @@
+fish_add_path "$HOME/.local/bin"
+
 set -g SSH_AGENT_ENV ~/.ssh/agent.env
 
 function start_agent

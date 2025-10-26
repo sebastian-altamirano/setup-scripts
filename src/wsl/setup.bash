@@ -152,22 +152,15 @@ cp "$CONFIG_PATH/config.fish" ~/.config/fish/conf.d/config.fish
 print_info 'Copying WSL configuration...'
 sudo cp "$CONFIG_PATH/wsl.conf" /etc/wsl.conf
 
-print_info 'Configuring PATH...'
-# Add local + selected Windows binary directories to fish's PATH (`wsl.conf` disables Windows PATH
-# injection for stability reasons).
-fish_paths=("$HOME/.local/bin")
+# `wsl.conf` disables Windows PATH injection for stability reasons.
+print_info 'Adding Windows binaries to PATH...'
 windows_binaries=(
 	'code'
 	'explorer.exe'
 )
 for windows_binary in "${windows_binaries[@]}"; do
-	fish_paths+=("$(dirname "$(which "$windows_binary")")")
+	ln -s "$(which "$windows_binary")" ~/.local/bin/"$windows_binary"
 done
-quoted_fish_paths=()
-for fish_path in "${fish_paths[@]}"; do
-	quoted_fish_paths+=("'$fish_path'")
-done
-echo "fish_add_path ${quoted_fish_paths[*]}" >>~/.config/fish/conf.d/config.fish
 
 # This is needed to access Windows user profile paths from WSL.
 # It allows sharing the Oh My Posh configuration between WSL and Windows without duplication.
