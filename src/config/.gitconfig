@@ -6,13 +6,17 @@
 	brm = branch -m
 	ci = commit
 	cia = commit --amend --date=now --no-edit
+	cie = commit --amend --date=now
 	cim = commit -m
+	cl = clone
 	co = checkout
 	cob = checkout -b
 	cp = cherry-pick
 	l = log
 	ls = log -E -i --grep
 	pl = pull
+	plm = pull --no-rebase
+	plr = pull --rebase
 	ps = push
 	st = status
 
