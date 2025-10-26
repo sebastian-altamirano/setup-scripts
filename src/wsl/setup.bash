@@ -147,6 +147,7 @@ chmod 644 ~/.ssh/known_hosts
 print_info 'Copying Fish shell configuration...'
 mkdir -p ~/.config/fish/conf.d
 cp "$CONFIG_PATH/aliases.fish" ~/.config/fish/conf.d/aliases.fish
+cp "$CONFIG_PATH/functions.fish" ~/.config/fish/conf.d/functions.fish
 cp "$CONFIG_PATH/config.fish" ~/.config/fish/conf.d/config.fish
 
 print_info 'Copying WSL configuration...'
@@ -155,6 +156,7 @@ sudo cp "$CONFIG_PATH/wsl.conf" /etc/wsl.conf
 # `wsl.conf` disables Windows PATH injection for stability reasons.
 print_info 'Adding Windows binaries to PATH...'
 windows_binaries=(
+	'clip.exe'
 	'code'
 	'explorer.exe'
 )
