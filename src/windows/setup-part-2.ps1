@@ -133,9 +133,9 @@ try {
 
 	Write-InfoMsg 'Copying PowerShell profile...'
 	New-Item -ItemType Directory -Path (Split-Path $PROFILE) -Force | Out-Null
+	Copy-Item "$CONFIG_PATH\powershell-profile.ps1" $PROFILE
 	# Unblock the downloaded script so it can be executed.
 	Unblock-File "$CONFIG_PATH\powershell-profile.ps1"
-	Copy-Item "$CONFIG_PATH\powershell-profile.ps1" $PROFILE
 
 	Write-InfoMsg 'Copying VS Code settings...'
 	$vscodeSettingsPath = "$env:AppData\Code\User"
