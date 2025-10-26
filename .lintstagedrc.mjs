@@ -1,5 +1,5 @@
 /**
- * @param {string[]} filePaths
+ * @param {readonly string[]} filePaths
  * @returns {string}
  */
 function formatPathsForPowerShell(filePaths) {

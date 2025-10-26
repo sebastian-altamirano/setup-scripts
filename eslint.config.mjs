@@ -10,7 +10,6 @@ export default defineConfig([
 		extends: ["markdown/recommended"],
 		files: ["**/*.md"],
 		language: "markdown/gfm",
-		// @ts-expect-error `@eslint/markdown` does not support `exactOptionalPropertyTypes`.
 		plugins: { markdown },
 		rules: {
 			"markdown/no-duplicate-headings": "error",
