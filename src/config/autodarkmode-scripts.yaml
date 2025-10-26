@@ -1,0 +1,22 @@
+Enabled: true
+Component:
+    Scripts:
+        - Name: Update Oh My Posh Theme
+          Command: pwsh
+          ArgsLight:
+              [
+                  -NoProfile,
+                  -Command,
+                  '& "$([Environment]::GetFolderPath(''MyDocuments''))/PowerShell/Scripts/update-omp-theme.ps1"',
+                  -ConfigurationFile ~/ys-custom.omp.json,
+                  -Theme github-light,
+              ]
+          ArgsDark:
+              [
+                  -NoProfile,
+                  -Command,
+                  '& "$([Environment]::GetFolderPath(''MyDocuments''))/PowerShell/Scripts/update-omp-theme.ps1"',
+                  -ConfigurationFile ~/ys-custom.omp.json,
+                  -Theme github-dark-dimmed,
+              ]
+          AllowedSources: [Any]

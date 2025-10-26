@@ -18,4 +18,4 @@ if not ssh-add -l | grep -q '38230545+sebastian-altamirano@users.noreply.github.
     ssh-add ~/.ssh/id_ed25519
 end
 
-oh-my-posh init fish --config ys | source
+oh-my-posh init fish --config "/mnt/c/Users/$windows_username/ys-custom.omp.json" | source

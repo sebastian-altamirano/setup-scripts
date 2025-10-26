@@ -8,7 +8,10 @@
 	"profiles": {
 		"defaults": {
 			"antialiasingMode": "grayscale",
-			"colorScheme": "Catppuccin Macchiato",
+			"colorScheme": {
+				"dark": "GitHub Dark Dimmed",
+				"light": "GitHub Light"
+			},
 			"cursorShape": "bar",
 			"font": {
 				"face": "MonaspiceNe Nerd Font",
@@ -39,68 +42,68 @@
 	},
 	"schemes": [
 		{
-			"background": "#EFF1F5",
-			"black": "#5C5F77",
-			"blue": "#1E66F5",
-			"brightBlack": "#ACB0BE",
-			"brightBlue": "#1E66F5",
-			"brightCyan": "#179299",
-			"brightGreen": "#40A02B",
-			"brightPurple": "#EA76CB",
-			"brightRed": "#D20F39",
-			"brightWhite": "#BCC0CC",
-			"brightYellow": "#DF8E1D",
-			"cursorColor": "#DC8A78",
-			"cyan": "#179299",
-			"foreground": "#4C4F69",
-			"green": "#40A02B",
-			"name": "Catppuccin Latte",
-			"purple": "#EA76CB",
-			"red": "#D20F39",
-			"selectionBackground": "#ACB0BE",
-			"white": "#ACB0BE",
-			"yellow": "#DF8E1D"
+			"background": "#1C2128",
+			"black": "#545D68",
+			"blue": "#539BF5",
+			"brightBlack": "#636E7B",
+			"brightBlue": "#6CB6FF",
+			"brightCyan": "#56D4DD",
+			"brightGreen": "#6BC46D",
+			"brightPurple": "#DCBDFB",
+			"brightRed": "#FF938A",
+			"brightWhite": "#CDD9E5",
+			"brightYellow": "#DAAA3F",
+			"cursorColor": "#ADBAC7",
+			"cyan": "#39C5CF",
+			"foreground": "#ADBAC7",
+			"green": "#57AB5A",
+			"name": "GitHub Dark Dimmed",
+			"purple": "#B083F0",
+			"red": "#F47067",
+			"selectionBackground": "#264F78",
+			"white": "#909DAB",
+			"yellow": "#C69026"
 		},
 		{
-			"background": "#24273A",
-			"black": "#494D64",
-			"blue": "#8AADF4",
-			"brightBlack": "#5B6078",
-			"brightBlue": "#8AADF4",
-			"brightCyan": "#8BD5CA",
-			"brightGreen": "#A6DA95",
-			"brightPurple": "#F5BDE6",
-			"brightRed": "#ED8796",
-			"brightWhite": "#A5ADCB",
-			"brightYellow": "#EED49F",
-			"cursorColor": "#F4DBD6",
-			"cyan": "#8BD5CA",
-			"foreground": "#CAD3F5",
-			"green": "#A6DA95",
-			"name": "Catppuccin Macchiato",
-			"purple": "#F5BDE6",
-			"red": "#ED8796",
-			"selectionBackground": "#5B6078",
-			"white": "#B8C0E0",
-			"yellow": "#EED49F"
+			"background": "#F6F8FA",
+			"black": "#24292F",
+			"blue": "#0969DA",
+			"brightBlack": "#57606A",
+			"brightBlue": "#218BFF",
+			"brightCyan": "#3192AA",
+			"brightGreen": "#1A7F37",
+			"brightPurple": "#A475F9",
+			"brightRed": "#A40E26",
+			"brightWhite": "#8C959F",
+			"brightYellow": "#633C01",
+			"cursorColor": "#1F2328",
+			"cyan": "#1B7C83",
+			"foreground": "#1F2328",
+			"green": "#116329",
+			"name": "GitHub Light",
+			"purple": "#8250DF",
+			"red": "#CF222E",
+			"selectionBackground": "#264F78",
+			"white": "#6E7781",
+			"yellow": "#4D2D00"
 		}
 	],
 	"theme": "system",
 	"themes": [
 		{
-			"name": "Catppuccin Latte",
+			"name": "GitHub Dark Dimmed",
 			"tab": {
-				"background": "#EFF1F5FF",
+				"background": "#1C2128",
 				"iconStyle": "default",
 				"showCloseButton": "always",
-				"unfocusedBackground": null
+				"unfocusedBackground": "#22272E"
 			},
 			"tabRow": {
-				"background": "#E6E9EFFF",
-				"unfocusedBackground": "#DCE0E8FF"
+				"background": "#1C2128",
+				"unfocusedBackground": "#22272E"
 			},
 			"window": {
-				"applicationTheme": "light",
+				"applicationTheme": "dark",
 				"experimental.rainbowFrame": false,
 				"frame": null,
 				"unfocusedFrame": null,
@@ -108,19 +111,19 @@
 			}
 		},
 		{
-			"name": "Catppuccin Macchiato",
+			"name": "GitHub Light",
 			"tab": {
-				"background": "#24273AFF",
+				"background": "#F6F8FA",
 				"iconStyle": "default",
 				"showCloseButton": "always",
-				"unfocusedBackground": null
+				"unfocusedBackground": "#EAEEF2"
 			},
 			"tabRow": {
-				"background": "#1E2030FF",
-				"unfocusedBackground": "#181926FF"
+				"background": "#F6F8FA",
+				"unfocusedBackground": "#EAEEF2"
 			},
 			"window": {
-				"applicationTheme": "dark",
+				"applicationTheme": "light",
 				"experimental.rainbowFrame": false,
 				"frame": null,
 				"unfocusedFrame": null,

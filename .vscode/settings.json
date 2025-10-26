@@ -18,12 +18,15 @@
 
 	"[fish]": {
 		"editor.defaultFormatter": "bmalehorn.vscode-fish",
-		"editor.insertSpaces": true,
 		"editor.tabSize": 4
 	},
 
 	"[powershell]": {
 		"editor.defaultFormatter": "ms-vscode.powershell"
+	},
+
+	"[yaml]": {
+		"editor.tabSize": 4
 	},
 	// The PowerShell extension does not allow specifying formatting settings using a file
 	// (https://github.com/PowerShell/vscode-powershell/issues/3024#issuecomment-1479559149), so it

@@ -116,6 +116,21 @@ try {
 
 	Write-InfoMsg 'Copying configuration files...'
 
+	Write-InfoMsg 'Copying Oh My Posh theme...'
+	Copy-Item "$CONFIG_PATH\ys-custom.omp.json" "$env:UserProfile\ys-custom.omp.json"
+
+	Write-InfoMsg 'Copying Oh My Posh theme toggle script...'
+	$pwshScriptsPath = "$([Environment]::GetFolderPath('MyDocuments'))\PowerShell\Scripts"
+	New-Item -ItemType Directory -Path $pwshScriptsPath -Force | Out-Null
+	Copy-Item "$CONFIG_PATH\update-omp-theme.ps1" "$pwshScriptsPath\update-omp-theme.ps1"
+	Unblock-File "$pwshScriptsPath\update-omp-theme.ps1"
+
+	Write-InfoMsg 'Copying Auto Dark Mode settings...'
+	$autoDarkModeSettingsPath = "$env:AppData\AutoDarkMode"
+	New-Item -ItemType Directory -Path $autoDarkModeSettingsPath -Force | Out-Null
+	Copy-Item "$CONFIG_PATH\autodarkmode-config.yaml" "$autoDarkModeSettingsPath\config.yaml"
+	Copy-Item "$CONFIG_PATH\autodarkmode-scripts.yaml" "$autoDarkModeSettingsPath\scripts.yaml"
+
 	Write-InfoMsg 'Copying PowerShell profile...'
 	New-Item -ItemType Directory -Path (Split-Path $PROFILE) -Force | Out-Null
 	# Unblock the downloaded script so it can be executed.

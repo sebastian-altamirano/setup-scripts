@@ -99,12 +99,12 @@ print_info 'Installing fish plugins...'
 mkdir -p ~/.config/fish
 cp "$CONFIG_PATH/fish_plugins" ~/.config/fish/fish_plugins
 FISHER_INSTALLER='https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish'
-fish -c "curl -sL $FISHER_INSTALLER | source; and fisher update"
+fish --no-config -c "curl -sL $FISHER_INSTALLER | source; and fisher update"
 
 print_info 'Installing Node.js...'
-fish -c 'nvm install lts'
-fish -c 'set --universal nvm_default_version lts'
-fish -c 'nvm use lts; npm i -g npm; npm i -g pnpm'
+fish --no-config -c 'nvm install lts'
+fish --no-config -c 'set --universal nvm_default_version lts'
+fish --no-config -c 'nvm use lts; npm i -g npm; npm i -g pnpm'
 
 print_info "Installing VS Code extensions..."
 extensions=(
@@ -154,7 +154,7 @@ sudo cp "$CONFIG_PATH/wsl.conf" /etc/wsl.conf
 
 print_info 'Configuring PATH...'
 # Add local + selected Windows binary directories to fish's PATH (`wsl.conf` disables Windows PATH
-# injection).
+# injection for stability reasons).
 fish_paths=("$HOME/.local/bin")
 windows_binaries=(
 	'code'
@@ -168,6 +168,14 @@ for fish_path in "${fish_paths[@]}"; do
 	quoted_fish_paths+=("'$fish_path'")
 done
 echo "fish_add_path ${quoted_fish_paths[*]}" >>~/.config/fish/conf.d/config.fish
+
+# This is needed to access Windows user profile paths from WSL.
+# It allows sharing the Oh My Posh configuration between WSL and Windows without duplication.
+# Storing the username instead of the full profile path lets you build other paths dynamically, like
+# AppData.
+print_info 'Setting universal fish variable: windows_username'
+# shellcheck disable=SC2016
+fish --no-config -c 'set --universal windows_username (pwsh.exe -NoProfile -Command '\''echo $env:UserName'\'' | string trim)'
 
 print_success '\nSetup complete.'
 print_info 'Check the '\''README.md'\'' for the next steps.'
