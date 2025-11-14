@@ -46,6 +46,7 @@ try {
 		'Microsoft.Teams'
 		'9WZDNCRD29V9', # Microsoft 365 Copilot
 		'9NZBF4GT040C', # Microsoft Bing
+		'9P1J8S7CCWWT', # Microsoft Clipchamp
 		'9NBLGGH5R558', # Microsoft To Do
 		'9NMPJ99VJBWV', # Phone Link
 		'9NFTCH6J7FHV', # Power Automate
@@ -53,7 +54,7 @@ try {
 		'9PC1H9VN18CM'  # Start Experiences App
 	)
 	foreach ($package in $winGetPackages) {
-		winget uninstall --exact --id $package  --accept-source-agreements --silent
+		winget uninstall --exact --id $package --accept-source-agreements --silent
 	}
 	taskkill /f /im OneDrive.exe
 	# OneDrive uninstall returns error code 2147747483, but completes successfully and does not cause
@@ -64,19 +65,19 @@ try {
 	Write-InfoMsg 'Note that some applications might open during installation.'
 	$winGetPackages = @(
 		'ArminOsaj.AutoDarkMode',
-		'DevToys-app.DevToys',
 		'Discord.Discord',
 		'DuongDieuPhap.ImageGlass',
 		'FlawlessWidescreen.FlawlessWidescreen',
 		'Guru3D.Afterburner',
 		'JanDeDobbeleer.OhMyPosh',
 		'KDE.Krita',
-		'Logitech.GHUB',
 		'M2Team.NanaZip',
 		'Meta.Oculus',
 		'Microsoft.PowerToys',
+		'Microsoft.VCRedist.2010.x64',  # Required by FlawlessWidescreen
 		'Microsoft.VisualStudioCode',
 		'mtkennerly.ludusavi',
+		'OBSProject.OBSStudio',
 		'Philips.HueSync',
 		'REALiX.HWiNFO',
 		'Reshade.Setup.AddonsSupport',
@@ -84,6 +85,7 @@ try {
 		# Microsoft Store apps:
 		'9N0866FS04W8',   # Dolby Access
 		'XPDDT99J9GKB5C', # Samsung Magician
+		'9P30LSR4705L',   # LosslessCut
 		'9NCBCSZSJRSB',   # Spotify ('Spotify.Spotify' installer cannot be run from an administrator context)
 		'9MV0B5HZVK9Z',   # Xbox
 		'9NBLGGH30XJ3'    # Xbox Accessories
