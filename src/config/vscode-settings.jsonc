@@ -152,7 +152,6 @@
 	"code-runner.runInTerminal": true,
 	"code-runner.saveFileBeforeRun": true,
 
-	"github.copilot.chat.agent.thinkingTool": true,
 	"github.copilot.chat.codesearch.enabled": true,
 	"github.copilot.chat.languageContext.fix.typescript.enabled": true,
 	"github.copilot.chat.languageContext.inline.typescript.enabled": true,
@@ -161,6 +160,7 @@
 	"github.copilot.nextEditSuggestions.enabled": true,
 	"github.copilot.nextEditSuggestions.fixes": true,
 
+	"gitlens.ai.enabled": false,
 	"gitlens.codeLens.enabled": false,
 	"gitlens.hovers.currentLine.over": "annotation",
 	"gitlens.plusFeatures.enabled": false,
