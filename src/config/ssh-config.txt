@@ -1,5 +1,6 @@
 Host github.com
      AddKeysToAgent yes
+     HostKeyAlgorithms ssh-ed25519
      HostName github.com
      IdentitiesOnly yes
      IdentityFile ~/.ssh/id_ed25519
