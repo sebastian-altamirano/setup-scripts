@@ -76,6 +76,7 @@ sudo apt upgrade -y
 print_info 'Installing APT packages...'
 sudo apt install -y \
 	apt-transport-https \
+	bat \
 	build-essential \
 	curl \
 	eza \

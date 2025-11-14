@@ -4,9 +4,13 @@ abbr -a c clear
 abbr -a e explorer.exe
 abbr -a g git
 
+abbr -a --position anywhere -- --help '--help | bat -plhelp'
+
 alias .. 'cd ..'
 alias ... 'cd ../..'
 alias .... 'cd ../../..'
+
+alias bat batcat
 
 alias hs 'history | grep'
 
