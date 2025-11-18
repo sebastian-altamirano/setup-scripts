@@ -7,6 +7,10 @@
 	"editor.formatOnSave": true,
 	"editor.insertSpaces": false,
 
+	"files.associations": {
+		"**/config/ssh/config": "ssh_config",
+		"**/config/vscode/*.json": "jsonc"
+	},
 	"files.eol": "\n",
 	"files.insertFinalNewline": true,
 	"files.trimTrailingWhitespace": true,

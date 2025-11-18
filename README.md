@@ -71,7 +71,7 @@ The scripts generate log files that you can check for errors during their execut
 Windows applications are installed using WinGet, which might trigger unexpected reboots. If that happens, check the logs after the restart to determine where to resume execution. You may need to edit the scripts to skip already executed steps.
 
 1. Download the repository as a ZIP file from GitHub.
-2. Copy your GitHub SSH keys to [/src/config/](/src/config/).
+2. Copy your GitHub SSH keys to [/config/ssh](/config/ssh).
 3. Allow PowerShell scripts to run:
     1. Open PowerShell as Administrator in the repository folder.
     2. Set the execution policy to allow local scripts with `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`.

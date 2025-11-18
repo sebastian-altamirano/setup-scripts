@@ -7,7 +7,7 @@
 # Import utility functions.
 . "$PSScriptRoot\utils.ps1"
 
-$CONFIG_PATH = Join-Path $PSScriptRoot '..\config' | Resolve-Path
+$CONFIG_PATH = Join-Path $PSScriptRoot '..\..\config' | Resolve-Path
 
 $ErrorActionPreference = 'Stop'
 
@@ -119,36 +119,35 @@ try {
 	Write-InfoMsg 'Copying configuration files...'
 
 	Write-InfoMsg 'Copying Oh My Posh theme...'
-	Copy-Item "$CONFIG_PATH\ys-custom.omp.json" "$env:UserProfile\ys-custom.omp.json"
+	Copy-Item "$CONFIG_PATH\omp\ys-custom.omp.json" "$env:UserProfile\ys-custom.omp.json"
 
 	Write-InfoMsg 'Copying Oh My Posh theme toggle script...'
 	$pwshScriptsPath = "$([Environment]::GetFolderPath('MyDocuments'))\PowerShell\Scripts"
 	New-Item -ItemType Directory -Path $pwshScriptsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\update-omp-theme.ps1" "$pwshScriptsPath\update-omp-theme.ps1"
+	Copy-Item "$CONFIG_PATH\pwsh\Scripts\update-omp-theme.ps1" "$pwshScriptsPath\update-omp-theme.ps1"
 	Unblock-File "$pwshScriptsPath\update-omp-theme.ps1"
 
 	Write-InfoMsg 'Copying Auto Dark Mode settings...'
 	$autoDarkModeSettingsPath = "$env:AppData\AutoDarkMode"
 	New-Item -ItemType Directory -Path $autoDarkModeSettingsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\autodarkmode-config.yaml" "$autoDarkModeSettingsPath\config.yaml"
-	Copy-Item "$CONFIG_PATH\autodarkmode-scripts.yaml" "$autoDarkModeSettingsPath\scripts.yaml"
+	Copy-Item "$CONFIG_PATH\adm\config.yaml" "$autoDarkModeSettingsPath\config.yaml"
+	Copy-Item "$CONFIG_PATH\adm\scripts.yaml" "$autoDarkModeSettingsPath\scripts.yaml"
 
 	Write-InfoMsg 'Copying PowerShell profile...'
 	New-Item -ItemType Directory -Path (Split-Path $PROFILE) -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\powershell-profile.ps1" $PROFILE
-	# Unblock the downloaded script so it can be executed.
-	Unblock-File "$CONFIG_PATH\powershell-profile.ps1"
+	Copy-Item "$CONFIG_PATH\pwsh\Microsoft.PowerShell_profile.ps1" $PROFILE
+	Unblock-File $PROFILE
 
 	Write-InfoMsg 'Copying VS Code settings...'
 	$vscodeSettingsPath = "$env:AppData\Code\User"
 	New-Item -ItemType Directory -Path $vscodeSettingsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\vscode-settings.jsonc" "$vscodeSettingsPath\settings.json"
-	Copy-Item "$CONFIG_PATH\vscode-keybindings.jsonc" "$vscodeSettingsPath\keybindings.json"
+	Copy-Item "$CONFIG_PATH\vscode\settings.json" "$vscodeSettingsPath\settings.json"
+	Copy-Item "$CONFIG_PATH\vscode\keybindings.json" "$vscodeSettingsPath\keybindings.json"
 
 	Write-InfoMsg 'Copying Windows Terminal settings...'
 	$wtSettingsPath = "$env:LocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 	New-Item -ItemType Directory -Path $wtSettingsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\windows-terminal.jsonc" "$wtSettingsPath\settings.json"
+	Copy-Item "$CONFIG_PATH\wt\settings.json" "$wtSettingsPath\settings.json"
 
 	Write-InfoMsg 'Installing Ubuntu in WSL...'
 	wsl --install -d Ubuntu --no-launch

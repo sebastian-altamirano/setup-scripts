@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-CONFIG_PATH="$(realpath "$(dirname "$0")/../config")"
+CONFIG_PATH="$(realpath "$(dirname "$0")/../../config")"
 
 # Color codes
 CYAN='\033[1;36m'
@@ -48,8 +48,8 @@ print_attention 'The script will install many applications and may require your 
 	'Please do not leave your computer unattended.'
 
 # Preparatory checks.
-while [[ ! -f "$CONFIG_PATH/id_ed25519" ]] || [[ ! -f "$CONFIG_PATH/id_ed25519.pub" ]]; do
-	print_error "SSH keys not found in '$CONFIG_PATH'."
+while [[ ! -f "$CONFIG_PATH/ssh/id_ed25519" ]] || [[ ! -f "$CONFIG_PATH/ssh/id_ed25519.pub" ]]; do
+	print_error "SSH keys not found in '$CONFIG_PATH/ssh'."
 	print_attention 'Please copy your SSH keys ('\''id_ed25519'\'' and '\''id_ed25519.pub'\'') to' \
 		'the config directory.'
 	print_attention 'Press Enter to retry, or Ctrl+C to abort.'
@@ -98,7 +98,7 @@ curl -s https://ohmyposh.dev/install.sh | bash -s
 
 print_info 'Installing fish plugins...'
 mkdir -p ~/.config/fish
-cp "$CONFIG_PATH/fish_plugins" ~/.config/fish/fish_plugins
+cp "$CONFIG_PATH/fish/fish_plugins" ~/.config/fish/fish_plugins
 FISHER_INSTALLER='https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish'
 fish --no-config -c "curl -sL $FISHER_INSTALLER | source; and fisher update"
 
@@ -130,16 +130,16 @@ done
 print_info 'Copying configuration files...'
 
 print_info 'Copying Git configuration...'
-cp "$CONFIG_PATH/.gitconfig" ~/.gitconfig
+cp "$CONFIG_PATH/git/.gitconfig" ~/.gitconfig
 
 print_info 'Copying SSH configuration...'
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
-cp "$CONFIG_PATH/ssh-config.txt" ~/.ssh/config
+cp "$CONFIG_PATH/ssh/config" ~/.ssh/config
 chmod 600 ~/.ssh/config
-cp "$CONFIG_PATH/id_ed25519" ~/.ssh/id_ed25519
+cp "$CONFIG_PATH/ssh/id_ed25519" ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
-cp "$CONFIG_PATH/id_ed25519.pub" ~/.ssh/id_ed25519.pub
+cp "$CONFIG_PATH/ssh/id_ed25519.pub" ~/.ssh/id_ed25519.pub
 chmod 644 ~/.ssh/id_ed25519.pub
 # Add GitHub's SSH key to `known_hosts`.
 ssh-keyscan -t ed25519 github.com >>~/.ssh/known_hosts
@@ -147,12 +147,12 @@ chmod 644 ~/.ssh/known_hosts
 
 print_info 'Copying Fish shell configuration...'
 mkdir -p ~/.config/fish/conf.d
-cp "$CONFIG_PATH/aliases.fish" ~/.config/fish/conf.d/aliases.fish
-cp "$CONFIG_PATH/functions.fish" ~/.config/fish/conf.d/functions.fish
-cp "$CONFIG_PATH/config.fish" ~/.config/fish/conf.d/config.fish
+cp "$CONFIG_PATH/fish/conf.d/aliases.fish" ~/.config/fish/conf.d/aliases.fish
+cp "$CONFIG_PATH/fish/conf.d/functions.fish" ~/.config/fish/conf.d/functions.fish
+cp "$CONFIG_PATH/fish/conf.d/config.fish" ~/.config/fish/conf.d/config.fish
 
 print_info 'Copying WSL configuration...'
-sudo cp "$CONFIG_PATH/wsl.conf" /etc/wsl.conf
+sudo cp "$CONFIG_PATH/wsl/wsl.conf" /etc/wsl.conf
 
 # `wsl.conf` disables Windows PATH injection for stability reasons.
 print_info 'Adding Windows binaries to PATH...'
