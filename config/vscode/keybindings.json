@@ -1,6 +1,6 @@
 [
 	{
-		"command": "workbench.action.quickOpen",
+		"command": "workbench.action.showCommands",
 		"key": "shift shift"
 	}
 ]
