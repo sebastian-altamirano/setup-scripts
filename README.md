@@ -1,5 +1,22 @@
 # Setup Scripts
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Formatting and Clean Install Instructions](#formatting-and-clean-install-instructions)
+    - [Preparation](#preparation)
+    - [BIOS](#bios)
+        - [Required Before Formatting](#required-before-formatting)
+        - [Optional (Can Be Enabled Later)](#optional-can-be-enabled-later)
+    - [Formatting](#formatting)
+- [Setup Instructions](#setup-instructions)
+    - [Prerequisites](#prerequisites)
+    - [Instructions](#instructions)
+- [Manual Settings](#manual-settings)
+    - [Windows](#windows)
+- [PC Building Tips](#pc-building-tips)
+- [Maintenance Tips](#maintenance-tips)
+
 ## Introduction
 
 This repository is designed to streamline system setup after formatting or hardware upgrades. It helps prepare the PC to the point leading to the system setup and contains setup scripts, configuration files, and optional PC building tips. While these scripts are primarily for personal use, they are shared here for anyone who might find them helpful.
@@ -25,8 +42,8 @@ Some BIOS settings are required for the formatting and setup scripts to work cor
 - **UEFI (Enabled)**: Must be enabled to enable Secure Boot. The boot drive must be formatted using GPT.
 - **CSM (Disabled)**: Must be disabled to enable Secure Boot. The boot drive must be formatted using GPT.
 - **TPM/PTT/fTPM**: Required by Secure Boot.
-- **Secure Boot (Enabled)**: Required by Windows 11 and some videogame anti-cheat systems.
-- **Virtualization/SVM Mode (Enabled)**: Required by WSL.
+- **Secure Boot (Enabled)**: Required by Windows 11 and some video game anti-cheat systems.
+- **Virtualization/SVM Mode (Enabled)**: Required for WSL.
 
 #### Optional (Can Be Enabled Later)
 
@@ -39,30 +56,31 @@ Some BIOS settings are required for the formatting and setup scripts to work cor
 1. Update the BIOS and/or change BIOS settings if needed (e.g., for upgrading the CPU or installing Windows in UEFI mode).
 2. Connect the bootable USB and give it priority in the BIOS.
 3. Install the OS:
-    - When choosing the Windows version, ensure it supports WSL (e.g., Windows 11 Home does not, but Windows 11 Professional does).
+    - When choosing the Windows edition, ensure it supports the features you plan to use (WSL, virtualization, BitLocker, etc.).
     - Disable the internet connection during installation to prevent the OS from automatically installing drivers.
     - If you did not pre-create a local user with Rufus, create one now. Avoid using accents or special characters.
 4. Install the drivers.
 5. Install Windows and Microsoft Store updates:
-    - Enable internet connection.
-    - Log-in to the Microsoft Store.
-    - Download and install updates; restart the SO if required.
-    - After reboot, make sure there are no more updates pending. The reason for this is that some updates could disrupt the setup scripts.
+    - Reconnect to the internet.
+    - Log in to the Microsoft Store.
+    - Download and install updates; restart the OS if required.
+    - After rebooting, make sure there are no more updates pending. Some updates could disrupt the setup scripts.
 6. Run the [setup scripts](#setup-instructions) to install applications and restore configurations.
 7. Apply [manual settings](#manual-settings).
-8. Log-in accounts.
+8. Log in to accounts.
 9. Restore backups.
 
 ## Setup Instructions
 
 ### Prerequisites
 
-- Virtualization enabled in the BIOS: Required to install WSL.
+Before running the scripts, make sure you meet the following requirements:
+
+- Virtualization enabled in the BIOS: Required for WSL.
+- Active internet connection: Required to download updates and applications.
 - Logged-in user in the Microsoft Store: Required to install some applications with WinGet.
 
 ### Instructions
-
-Before running the scripts, ensure that your internet connection is active, as the scripts require it to download updates and applications.
 
 Stay attentive during the execution of the scripts, as some commands may require your input.
 
@@ -88,7 +106,7 @@ Some configurations cannot be automated. These settings are detailed below:
 
 ### Windows
 
-- Copy the snippets from `/src/browser-snippets` [into the browser where you want to use them](https://learn.microsoft.com/en-us/microsoft-edge/devtools-guide-chromium/javascript/snippets).
+- Copy the snippets from [`/src/browser-snippets`](/src/browser-snippets) [into the browser where you want to use them](https://learn.microsoft.com/en-us/microsoft-edge/devtools-guide-chromium/javascript/snippets).
 - Enable 'File name extensions' and 'Hidden items' in the File Explorer options.
 - Disable mouse acceleration.
 - Change the mouse pointer scheme to inverted.
@@ -99,7 +117,7 @@ Some configurations cannot be automated. These settings are detailed below:
 
 ## PC Building Tips
 
-When assembling a PC, install components in this order to reduce to simplify assembly:
+When assembling a PC, install components in this order to simplify assembly:
 
 1. Case fans
 2. Power supply
@@ -114,7 +132,7 @@ When assembling a PC, install components in this order to reduce to simplify ass
 6. CPU Cooler
     - Apply thermal paste before mounting.
     - If the cooler is small or you use an AIO, you can fit it before RAM; otherwise install RAM first to avoid clearance problems.
-7. IO shield
+7. I/O shield
 8. Motherboard
 9. Front panel connectors
 10. PWM hub

@@ -3,7 +3,7 @@
 		"source.fixAll": "explicit",
 		"source.organizeImports": "explicit"
 	},
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.defaultFormatter": "prettier.prettier-vscode",
 	"editor.formatOnSave": true,
 	"editor.insertSpaces": false,
 
@@ -25,12 +25,13 @@
 		"editor.tabSize": 4
 	},
 
-	"[powershell]": {
-		"editor.defaultFormatter": "ms-vscode.powershell"
+	"markdown.extension.toc.levels": "2..6",
+	"markdown.extension.toc.omittedFromToc": {
+		"README.md": ["## Table of Contents"]
 	},
 
-	"[yaml]": {
-		"editor.tabSize": 4
+	"[powershell]": {
+		"editor.defaultFormatter": "ms-vscode.powershell"
 	},
 	// The PowerShell extension does not allow specifying formatting settings using a file
 	// (https://github.com/PowerShell/vscode-powershell/issues/3024#issuecomment-1479559149), so it
@@ -39,5 +40,9 @@
 	// `editor.insertSpaces` setting.
 	"powershell.codeFormatting.preset": "OTBS",
 	"powershell.scriptAnalysis.enable": true,
-	"powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1"
+	"powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+
+	"[yaml]": {
+		"editor.tabSize": 4
+	}
 }
