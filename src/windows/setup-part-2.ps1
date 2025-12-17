@@ -66,7 +66,6 @@ try {
 	$winGetPackages = @(
 		'ArminOsaj.AutoDarkMode',
 		'Discord.Discord',
-		'DuongDieuPhap.ImageGlass',
 		'FlawlessWidescreen.FlawlessWidescreen',
 		'Guru3D.Afterburner',
 		'JanDeDobbeleer.OhMyPosh',
@@ -84,8 +83,9 @@ try {
 		'Valve.Steam',
 		# Microsoft Store apps:
 		'9N0866FS04W8',   # Dolby Access
-		'XPDDT99J9GKB5C', # Samsung Magician
+		'9N33VZK3C7TH',   # ImageGlass
 		'9P30LSR4705L',   # LosslessCut
+		'XPDDT99J9GKB5C', # Samsung Magician
 		'9NCBCSZSJRSB',   # Spotify ('Spotify.Spotify' installer cannot be run from an administrator context)
 		'9MV0B5HZVK9Z',   # Xbox
 		'9NBLGGH30XJ3'    # Xbox Accessories
