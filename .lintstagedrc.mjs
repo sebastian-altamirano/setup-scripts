@@ -19,9 +19,9 @@ export default {
 	"*.md": ["prettier --write", "eslint --fix"],
 	"*.{mjs,js}": [() => "tsc", `prettier --write`, `eslint --fix`],
 	"*.{ps1,psm1}": (filePaths) => [
-		`pwsh -Command 'scripts/powershell-format.ps1' -Path ${formatPathsForPowerShell(filePaths)}`,
-		`pwsh -Command 'scripts/powershell-lint.ps1' -Path ${formatPathsForPowerShell(filePaths)}`,
+		`pwsh -Command 'scripts/code-quality.ps1' -Action format -Type powershell -Path ${formatPathsForPowerShell(filePaths)}`,
+		`pwsh -Command 'scripts/code-quality.ps1' -Action lint -Type powershell -Path ${formatPathsForPowerShell(filePaths)}`,
 	],
 	"*.psd1": (filePaths) =>
-		`pwsh -Command 'scripts/powershell-lint.ps1' -Path ${formatPathsForPowerShell(filePaths)}`,
+		`pwsh -Command 'scripts/code-quality.ps1' -Action lint -Type powershell -Path ${formatPathsForPowerShell(filePaths)}`,
 };
