@@ -68,6 +68,6 @@ switch ("$Action|$Type") {
 	}
 	'lint|powershell' {
 		$settings = Join-Path $PROJECT_ROOT 'PSScriptAnalyzerSettings.psd1'
-		foreach ($file in $files) { Invoke-ScriptAnalyzer -Path $file -Settings $settings }
+		foreach ($file in $files) { Invoke-ScriptAnalyzer -EnableExit -Path $file -Settings $settings }
 	}
 }
