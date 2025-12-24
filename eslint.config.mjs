@@ -18,7 +18,7 @@ export default defineConfig([
 	},
 	{
 		extends: ["js/recommended", "ts/strictTypeChecked", "ts/stylisticTypeChecked"],
-		files: ["**/*.{js,mjs}"],
+		files: ["**/*.{js,mjs,ts}"],
 		languageOptions: {
 			ecmaVersion: 2022,
 			globals: globals.browser,
@@ -39,6 +39,12 @@ export default defineConfig([
 			"no-var": "error",
 			"no-warning-comments": "warn",
 			yoda: "error",
+		},
+	},
+	{
+		files: ["**/*.ts"],
+		rules: {
+			"@typescript-eslint/explicit-function-return-type": "error",
 		},
 	},
 	prettier,
