@@ -34,11 +34,12 @@
 		"editor.defaultFormatter": "ms-vscode.powershell"
 	},
 	// The PowerShell extension does not allow specifying formatting settings using a file
-	// (https://github.com/PowerShell/vscode-powershell/issues/3024#issuecomment-1479559149), so it
-	// is not possible to use `/CodeFormatting.psd1`. However, this file contains the same settings as
-	// "OTBS", but uses tabs instead of spaces. The extension seems to respect the
-	// `editor.insertSpaces` setting.
+	// (https://github.com/PowerShell/vscode-powershell/issues/3024#issuecomment-1479559149), so the
+	// settings from `/CodeFormatting.psd1` must be replicated here.
+	"powershell.codeFormatting.alignPropertyValuePairs": true,
+	"powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
 	"powershell.codeFormatting.preset": "OTBS",
+	"powershell.codeFormatting.useCorrectCasing": true,
 	"powershell.scriptAnalysis.enable": true,
 	"powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
 
