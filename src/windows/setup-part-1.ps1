@@ -9,8 +9,8 @@
 
 $ErrorActionPreference = 'Stop'
 
-$LOG_PATH = Join-Path $PSScriptRoot 'windows-setup-part-1.log'
-Start-Transcript -Path $LOG_PATH -Append
+$LogPath = Join-Path $PSScriptRoot 'windows-setup-part-1.log'
+Start-Transcript -Path $LogPath -Append
 
 try {
 	Write-InfoMsg '===== Windows Setup - Part 1 ====='
@@ -33,7 +33,7 @@ try {
 	$null = Read-Host
 	Restart-Computer
 } catch {
-	Write-ErrorMsg "$($_.Exception.Message)`nCheck the log for details: '$LOG_PATH'."
+	Write-ErrorMsg "$($_.Exception.Message)`nCheck the log for details: '$LogPath'."
 	exit 1
 } finally {
 	Stop-Transcript

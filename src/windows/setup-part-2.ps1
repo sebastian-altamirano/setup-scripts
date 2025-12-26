@@ -7,12 +7,12 @@
 # Import utility functions.
 . "$PSScriptRoot\utils.ps1"
 
-$CONFIG_PATH = Join-Path $PSScriptRoot '..\..\config' | Resolve-Path
+$ConfigPath = Join-Path $PSScriptRoot '..\..\config' | Resolve-Path
 
 $ErrorActionPreference = 'Stop'
 
-$LOG_PATH = Join-Path $PSScriptRoot 'windows-setup-part-2.log'
-Start-Transcript -Path $LOG_PATH -Append
+$LogPath = Join-Path $PSScriptRoot 'windows-setup-part-2.log'
+Start-Transcript -Path $LogPath -Append
 
 try {
 	Write-InfoMsg '===== Windows Setup - Part 2 (Final) ====='
@@ -119,35 +119,35 @@ try {
 	Write-InfoMsg 'Copying configuration files...'
 
 	Write-InfoMsg 'Copying Oh My Posh theme...'
-	Copy-Item "$CONFIG_PATH\omp\ys-custom.omp.json" "$env:UserProfile\ys-custom.omp.json"
+	Copy-Item "$ConfigPath\omp\ys-custom.omp.json" "$env:UserProfile\ys-custom.omp.json"
 
 	Write-InfoMsg 'Copying Oh My Posh theme toggle script...'
 	$pwshScriptsPath = "$([Environment]::GetFolderPath('MyDocuments'))\PowerShell\Scripts"
 	New-Item -ItemType Directory -Path $pwshScriptsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\pwsh\Scripts\update-omp-theme.ps1" "$pwshScriptsPath\update-omp-theme.ps1"
+	Copy-Item "$ConfigPath\pwsh\Scripts\update-omp-theme.ps1" "$pwshScriptsPath\update-omp-theme.ps1"
 	Unblock-File "$pwshScriptsPath\update-omp-theme.ps1"
 
 	Write-InfoMsg 'Copying Auto Dark Mode settings...'
 	$autoDarkModeSettingsPath = "$env:AppData\AutoDarkMode"
 	New-Item -ItemType Directory -Path $autoDarkModeSettingsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\adm\config.yaml" "$autoDarkModeSettingsPath\config.yaml"
-	Copy-Item "$CONFIG_PATH\adm\scripts.yaml" "$autoDarkModeSettingsPath\scripts.yaml"
+	Copy-Item "$ConfigPath\adm\config.yaml" "$autoDarkModeSettingsPath\config.yaml"
+	Copy-Item "$ConfigPath\adm\scripts.yaml" "$autoDarkModeSettingsPath\scripts.yaml"
 
 	Write-InfoMsg 'Copying PowerShell profile...'
 	New-Item -ItemType Directory -Path (Split-Path $PROFILE) -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\pwsh\Microsoft.PowerShell_profile.ps1" $PROFILE
+	Copy-Item "$ConfigPath\pwsh\Microsoft.PowerShell_profile.ps1" $PROFILE
 	Unblock-File $PROFILE
 
 	Write-InfoMsg 'Copying VS Code settings...'
-	$vscodeSettingsPath = "$env:AppData\Code\User"
-	New-Item -ItemType Directory -Path $vscodeSettingsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\vscode\settings.json" "$vscodeSettingsPath\settings.json"
-	Copy-Item "$CONFIG_PATH\vscode\keybindings.json" "$vscodeSettingsPath\keybindings.json"
+	$vsCodeSettingsPath = "$env:AppData\Code\User"
+	New-Item -ItemType Directory -Path $vsCodeSettingsPath -Force | Out-Null
+	Copy-Item "$ConfigPath\vscode\settings.json" "$vsCodeSettingsPath\settings.json"
+	Copy-Item "$ConfigPath\vscode\keybindings.json" "$vsCodeSettingsPath\keybindings.json"
 
 	Write-InfoMsg 'Copying Windows Terminal settings...'
 	$wtSettingsPath = "$env:LocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 	New-Item -ItemType Directory -Path $wtSettingsPath -Force | Out-Null
-	Copy-Item "$CONFIG_PATH\wt\settings.json" "$wtSettingsPath\settings.json"
+	Copy-Item "$ConfigPath\wt\settings.json" "$wtSettingsPath\settings.json"
 
 	Write-InfoMsg 'Installing Ubuntu in WSL...'
 	wsl --install -d Ubuntu --no-launch
@@ -168,7 +168,7 @@ try {
 	$null = Read-Host
 	Restart-Computer
 } catch {
-	Write-ErrorMsg "$($_.Exception.Message)`nCheck the log for details: '$LOG_PATH'."
+	Write-ErrorMsg "$($_.Exception.Message)`nCheck the log for details: '$LogPath'."
 	exit 1
 } finally {
 	if ($shutdownBlocker) {

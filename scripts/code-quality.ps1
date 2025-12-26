@@ -27,10 +27,10 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$PROJECT_ROOT = Split-Path -Path $PSScriptRoot -Parent
+$ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
 
 function Get-ProjectFile([string[]] $Include) {
-	Get-ChildItem -Path $PROJECT_ROOT -Recurse -File -Include $Include |
+	Get-ChildItem -Path $ProjectRoot -Recurse -File -Include $Include |
 		Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules)[\\/]' } |
 		Select-Object -ExpandProperty FullName
 }
@@ -63,11 +63,11 @@ switch ("$Action|$Type") {
 	'format|fish' { & fish_indent -w @files }
 	'lint|fish' { Write-Host 'No fish linter configured; skipping.' -ForegroundColor Yellow }
 	'format|powershell' {
-		$settings = Join-Path $PROJECT_ROOT 'CodeFormatting.psd1'
+		$settings = Join-Path $ProjectRoot 'CodeFormatting.psd1'
 		foreach ($file in $files) { Format-PowerShellFile -Path $file -Settings $settings }
 	}
 	'lint|powershell' {
-		$settings = Join-Path $PROJECT_ROOT 'PSScriptAnalyzerSettings.psd1'
+		$settings = Join-Path $ProjectRoot 'PSScriptAnalyzerSettings.psd1'
 		foreach ($file in $files) { Invoke-ScriptAnalyzer -EnableExit -Path $file -Settings $settings }
 	}
 }
