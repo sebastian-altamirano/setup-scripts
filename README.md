@@ -86,7 +86,7 @@ Stay attentive during the execution of the scripts, as some commands may require
 
 The scripts generate log files that you can check for errors during their execution. Each script creates a log file in the same folder as the script, with a `.log` extension.
 
-Windows applications are installed using WinGet, which might trigger unexpected reboots. If that happens, check the logs after the restart to determine where to resume execution. You may need to edit the scripts to skip already executed steps.
+Applications are installed using package managers, which might trigger unexpected reboots. If that happens, check the logs after the restart to determine where to resume execution. You may need to edit the scripts to skip already executed steps.
 
 1. Download the repository as a ZIP file from GitHub.
 2. Copy your GitHub SSH keys to [/config/ssh](/config/ssh).

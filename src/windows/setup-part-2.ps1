@@ -61,6 +61,11 @@ try {
 	# the script to enter the catch block.
 	winget uninstall 'OneDriveSetup.exe' --accept-source-agreements --silent
 
+	# Package manager policy:
+	# - Prefer WinGet for application installs.
+	# - If something isn't available in WinGet, use Chocolatey as a fallback.
+	# - Do not use Scoop: these scripts run elevated, and Scoop is not designed to run/install cleanly
+	#   from an administrative context.
 	Write-InfoMsg 'Installing WinGet packages...'
 	Write-InfoMsg 'Note that some applications might open during installation.'
 	$winGetPackages = @(
