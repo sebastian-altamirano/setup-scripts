@@ -23,7 +23,7 @@ try {
 
 	# Workaround for https://github.com/microsoft/winget-cli/issues/229:
 	# Starts a background job to abort shutdowns triggered by some installers.
-	# This helps prevent unexpected restarts, but won't catch all cases.
+	# This helps prevent unexpected restarts, but will not catch all cases.
 	$shutdownBlocker = Start-Job {
 		while ($true) {
 			shutdown -a 2>$null
@@ -63,7 +63,7 @@ try {
 
 	# Package manager policy:
 	# - Prefer WinGet for application installs.
-	# - If something isn't available in WinGet, use Chocolatey as a fallback.
+	# - If something is not available in WinGet, use Chocolatey as a fallback.
 	# - Do not use Scoop: these scripts run elevated, and Scoop is not designed to run/install cleanly
 	#   from an administrative context.
 	Write-InfoMsg 'Installing WinGet packages...'

@@ -121,7 +121,7 @@ When assembling a PC, install components in this order to simplify assembly:
 
 1. Case fans
 2. Power supply
-    - For modular PSUs, it's often easiest to mate the modular cables at the PSU while it's outside the case for better access; large cases (e.g., Asus ProArt PA602) may allow connecting cables with the PSU already mounted.
+    - For modular PSUs, it is often easiest to mate the modular cables at the PSU while it is outside the case for better access; large cases (e.g., Asus ProArt PA602) may allow connecting cables with the PSU already mounted.
     - Connect device-side power connectors as you install each device to improve routing and avoid stressed cables; waiting to plug everything at the end can make routing harder and increase rework.
     - Use cuttable Velcro strips for cable management instead of zip ties — they are easier to adjust, reusable, and safer to remove (cutting tight zip ties risks damaging cables).
 3. NVMe M.2 SSD(s)
