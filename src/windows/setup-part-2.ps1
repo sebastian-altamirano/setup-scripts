@@ -42,7 +42,11 @@ try {
 	foreach ($package in $uwpPackages) {
 		Get-AppxPackage -All "*$package*" | Remove-AppxPackage -AllUsers
 	}
-	$winGetPackages = @(
+	$winGetUninstallArgs = @(
+		'--accept-source-agreements',
+		'--silent'
+	)
+	$winGetUninstallIds = @(
 		'Microsoft.Teams'
 		'9WZDNCRD29V9', # Microsoft 365 Copilot
 		'9NZBF4GT040C', # Microsoft Bing
@@ -53,13 +57,13 @@ try {
 		'9P7BP5VNWKX5', # Quick Assist
 		'9PC1H9VN18CM'  # Start Experiences App
 	)
-	foreach ($package in $winGetPackages) {
-		winget uninstall --exact --id $package --accept-source-agreements --silent
+	foreach ($package in $winGetUninstallIds) {
+		winget uninstall --exact --id $package @winGetUninstallArgs
 	}
 	taskkill /f /im OneDrive.exe
 	# OneDrive uninstall returns error code 2147747483, but completes successfully and does not cause
 	# the script to enter the catch block.
-	winget uninstall 'OneDriveSetup.exe' --accept-source-agreements --silent
+	winget uninstall 'OneDriveSetup.exe' @winGetUninstallArgs
 
 	# Package manager policy:
 	# - Prefer WinGet for application installs.
@@ -68,7 +72,12 @@ try {
 	#   from an administrative context.
 	Write-InfoMsg 'Installing WinGet packages...'
 	Write-InfoMsg 'Note that some applications might open during installation.'
-	$winGetPackages = @(
+	$winGetInstallArgs = @(
+		'--accept-package-agreements',
+		'--accept-source-agreements',
+		'--silent'
+	)
+	$winGetInstallIds = @(
 		'ArminOsaj.AutoDarkMode',
 		'Discord.Discord',
 		'FlawlessWidescreen.FlawlessWidescreen',
@@ -95,10 +104,8 @@ try {
 		'9MV0B5HZVK9Z',   # Xbox
 		'9NBLGGH30XJ3'    # Xbox Accessories
 	)
-	foreach ($package in $winGetPackages) {
-		winget install --exact --id $package `
-			--accept-package-agreements --accept-source-agreements `
-			--silent
+	foreach ($package in $winGetInstallIds) {
+		winget install --exact --id $package @winGetInstallArgs
 	}
 
 	Write-InfoMsg 'Installing fonts...'
@@ -124,19 +131,23 @@ try {
 	Write-InfoMsg 'Copying configuration files...'
 
 	Write-InfoMsg 'Copying Oh My Posh theme...'
-	Copy-Item "$ConfigPath\omp\ys-custom.omp.json" "$env:UserProfile\ys-custom.omp.json"
+	$ompThemeName = 'ys-custom.omp.json'
+	Copy-Item "$ConfigPath\omp\$ompThemeName" "$env:UserProfile\$ompThemeName"
 
 	Write-InfoMsg 'Copying Oh My Posh theme toggle script...'
 	$pwshScriptsPath = "$([Environment]::GetFolderPath('MyDocuments'))\PowerShell\Scripts"
+	$ompThemeToggleScriptName = 'update-omp-theme.ps1'
 	New-Item -ItemType Directory -Path $pwshScriptsPath -Force | Out-Null
-	Copy-Item "$ConfigPath\pwsh\Scripts\update-omp-theme.ps1" "$pwshScriptsPath\update-omp-theme.ps1"
-	Unblock-File "$pwshScriptsPath\update-omp-theme.ps1"
+	Copy-Item "$ConfigPath\pwsh\Scripts\$ompThemeToggleScriptName" "$pwshScriptsPath\$ompThemeToggleScriptName"
+	Unblock-File "$pwshScriptsPath\$ompThemeToggleScriptName"
 
 	Write-InfoMsg 'Copying Auto Dark Mode settings...'
 	$autoDarkModeSettingsPath = "$env:AppData\AutoDarkMode"
+	$autoDarkModeConfigName = 'config.yaml'
+	$autoDarkModeScriptsName = 'scripts.yaml'
 	New-Item -ItemType Directory -Path $autoDarkModeSettingsPath -Force | Out-Null
-	Copy-Item "$ConfigPath\adm\config.yaml" "$autoDarkModeSettingsPath\config.yaml"
-	Copy-Item "$ConfigPath\adm\scripts.yaml" "$autoDarkModeSettingsPath\scripts.yaml"
+	Copy-Item "$ConfigPath\adm\$autoDarkModeConfigName" "$autoDarkModeSettingsPath\$autoDarkModeConfigName"
+	Copy-Item "$ConfigPath\adm\$autoDarkModeScriptsName" "$autoDarkModeSettingsPath\$autoDarkModeScriptsName"
 
 	Write-InfoMsg 'Copying PowerShell profile...'
 	New-Item -ItemType Directory -Path (Split-Path $PROFILE) -Force | Out-Null
@@ -145,24 +156,28 @@ try {
 
 	Write-InfoMsg 'Copying VS Code settings...'
 	$vsCodeSettingsPath = "$env:AppData\Code\User"
+	$vsCodeSettingsName = 'settings.json'
+	$vsCodeKeybindingsName = 'keybindings.json'
 	New-Item -ItemType Directory -Path $vsCodeSettingsPath -Force | Out-Null
-	Copy-Item "$ConfigPath\vscode\settings.json" "$vsCodeSettingsPath\settings.json"
-	Copy-Item "$ConfigPath\vscode\keybindings.json" "$vsCodeSettingsPath\keybindings.json"
+	Copy-Item "$ConfigPath\vscode\$vsCodeSettingsName" "$vsCodeSettingsPath\$vsCodeSettingsName"
+	Copy-Item "$ConfigPath\vscode\$vsCodeKeybindingsName" "$vsCodeSettingsPath\$vsCodeKeybindingsName"
 
 	Write-InfoMsg 'Copying Windows Terminal settings...'
 	$wtSettingsPath = "$env:LocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
+	$wtSettingsName = 'settings.json'
 	New-Item -ItemType Directory -Path $wtSettingsPath -Force | Out-Null
-	Copy-Item "$ConfigPath\wt\settings.json" "$wtSettingsPath\settings.json"
+	Copy-Item "$ConfigPath\wt\$wtSettingsName" "$wtSettingsPath\$wtSettingsName"
 
-	Write-InfoMsg 'Installing Ubuntu in WSL...'
-	wsl --install -d Ubuntu --no-launch
-	Write-InfoMsg 'The Ubuntu installer will prompt you to create a user and set a password.'
+	$wslDistroName = 'Ubuntu'
+	Write-InfoMsg "Installing $wslDistroName in WSL..."
+	wsl --install -d $wslDistroName --no-launch
+	Write-InfoMsg "The $wslDistroName installer will prompt you to create a user and set a password."
 	ubuntu.exe install
 
 	Write-InfoMsg 'Running WSL setup script...'
 	$wslSetupScriptWindowsPath = "$PSScriptRoot\..\wsl\setup.bash" | Resolve-Path
-	$wslSetupScriptWslPath = wsl -d Ubuntu -e bash -c "wslpath -au '$wslSetupScriptWindowsPath'"
-	wsl -d Ubuntu -e $wslSetupScriptWslPath
+	$wslSetupScriptWslPath = wsl -d $wslDistroName -e bash -c "wslpath -au '$wslSetupScriptWindowsPath'"
+	wsl -d $wslDistroName -e $wslSetupScriptWslPath
 	if ($LASTEXITCODE -ne 0) {
 		throw "WSL setup failed."
 	}
