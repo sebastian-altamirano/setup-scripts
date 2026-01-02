@@ -95,6 +95,7 @@ try {
 		'REALiX.HWiNFO',
 		'Reshade.Setup.AddonsSupport',
 		'Valve.Steam',
+		'VideoLAN.VLC',
 		# Microsoft Store apps:
 		'9N0866FS04W8',   # Dolby Access
 		'9N33VZK3C7TH',   # ImageGlass
