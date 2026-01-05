@@ -14,8 +14,7 @@
     - [Instructions](#instructions)
 - [Manual Settings](#manual-settings)
     - [Windows](#windows)
-- [PC Building Tips](#pc-building-tips)
-- [Maintenance Tips](#maintenance-tips)
+- [Additional Resources](#additional-resources)
 
 ## Introduction
 
@@ -115,40 +114,6 @@ Some configurations cannot be automated. These settings are detailed below:
 - Change the screen refresh rate to the maximum available value.
 - Disable unwanted startup applications using Task Manager.
 
-## PC Building Tips
+## Additional Resources
 
-When assembling a PC, install components in this order to simplify assembly:
-
-1. Case fans
-2. Power supply
-    - For modular PSUs, it is often easiest to mate the modular cables at the PSU while it is outside the case for better access; large cases (e.g., Asus ProArt PA602) may allow connecting cables with the PSU already mounted.
-    - Connect device-side power connectors as you install each device to improve routing and avoid stressed cables; waiting to plug everything at the end can make routing harder and increase rework.
-    - Use cuttable Velcro strips for cable management instead of zip ties — they are easier to adjust, reusable, and safer to remove (cutting tight zip ties risks damaging cables).
-3. NVMe M.2 SSD(s)
-    - If using a single M.2 and the motherboard has multiple slots, prefer the slot closest to the CPU for best performance.
-4. CPU
-5. RAM sticks
-    - For dual‑channel kits, place modules in the correct slots (usually alternate slots; check your motherboard manual).
-6. CPU Cooler
-    - Apply thermal paste before mounting.
-    - If the cooler is small or you use an AIO, you can fit it before RAM; otherwise install RAM first to avoid clearance problems.
-7. I/O shield
-8. Motherboard
-9. Front panel connectors
-10. PWM hub
-11. GPU
-    - Use a separate power cable for each GPU power input.
-12. 2.5" and/or 3.5" drives
-
-Thermal paste tips:
-
-- Prefer non‑conductive paste to avoid damage from accidental contact.
-- Apply thermal paste using a pattern appropriate for its viscosity. For example, X and dot methods may not spread effectively with thicker pastes. Ensure adequate coverage, but avoid excessive application.
-- Tighten heatsink screws evenly in a cross (X) pattern, a little at a time, to ensure uniform contact.
-
-## Maintenance Tips
-
-- If the PC shows no video, clean the RAM contacts with a bulb air blower or isopropyl alcohol. Some people use an eraser (the "eraser trick"), but using compressed air or isopropyl alcohol is safer.
-- Keep at least 20% of storage space free for better performance.
-- Undervolt your GPU to reduce power consumption and lower temperatures, with little to no loss in performance. This is especially useful for owners of budget GPU models, since undervolting helps compensate for weaker cooling systems and cheaper components. The process is quick—usually about 5 minutes—if you follow a reliable guide. For example, [GPU undervolting tutorial on YouTube](https://www.youtube.com/watch?v=SIlXT32fOMk) demonstrates how to undervolt an RTX 3090 using MSI Afterburner. The creator first recommends a safe voltage/frequency setting that works for most users, then explains how to combine undervolting with overclocking for even better efficiency and higher FPS. If you prefer a safer approach, stick to undervolting only, as it already provides significant benefits without added risk.
-- Some GPUs with semi-passive cooling need a minimum fan speed to spin reliably. Setting the fan curve below this threshold can cause fans to start and stop repeatedly, leading to noise and wear. Check your GPU’s minimum speed—for example, [Zotac RTX 3080 and RTX 3090 have a minimum speed of 47%](https://www.reddit.com/r/ZOTAC/comments/10dq8bp/zotac_trinity_3080_fan_issues/)—and set your curve above it for stable cooling.
+The [`/docs`](./docs) folder contains supplementary guides related to system setup and maintenance. While these resources are not required to run the setup scripts, they provide useful information that can help optimize your workflow and improve your overall experience.
