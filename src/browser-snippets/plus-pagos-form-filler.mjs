@@ -234,6 +234,12 @@ function changeTextInputValue(inputEl, newValue) {
  * @returns {void}
  */
 function changeTextInputValueKeyByKey(inputEl, newValue) {
+	// Clear the input by simulating text selection and deletion.
+	inputEl.setSelectionRange(0, inputEl.value.length);
+	inputEl.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Delete" }));
+	inputEl.value = "";
+	inputEl.dispatchEvent(new InputEvent("input", { bubbles: true, data: "" }));
+
 	for (let character of newValue) {
 		inputEl.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: character }));
 		inputEl.dispatchEvent(new KeyboardEvent("keypress", { bubbles: true, key: character }));
@@ -727,6 +733,8 @@ function acceptTermsAndConditions() {
 		"#AceptTerminosyCondiciones",
 		HTMLInputElement,
 	);
+	if (acceptTermsAndConditionsEl.checked) return; // Do not uncheck on reruns.
+
 	acceptTermsAndConditionsEl.click();
 }
 
