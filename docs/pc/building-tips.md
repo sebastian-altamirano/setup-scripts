@@ -1,4 +1,4 @@
-# PC Building Tips
+# Building Tips
 
 When assembling a PC, install components in this order to simplify assembly:
 
