@@ -1,7 +1,10 @@
 {
 	// -------------------------------------- GENERAL SETTINGS ---------------------------------------
 
+	"accessibility.underlineLinks": true,
+
 	"chat.editRequests": "hover",
+	"chat.viewSessions.orientation": "stacked",
 
 	"debug.showVariableTypes": true,
 	"debug.toolBarLocation": "commandCenter",
@@ -10,11 +13,14 @@
 
 	"editor.accessibilitySupport": "off",
 	"editor.bracketPairColorization.enabled": false,
+	"editor.bracketPairColorization.independentColorPoolPerBracketType": true,
 	"editor.codeLens": true,
 	"editor.detectIndentation": true,
 	"editor.fontFamily": "'MonaspiceNe Nerd Font', monospace",
 	"editor.fontLigatures": "'calt', 'cv01' 2, 'cv11', 'cv31', 'ss01', 'ss02', 'ss03', 'ss04', 'ss07', 'ss09', 'liga'",
 	"editor.fontSize": 16,
+	"editor.guides.bracketPairs": "active",
+	"editor.guides.indentation": true,
 	"editor.inlayHints.enabled": "offUnlessPressed",
 	"editor.inlineSuggest.syntaxHighlightingEnabled": true,
 	"editor.linkedEditing": true,
@@ -35,6 +41,8 @@
 	},
 	"editor.wordWrap": "off",
 	"editor.wordWrapColumn": 100,
+
+	"extensions.autoUpdate": "onlyEnabledExtensions",
 
 	"git.enableCommitSigning": true,
 	"git.blame.editorDecoration.enabled": false,
@@ -66,6 +74,9 @@
 	"window.zoomPerWindow": false,
 
 	"workbench.editor.empty.hint": "hidden",
+	"workbench.editorAssociations": {
+		"*.svg": "default"
+	},
 	"workbench.preferredDarkColorTheme": "GitHub Dark Dimmed",
 	"workbench.preferredLightColorTheme": "GitHub Light Default",
 	"workbench.settings.editor": "json",
@@ -81,19 +92,34 @@
 
 	// --------------------------------- LANGUAGE-SPECIFIC SETTINGS ----------------------------------
 
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
 	"[instructions]": {
 		"editor.wordWrap": "bounded"
 	},
 
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
 	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.wordWrap": "bounded"
 	},
 
 	"[jsonc]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.wordWrap": "bounded"
 	},
 
 	"[markdown]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.quickSuggestions": {
 			"comments": "off",
 			"strings": "off",
@@ -101,6 +127,18 @@
 		},
 		"editor.suggestOnTriggerCharacters": false,
 		"editor.wordWrap": "bounded"
+	},
+
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
+	"[yaml]": {
+		"editor.defaultFormatter": "redhat.vscode-yaml"
 	},
 
 	"go.inlayHints.assignVariableTypes": true,
@@ -162,6 +200,11 @@
 
 	"gitlens.ai.enabled": false,
 	"gitlens.codeLens.enabled": false,
+	"github.copilot.enable": {
+		"*": true,
+		"markdown": false,
+		"plaintext": false
+	},
 	"gitlens.hovers.currentLine.over": "annotation",
 	"gitlens.plusFeatures.enabled": false,
 	"gitlens.rebaseEditor.openOnPausedRebase": false,
@@ -172,6 +215,7 @@
 	"prettier.printWidth": 100,
 	"prettier.requireConfig": true,
 	"prettier.tabWidth": 4,
+	"prettier.useEditorConfig": false,
 	"prettier.useTabs": true,
 
 	"todohighlight.exclude": [
