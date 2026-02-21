@@ -15,11 +15,16 @@
 	cp = cherry-pick
 	h = log
 	hs = log -E -i --grep
-	hr = "!f() { git restore --source="$1" "$2"; }; f"
 	pl = pull
 	plm = pull --no-rebase
 	plr = pull --rebase
 	ps = push
+	psf = push --force-with-lease
+	rba = rebase --abort
+	rbc = rebase --continue
+	rbi = rebase -i
+	restore = "!f() { git restore --source="$1" "$2"; }; f"
+	scrub = "!git reset --hard && git clean -fd"
 	st = status
 	undo = reset --soft HEAD~1
 
