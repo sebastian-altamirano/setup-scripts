@@ -12,7 +12,11 @@ const config: Configuration = {
 	"*.bash": ["shfmt -w", "shellcheck"],
 	"*.fish": "fish_indent -w",
 	"*.{json,jsonc}": "prettier --write",
-	"*.md": ["prettier --write", "eslint --fix"],
+	"*.md": [
+		"doctoc --github --minlevel 2 --title '## Table of Contents' --update-only",
+		"prettier --write",
+		"eslint --fix",
+	],
 	"*.{mjs,js,ts}": [(): string => "tsc", `prettier --write`, `eslint --fix`],
 	"*.{ps1,psm1}": (filePaths) => [
 		`pwsh -Command 'scripts/code-quality.ps1' -Action format -Type powershell -Path ${formatPathsForPowerShell(filePaths)}`,
