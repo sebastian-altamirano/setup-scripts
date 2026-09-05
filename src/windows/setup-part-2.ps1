@@ -78,12 +78,12 @@ try {
 		'--silent'
 	)
 	$winGetInstallIds = @(
+		'AprilNEA.OpenLogi',
 		'ArminOsaj.AutoDarkMode',
+		'cjpais.Handy',
 		'Discord.Discord',
 		'FlawlessWidescreen.FlawlessWidescreen',
-		'Guru3D.Afterburner',
 		'JanDeDobbeleer.OhMyPosh',
-		'KDE.Krita',
 		'M2Team.NanaZip',
 		'Meta.Oculus',
 		'Microsoft.PowerToys',
@@ -94,9 +94,10 @@ try {
 		'Philips.HueSync',
 		'REALiX.HWiNFO',
 		'Reshade.Setup.AddonsSupport',
+		'Upscayl.Upscayl',
 		'Valve.Steam',
-		'VideoLAN.VLC',
 		# Microsoft Store apps:
+		'9PLM9XGG6VKS',   # ChatGPT
 		'9N0866FS04W8',   # Dolby Access
 		'9N33VZK3C7TH',   # ImageGlass
 		'9P30LSR4705L',   # LosslessCut
