@@ -110,7 +110,6 @@ Some configurations cannot be automated. These settings are detailed below:
 
 ### Windows
 
-- Copy the snippets from [`/src/browser-snippets`](/src/browser-snippets) [into the browser where you want to use them](https://learn.microsoft.com/en-us/microsoft-edge/devtools-guide-chromium/javascript/snippets).
 - Enable 'File name extensions' and 'Hidden items' in the File Explorer options.
 - Disable mouse acceleration.
 - Change the mouse pointer scheme to inverted.
