@@ -1,6 +1,6 @@
 [alias]
 	a = add
-	aliases = config --get-regexp alias
+	aliases = "!git config --get-regexp '^alias\\.' | sed -E 's/^([^[:space:]]+)[[:space:]]+/\\1 | /; s/\\t(\\t*)/\\n\\1/g'"
 	br = branch
 	brd = branch -D
 	brl = branch -l
@@ -13,8 +13,29 @@
 	co = checkout
 	cob = checkout -b
 	cp = cherry-pick
+	cpa = cherry-pick --abort
+	cpc = cherry-pick --continue
 	h = log
-	hs = log -E -i --grep
+	hcs = "!f() { \
+		test \"$#\" -ge 1 || { \
+			echo 'usage: git hcs <text> [git-log-options]' >&2; \
+			echo 'searches exact text changes in file contents, not commit messages.' >&2; \
+			return 2; \
+		}; \
+		search=$1; \
+		shift; \
+		git log -S\"$search\" \"$@\"; \
+	}; f"
+	hms = "!f() { \
+		test \"$#\" -ge 1 || { \
+			echo 'usage: git hms <regex> [git-log-options]' >&2; \
+			echo 'searches commit messages, not file contents.' >&2; \
+			return 2; \
+		}; \
+		search=$1; \
+		shift; \
+		git log -E -i --grep=\"$search\" \"$@\"; \
+	}; f"
 	pl = pull
 	plm = pull --no-rebase
 	plr = pull --rebase
@@ -22,8 +43,23 @@
 	psf = push --force-with-lease
 	rba = rebase --abort
 	rbc = rebase --continue
-	rbi = rebase -i
-	restore = "!f() { git restore --source="$1" "$2"; }; f"
+	rbi = "!f() { \
+		case \"$1\" in \
+		''|*[!0-9]*|0) \
+			echo 'usage: git rbi <positive-commit-count>' >&2; \
+			return 2; \
+			;; \
+		esac; \
+		git rebase -i \"HEAD~$1\"; \
+	}; f"
+	rf = "!f() { \
+		test \"$#\" -eq 2 || { \
+			echo 'usage: git rf <commit> <file>' >&2; \
+			echo 'restores <file> from <commit> into the working tree.' >&2; \
+			return 2; \
+		}; \
+		git restore --source=\"$1\" -- \"$2\"; \
+	}; f"
 	scrub = "!git reset --hard && git clean -fd"
 	st = status
 	undo = reset --soft HEAD~1
