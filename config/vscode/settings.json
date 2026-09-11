@@ -6,6 +6,7 @@
 	"chat.editRequests": "hover",
 	"chat.viewSessions.orientation": "stacked",
 
+	"debug.breakpointsView.presentation": "tree",
 	"debug.showVariableTypes": true,
 	"debug.toolBarLocation": "commandCenter",
 
@@ -44,9 +45,12 @@
 
 	"extensions.autoUpdate": "onlyEnabledExtensions",
 
-	"git.enableCommitSigning": true,
+	"files.defaultLanguage": "markdown",
+
+	"git.addAICoAuthor": "off",
 	"git.blame.editorDecoration.enabled": false,
 	"git.blame.statusBarItem.enabled": false,
+	"git.enableCommitSigning": true,
 
 	"inlineChat.enableV2": true,
 
@@ -129,6 +133,10 @@
 		"editor.wordWrap": "bounded"
 	},
 
+	"[plaintext]": {
+		"editor.wordWrap": "bounded"
+	},
+
 	"[typescript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
@@ -150,14 +158,13 @@
 	"go.inlayHints.rangeVariableTypes": true,
 	"go.lintFlags": ["--fast"],
 
-	"javascript.inlayHints.functionLikeReturnTypes.enabled": true,
-	"javascript.inlayHints.parameterNames.enabled": "all",
-	"javascript.inlayHints.parameterTypes.enabled": true,
-	"javascript.inlayHints.propertyDeclarationTypes.enabled": true,
-	"javascript.inlayHints.variableTypes.enabled": true,
-	"javascript.updateImportsOnFileMove.enabled": "always",
-
+	"js/ts.inlayHints.functionLikeReturnTypes.enabled": true,
+	"js/ts.inlayHints.parameterNames.enabled": "all",
+	"js/ts.inlayHints.parameterTypes.enabled": true,
+	"js/ts.inlayHints.propertyDeclarationTypes.enabled": true,
+	"js/ts.inlayHints.variableTypes.enabled": true,
 	"js/ts.implicitProjectConfig.checkJs": true,
+	"js/ts.updateImportsOnFileMove.enabled": "always",
 
 	"python.analysis.aiCodeActions": {
 		"generateDocstring": true,
@@ -190,21 +197,12 @@
 	"code-runner.runInTerminal": true,
 	"code-runner.saveFileBeforeRun": true,
 
-	"github.copilot.chat.codesearch.enabled": true,
-	"github.copilot.chat.languageContext.fix.typescript.enabled": true,
-	"github.copilot.chat.languageContext.inline.typescript.enabled": true,
-	"github.copilot.chat.languageContext.typescript.enabled": true,
-	"github.copilot.nextEditSuggestions.allowWhitespaceOnlyChanges": false,
-	"github.copilot.nextEditSuggestions.enabled": true,
-	"github.copilot.nextEditSuggestions.fixes": true,
+	"github.copilot.enable": {
+		"*": false
+	},
 
 	"gitlens.ai.enabled": false,
 	"gitlens.codeLens.enabled": false,
-	"github.copilot.enable": {
-		"*": true,
-		"markdown": false,
-		"plaintext": false
-	},
 	"gitlens.hovers.currentLine.over": "annotation",
 	"gitlens.plusFeatures.enabled": false,
 	"gitlens.rebaseEditor.openOnPausedRebase": false,
@@ -260,5 +258,7 @@
 		"**/*.txt",
 		"**/*.yaml",
 		"**/*.yml"
-	]
+	],
+
+	"yaml.disableSchemaDetection": ["**/.github/workflows/*.yml", "**/.github/workflows/*.yaml"]
 }
