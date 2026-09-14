@@ -67,9 +67,11 @@ try {
 
 	# Package manager policy:
 	# - Prefer WinGet for application installs.
-	# - If something is not available in WinGet, use Chocolatey as a fallback.
-	# - Do not use Scoop: these scripts run elevated, and Scoop is not designed to run/install cleanly
-	#   from an administrative context.
+	# - If a package is unavailable in WinGet, use Chocolatey as a fallback.
+	# - Avoid Scoop in this bootstrap: the entire script runs elevated, while Scoop is intended
+	#   primarily for per-user, non-elevated installations.
+	# - For WinGet packages whose installers reject an elevated context, use an equivalent Microsoft
+	#   Store or Chocolatey package when available.
 	Write-InfoMsg 'Installing WinGet packages...'
 	Write-InfoMsg 'Note that some applications might open during installation.'
 	$winGetInstallArgs = @(
@@ -80,6 +82,7 @@ try {
 	$winGetInstallIds = @(
 		'AprilNEA.OpenLogi',
 		'ArminOsaj.AutoDarkMode',
+		'chocolatey.chocolatey',
 		'cjpais.Handy',
 		'Discord.Discord',
 		'FlawlessWidescreen.FlawlessWidescreen',
@@ -110,6 +113,15 @@ try {
 		winget install --exact --id $package @winGetInstallArgs
 	}
 
+	Write-InfoMsg 'Installing Chocolatey packages...'
+	$chocoExecutable = Join-Path $env:ProgramData 'chocolatey\bin\choco.exe'
+	$chocoInstallPackages = @(
+		'equalizerapo'
+	)
+	foreach ($package in $chocoInstallPackages) {
+		& $chocoExecutable install $package --yes
+	}
+
 	Write-InfoMsg 'Installing fonts...'
 	# Refresh PATH to ensure `oh-my-posh` is available.
 	$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
@@ -131,6 +143,37 @@ try {
 	}
 
 	Write-InfoMsg 'Copying configuration files...'
+
+	Write-InfoMsg 'Installing RNNoise VST plugin for Equalizer APO...'
+	$equalizerApoPath = Join-Path $env:ProgramFiles 'EqualizerAPO'
+	$equalizerApoConfigPath = Join-Path $equalizerApoPath 'config'
+	$rnnoiseArchiveUri = 'https://github.com/werman/noise-suppression-for-voice/releases/latest/download/win-rnnoise.zip'
+	$rnnoiseTemporaryPath = Join-Path ([System.IO.Path]::GetTempPath()) "win-rnnoise-$([guid]::NewGuid())"
+	$rnnoiseArchivePath = Join-Path $rnnoiseTemporaryPath 'win-rnnoise.zip'
+	$rnnoiseExtractPath = Join-Path $rnnoiseTemporaryPath 'extracted'
+	$rnnoiseTargetPath = Join-Path $equalizerApoPath 'VSTPlugins\rnnoise_mono.dll'
+	try {
+		New-Item -ItemType Directory -Path $rnnoiseTemporaryPath -Force | Out-Null
+		Invoke-WebRequest -Uri $rnnoiseArchiveUri -OutFile $rnnoiseArchivePath -ErrorAction Stop
+		Expand-Archive -LiteralPath $rnnoiseArchivePath -DestinationPath $rnnoiseExtractPath
+		$rnnoisePluginPath = Join-Path $rnnoiseExtractPath 'win-rnnoise\vst\rnnoise_mono.dll'
+		if (-not (Test-Path -LiteralPath $rnnoisePluginPath -PathType Leaf)) {
+			throw "The RNNoise archive does not contain the expected plugin: $rnnoisePluginPath"
+		}
+
+		Copy-Item $rnnoisePluginPath $rnnoiseTargetPath -Force
+	} catch {
+		Write-AttentionMsg "Could not install the RNNoise VST plugin: $($_.Exception.Message)"
+	} finally {
+		Remove-Item -LiteralPath $rnnoiseTemporaryPath -Recurse -Force -ErrorAction SilentlyContinue
+	}
+
+	if (Test-Path -LiteralPath $rnnoiseTargetPath -PathType Leaf) {
+		Write-InfoMsg 'Copying Equalizer APO settings...'
+		Copy-Item "$ConfigPath\equalizer-apo\config.txt" (Join-Path $equalizerApoConfigPath 'config.txt') -Force
+	} else {
+		Write-AttentionMsg 'Skipping Equalizer APO settings because rnnoise_mono.dll is not available.'
+	}
 
 	Write-InfoMsg 'Copying Oh My Posh theme...'
 	$ompThemeName = 'ys-custom.omp.json'
