@@ -18,18 +18,18 @@
 	h = log
 	hcs = "!f() { \
 		test \"$#\" -ge 1 || { \
-			echo 'usage: git hcs <text> [git-log-options]' >&2; \
-			echo 'searches exact text changes in file contents, not commit messages.' >&2; \
+			echo 'usage: git hcs <regex> [git-log-options]' >&2; \
+			echo 'searches changed lines in files, not commit messages.' >&2; \
 			return 2; \
 		}; \
 		search=$1; \
 		shift; \
-		git log -S\"$search\" \"$@\"; \
+		git log -G\"$search\" -i \"$@\"; \
 	}; f"
 	hms = "!f() { \
 		test \"$#\" -ge 1 || { \
 			echo 'usage: git hms <regex> [git-log-options]' >&2; \
-			echo 'searches commit messages, not file contents.' >&2; \
+			echo 'searches commit messages, not changed lines in files.' >&2; \
 			return 2; \
 		}; \
 		search=$1; \
