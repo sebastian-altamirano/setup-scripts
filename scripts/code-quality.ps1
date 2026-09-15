@@ -29,6 +29,12 @@ $ErrorActionPreference = 'Stop'
 
 $ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
 
+function Assert-LastExitCode([string] $Operation) {
+	if ($LASTEXITCODE -ne 0) {
+		throw "$Operation failed with exit code $LASTEXITCODE."
+	}
+}
+
 function Get-ProjectFile([string[]] $Include) {
 	Get-ChildItem -Path $ProjectRoot -Recurse -File -Include $Include |
 		Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules)[\\/]' } |
@@ -58,9 +64,18 @@ $files = @($files)
 if ($files.Count -eq 0) { exit 0 }
 
 switch ("$Action|$Type") {
-	'format|bash' { & shfmt -w @files }
-	'lint|bash' { & shellcheck @files }
-	'format|fish' { & fish_indent -w @files }
+	'format|bash' {
+		& shfmt -w @files
+		Assert-LastExitCode -Operation 'Formatting Bash files'
+	}
+	'lint|bash' {
+		& shellcheck @files
+		Assert-LastExitCode -Operation 'Linting Bash files'
+	}
+	'format|fish' {
+		& fish_indent -w @files
+		Assert-LastExitCode -Operation 'Formatting Fish files'
+	}
 	'lint|fish' { Write-Host 'No fish linter configured; skipping.' -ForegroundColor Yellow }
 	'format|powershell' {
 		$settings = Join-Path $ProjectRoot 'CodeFormatting.psd1'
