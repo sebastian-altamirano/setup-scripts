@@ -35,6 +35,7 @@ try {
 	$uwpPackages = @(
 		'BingNews',
 		'FeedbackHub',
+		'Microsoft.Copilot',
 		'MicrosoftSolitaireCollection',
 		'MicrosoftStickyNotes',
 		'Outlook'
