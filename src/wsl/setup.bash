@@ -114,18 +114,9 @@ fish --no-config -c 'nvm use lts; npm i -g npm; npm i -g pnpm'
 
 print_info "Installing VS Code extensions..."
 EXTENSIONS=(
-	Angular.ng-template
 	Cardinal90.multi-cursor-case-preserve
-	cyrilletuzi.angular-schematics
-	dbaeumer.vscode-eslint
 	esbenp.prettier-vscode
-	GitHub.copilot
-	GitHub.copilot-chat
-	ms-python.python
-	ms-vscode.vscode-copilot-vision
 	redhat.vscode-yaml
-	tamasfe.even-better-toml
-	YoavBls.pretty-ts-errors
 )
 for extension in "${EXTENSIONS[@]}"; do
 	code --install-extension "$extension"

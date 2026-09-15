@@ -136,7 +136,8 @@ try {
 	$extensions = @(
 		'GitHub.github-vscode-theme',
 		'jgclark.vscode-todo-highlight',
-		'ms-vscode-remote.remote-wsl'
+		'ms-vscode-remote.remote-wsl',
+		'YoavBls.pretty-ts-errors'
 	)
 	foreach ($extension in $extensions) {
 		code --install-extension $extension
