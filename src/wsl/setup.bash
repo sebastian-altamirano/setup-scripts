@@ -118,7 +118,8 @@ EXTENSIONS=(
 	Cardinal90.multi-cursor-case-preserve
 	cyrilletuzi.angular-schematics
 	dbaeumer.vscode-eslint
-	eamodio.gitlens
+	# Pin GitLens to the latest version that does not require login.
+	eamodio.gitlens@18.3.0
 	esbenp.prettier-vscode
 	GitHub.copilot
 	GitHub.copilot-chat
