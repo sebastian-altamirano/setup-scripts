@@ -48,11 +48,9 @@
 	"files.defaultLanguage": "markdown",
 
 	"git.addAICoAuthor": "off",
-	"git.blame.editorDecoration.enabled": false,
-	"git.blame.statusBarItem.enabled": false,
+	"git.blame.editorDecoration.enabled": true,
+	"git.blame.statusBarItem.enabled": true,
 	"git.enableCommitSigning": true,
-
-	"inlineChat.enableV2": true,
 
 	"remote.autoForwardPortsSource": "hybrid",
 
@@ -200,14 +198,6 @@
 	"github.copilot.enable": {
 		"*": false
 	},
-
-	"gitlens.ai.enabled": false,
-	"gitlens.codeLens.enabled": false,
-	"gitlens.hovers.currentLine.over": "annotation",
-	"gitlens.plusFeatures.enabled": false,
-	"gitlens.rebaseEditor.openOnPausedRebase": false,
-	"gitlens.showWhatsNewAfterUpgrades": false,
-	"gitlens.statusBar.enabled": false,
 
 	"prettier.endOfLine": "lf",
 	"prettier.printWidth": 100,
