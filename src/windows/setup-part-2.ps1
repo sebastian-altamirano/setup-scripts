@@ -14,6 +14,8 @@ $ErrorActionPreference = 'Stop'
 $LogPath = Join-Path $PSScriptRoot 'windows-setup-part-2.log'
 Start-Transcript -Path $LogPath -Append
 
+$shutdownBlocker = $null
+
 try {
 	Write-InfoMsg '===== Windows Setup - Part 2 (Final) ====='
 	Write-AttentionMsg (
@@ -112,6 +114,7 @@ try {
 	)
 	foreach ($package in $winGetInstallIds) {
 		winget install --exact --id $package @winGetInstallArgs
+		Assert-LastExitCode "Installing WinGet package '$package'"
 	}
 
 	Write-InfoMsg 'Installing Chocolatey packages...'
@@ -121,6 +124,7 @@ try {
 	)
 	foreach ($package in $chocoInstallPackages) {
 		& $chocoExecutable install $package --yes
+		Assert-LastExitCode "Installing Chocolatey package '$package'"
 	}
 
 	Write-InfoMsg 'Installing fonts...'
@@ -128,6 +132,7 @@ try {
 	$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
 		[System.Environment]::GetEnvironmentVariable("Path", "User")
 	oh-my-posh font install monaspace
+	Assert-LastExitCode 'Installing the Monaspace font with Oh My Posh'
 
 	Write-InfoMsg 'Installing PowerShell modules...'
 	Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
@@ -142,6 +147,7 @@ try {
 	)
 	foreach ($extension in $extensions) {
 		code --install-extension $extension
+		Assert-LastExitCode "Installing VS Code extension '$extension'"
 	}
 
 	Write-InfoMsg 'Copying configuration files...'
@@ -164,18 +170,12 @@ try {
 		}
 
 		Copy-Item $rnnoisePluginPath $rnnoiseTargetPath -Force
-	} catch {
-		Write-AttentionMsg "Could not install the RNNoise VST plugin: $($_.Exception.Message)"
 	} finally {
 		Remove-Item -LiteralPath $rnnoiseTemporaryPath -Recurse -Force -ErrorAction SilentlyContinue
 	}
 
-	if (Test-Path -LiteralPath $rnnoiseTargetPath -PathType Leaf) {
-		Write-InfoMsg 'Copying Equalizer APO settings...'
-		Copy-Item "$ConfigPath\equalizer-apo\config.txt" (Join-Path $equalizerApoConfigPath 'config.txt') -Force
-	} else {
-		Write-AttentionMsg 'Skipping Equalizer APO settings because rnnoise_mono.dll is not available.'
-	}
+	Write-InfoMsg 'Copying Equalizer APO settings...'
+	Copy-Item "$ConfigPath\equalizer-apo\config.txt" (Join-Path $equalizerApoConfigPath 'config.txt') -Force
 
 	Write-InfoMsg 'Copying Oh My Posh theme...'
 	$ompThemeName = 'ys-custom.omp.json'
@@ -218,16 +218,17 @@ try {
 	$wslDistroName = 'Ubuntu'
 	Write-InfoMsg "Installing $wslDistroName in WSL..."
 	wsl --install -d $wslDistroName --no-launch
+	Assert-LastExitCode "Installing WSL distribution '$wslDistroName'"
 	Write-InfoMsg "The $wslDistroName installer will prompt you to create a user and set a password."
 	ubuntu.exe install
+	Assert-LastExitCode "Initializing WSL distribution '$wslDistroName'"
 
 	Write-InfoMsg 'Running WSL setup script...'
 	$wslSetupScriptWindowsPath = "$PSScriptRoot\..\wsl\setup.bash" | Resolve-Path
 	$wslSetupScriptWslPath = wsl -d $wslDistroName -e bash -c "wslpath -au '$wslSetupScriptWindowsPath'"
+	Assert-LastExitCode "Resolving the WSL setup path for distribution '$wslDistroName'"
 	wsl -d $wslDistroName -e $wslSetupScriptWslPath
-	if ($LASTEXITCODE -ne 0) {
-		throw "WSL setup failed."
-	}
+	Assert-LastExitCode "Running the WSL setup for distribution '$wslDistroName'"
 
 	Write-SuccessMsg "`nPart 2 (Final) complete."
 	Write-SuccessMsg 'Once restarted, check the ''README.md'' for the next steps.'

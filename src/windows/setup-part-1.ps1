@@ -23,6 +23,7 @@ try {
 	winget install --exact --id Microsoft.PowerShell `
 		--accept-package-agreements --accept-source-agreements `
 		--silent
+	Assert-LastExitCode 'Installing Microsoft.PowerShell with WinGet'
 
 	Write-InfoMsg 'Enabling Hyper-V (required for WSL)...'
 	Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart

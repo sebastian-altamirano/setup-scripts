@@ -1,3 +1,9 @@
+function Assert-LastExitCode([string]$Operation) {
+	if ($LASTEXITCODE -ne 0) {
+		throw "$Operation failed with exit code $LASTEXITCODE."
+	}
+}
+
 function Write-InfoMsg {
 	param([string]$Message)
 	Write-Host "Info: $Message" -ForegroundColor Cyan
