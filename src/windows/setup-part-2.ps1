@@ -33,7 +33,7 @@ try {
 		}
 	}
 
-	Write-InfoMsg 'Uninstalling bundled applications...'
+	Write-InfoMsg 'Uninstalling bundled UWP applications...'
 	$uwpPackages = @(
 		'BingNews',
 		'FeedbackHub',
@@ -43,8 +43,14 @@ try {
 		'Outlook'
 	)
 	foreach ($package in $uwpPackages) {
-		Get-AppxPackage -All "*$package*" | Remove-AppxPackage -AllUsers
+		try {
+			Get-AppxPackage -All "*$package*" | Remove-AppxPackage -AllUsers
+		} catch {
+			Write-AttentionMsg "Could not uninstall UWP package '$package': $($_.Exception.Message)"
+		}
 	}
+
+	Write-InfoMsg 'Uninstalling bundled WinGet applications...'
 	$winGetUninstallArgs = @(
 		'--accept-source-agreements',
 		'--silent'
@@ -62,11 +68,21 @@ try {
 	)
 	foreach ($package in $winGetUninstallIds) {
 		winget uninstall --exact --id $package @winGetUninstallArgs
+		if ($LASTEXITCODE -ne 0) {
+			Write-AttentionMsg "Could not uninstall WinGet package '$package': exit code $LASTEXITCODE."
+		}
 	}
-	taskkill /f /im OneDrive.exe
-	# OneDrive uninstall returns error code 2147747483, but completes successfully and does not cause
-	# the script to enter the catch block.
+
+	Stop-Process -Name OneDrive -Force -ErrorAction SilentlyContinue
 	winget uninstall 'OneDriveSetup.exe' @winGetUninstallArgs
+	if ($LASTEXITCODE -eq 2147747483) {
+		Write-AttentionMsg (
+			"OneDrive reported an incomplete uninstall (exit code $LASTEXITCODE), but it may have been " +
+			"removed successfully."
+		)
+	} elseif ($LASTEXITCODE -ne 0) {
+		Write-AttentionMsg "Could not uninstall OneDrive: exit code $LASTEXITCODE."
+	}
 
 	# Package manager policy:
 	# - Prefer WinGet for application installs.
